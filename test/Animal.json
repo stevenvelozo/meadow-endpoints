@@ -1,0 +1,54 @@
+{
+	"Scope": "FableTest",
+
+	"DefaultIdentifier": "IDAnimal",
+
+	"Schema": [
+		{ "Column": "IDAnimal",        "Type":"AutoIdentity" },
+		{ "Column": "GUIDAnimal",      "Type":"AutoGUID" },
+		{ "Column": "CreateDate",      "Type":"CreateDate" },
+		{ "Column": "CreatingIDUser",  "Type":"CreateIDUser" },
+		{ "Column": "UpdateDate",      "Type":"UpdateDate" },
+		{ "Column": "UpdatingIDUser",  "Type":"UpdateIDUser" },
+		{ "Column": "Deleted",         "Type":"Deleted" },
+		{ "Column": "DeletingIDUser",  "Type":"DeleteIDUser" },
+		{ "Column": "DeleteDate",      "Type":"DeleteDate" }
+	],
+
+	"DefaultObject": {
+		"IDAnimal": null,
+		"GUIDAnimal": "",
+
+		"CreateDate": false,
+		"CreatingIDUser": 0,
+		"UpdateDate": false,
+		"UpdatingIDUser": 0,
+		"Deleted": 0,
+		"DeleteDate": false,
+		"DeletingIDUser": 0,
+
+		"Name": "Unknown",
+		"Type": "Unclassified"
+	},
+
+	"JsonSchema": {
+		"title": "Animal",
+		"description": "A creature that lives in a meadow.",
+		"type": "object",
+		"properties": {
+			"IDAnimal": {
+				"description": "The unique identifier for an animal",
+				"type": "integer"
+			},
+			"Name": {
+				"description": "The animal's name",
+				"type": "string"
+			},
+			"Type": {
+				"description": "The type of the animal",
+				"type": "string"
+			}
+		},
+		"required": ["IDAnimal", "Name", "CreatingIDUser"]
+	}
+}
