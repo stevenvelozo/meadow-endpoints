@@ -26,13 +26,16 @@
     "chai": "2.0.0",
     "codeclimate-test-reporter": "0.0.4",
     "coveralls": "^2.11.2",
+    "fable": "^0.1.6",
     "istanbul": "0.3.5",
     "mocha": "2.1.0",
+    "mysql2": "^0.15.8",
     "orator": "^0.1.11",
     "supertest": "^1.0.1"
   },
   "dependencies": {
     "async": "^0.9.0",
-    "meadow": "0.1.9"
+    "meadow": "0.1.10",
+    "restify": "^3.0.3"
   }
 }
