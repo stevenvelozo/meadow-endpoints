@@ -13,8 +13,6 @@
 * @class MeadowEndpoints
 * @constructor
 */
-var libAsync = require('async');
-
 var MeadowEndpoints = function()
 {
 	function createNew(pMeadow)

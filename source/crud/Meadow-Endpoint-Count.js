@@ -6,7 +6,6 @@
 * @author Steven Velozo <steven@velozo.com>
 * @module Meadow
 */
-var libAsync = require('async');
 /**
 * Count a record using the Meadow DAL object
 */

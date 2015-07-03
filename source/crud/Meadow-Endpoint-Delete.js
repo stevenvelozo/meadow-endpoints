@@ -47,7 +47,7 @@ var doAPIDeleteEndpoint = function(pRequest, pResponse, fNext)
 	// INJECT: Query configuration and population
 
 	// This is not overloadable.`
-	tmpQuery.addFilter(pRequest.DAL.defaultIdentifier, pRequest.body[pRequest.DAL.defaultIdentifier])
+	tmpQuery.addFilter(pRequest.DAL.defaultIdentifier, pRequest.body[pRequest.DAL.defaultIdentifier]);
 
 	// Do the delete
 	pRequest.DAL.doDelete(tmpQuery,
