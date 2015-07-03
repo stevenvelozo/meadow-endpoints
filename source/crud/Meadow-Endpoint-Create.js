@@ -6,7 +6,6 @@
 * @author Steven Velozo <steven@velozo.com>
 * @module Meadow
 */
-var libAsync = require('async');
 /**
 * Create a record using the Meadow DAL object
 */
@@ -31,7 +30,9 @@ var doAPICreateEndpoint = function(pRequest, pResponse, fNext)
 
 	// OVERLOAD: Body validation and parsing
 	if (typeof(pRequest.body) !== 'object')
+	{
 		return pRequest.CommonServices.sendError('Record create failure - a valid record is required.', pRequest, pResponse, tmpNext);
+	}
 	var tmpNewRecord = pRequest.body;
 
 	// INJECT: Record modification before insert

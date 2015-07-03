@@ -6,7 +6,6 @@
 * @author Steven Velozo <steven@velozo.com>
 * @module Meadow
 */
-var libAsync = require('async');
 /**
 * Delete a record using the Meadow DAL object
 */
@@ -31,11 +30,14 @@ var doAPIDeleteEndpoint = function(pRequest, pResponse, fNext)
 
 	// OVERLOAD: Body validation and parsing
 	if (typeof(pRequest.body) !== 'object')
+	{
 		return pRequest.CommonServices.sendError('Record delete failure - a valid record is required.', pRequest, pResponse, tmpNext);
+	}
 	// Although the delete request does allow multiple deletes, we require an identifier.
 	if (pRequest.body[pRequest.DAL.defaultIdentifier] < 1)
-		return _CommonServices.sendError('Record delete failure - a valid record ID is required in the passed-in record.', pRequest, pResponse, tmpNext);
-	var tmpUpdatedRecord = pRequest.body;
+	{
+		return pRequest.CommonServices.sendError('Record delete failure - a valid record ID is required in the passed-in record.', pRequest, pResponse, tmpNext);
+	}
 
 	// INJECT: Record modification before update
 
@@ -60,7 +62,7 @@ var doAPIDeleteEndpoint = function(pRequest, pResponse, fNext)
 			pResponse.send(tmpRecordCount);
 			return tmpNext();
 		}
-	)
+	);
 };
 
 module.exports = doAPIDeleteEndpoint;

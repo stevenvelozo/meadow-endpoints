@@ -57,7 +57,7 @@ var MeadowEndpoints = function()
 			}
 
 			return this;
-		}
+		};
 
 
 		// The default authenticators
@@ -84,7 +84,7 @@ var MeadowEndpoints = function()
 			}
 
 			return this;
-		}
+		};
 
 
 		// The default endpoint authorization levels
@@ -107,7 +107,7 @@ var MeadowEndpoints = function()
 		{
 			_EndpointAuthorizationLevels[pEndpointHash] = pAuthorizationLevel;
 			return true;
-		}
+		};
 
 
 		/**
@@ -118,7 +118,7 @@ var MeadowEndpoints = function()
 			// TODO: There is a shared state issue with using this as the source for the authorization levels.  Fix it.
 			pRequest.CommonServices = _CommonServices;
 			fNext();
-		}
+		};
 
 
 		/**
@@ -130,7 +130,7 @@ var MeadowEndpoints = function()
 			pRequest.EndpointAuthorizationLevels = _EndpointAuthorizationLevels;
 			pRequest.DAL = _Meadow;
 			fNext();
-		}
+		};
 
 
 		/**

@@ -6,7 +6,6 @@
 * @author Steven Velozo <steven@velozo.com>
 * @module Meadow
 */
-var libAsync = require('async');
 /**
 * Update a record using the Meadow DAL object
 */
@@ -31,9 +30,13 @@ var doAPIUpdateEndpoint = function(pRequest, pResponse, fNext)
 
 	// OVERLOAD: Body validation and parsing
 	if (typeof(pRequest.body) !== 'object')
+	{
 		return pRequest.CommonServices.sendError('Record update failure - a valid record is required.', pRequest, pResponse, tmpNext);
+	}
 	if (pRequest.body[pRequest.DAL.defaultIdentifier] < 1)
-		return _CommonServices.sendError('Record update failure - a valid record ID is required in the passed-in record.', pRequest, pResponse, tmpNext);
+	{
+		return pRequest.CommonServices.sendError('Record update failure - a valid record ID is required in the passed-in record.', pRequest, pResponse, tmpNext);
+	}
 	var tmpUpdatedRecord = pRequest.body;
 
 	// INJECT: Record modification before update

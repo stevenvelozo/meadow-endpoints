@@ -66,7 +66,7 @@ var MeadowCommonServices = function()
 			}
 
 			return true;
-		}
+		};
 
 
 		/**
