@@ -1,6 +1,8 @@
 language: node_js
 node_js:
   - "0.12"
+before_script:
+  - mysql -e 'CREATE DATABASE FableTest;'
 addons:
   code_climate:
     repo_token: b0b7492746ebd2075419cab324ea69ab4f444baeb687a1e4cad47e04216af7f6
