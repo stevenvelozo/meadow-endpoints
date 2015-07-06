@@ -196,6 +196,18 @@ var MeadowEndpoints = function()
 				enumerable: true
 			});
 
+		/**
+		 * Behavior Modifications
+		 *
+		 * @property behaviorModifications
+		 * @type object
+		 */
+		Object.defineProperty(tmpNewMeadowEndpointObject, 'behaviorModifications',
+			{
+				get: function() { return _BehaviorModifications; },
+				enumerable: true
+			});
+
 		return tmpNewMeadowEndpointObject;
 	}
 

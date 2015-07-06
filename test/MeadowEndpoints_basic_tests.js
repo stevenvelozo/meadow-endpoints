@@ -217,6 +217,8 @@ suite
 							_MeadowEndpoints.setEndpoint('Randomize');
 							_MeadowEndpoints.setEndpoint('Randomize', function() {});
 
+							_MeadowEndpoints.behaviorModifications.setTemplate('ListQuery', '<%= MyData %>');
+
 							// Wire the endpoints up
 							_MeadowEndpoints.connectRoutes(_Orator.webServer);
 							_Orator.startWebServer (function() { fCallBack(null); });
