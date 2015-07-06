@@ -1,5 +1,5 @@
 /**
-* Meadow Endpoint - Read a Set of Records
+* Meadow Endpoint - Read a select list of Records (for Drop-downs and such)
 *
 * @license MIT
 *
@@ -10,8 +10,10 @@ var libAsync = require('async');
 /**
 * Get a set of records from a DAL.
 */
-var doAPIReadsEndpoint = function(pRequest, pResponse, fNext)
+var doAPIReadSelectListEndpoint = function(pRequest, pResponse, fNext)
 {
+	var tmpNext = (typeof(fNext) === 'function') ? fNext : function() {};
+
 	// This state is the requirement for the UserRoleIndex value in the SessionData object... processed by default as >=
 	// The default here is that any authenticated user can use this endpoint.
 	pRequest.EndpointAuthorizationRequirement = pRequest.EndpointAuthorizationLevels.Reads;
@@ -35,6 +37,8 @@ var doAPIReadsEndpoint = function(pRequest, pResponse, fNext)
 				// OVERLOAD: Query instantiation
 				var tmpQuery = pRequest.DAL.query;
 
+				// TODO: Limit the query to the columns we need for the templated expression
+
 				// INJECT: Query configuration and population
 
 				// OVERLOAD: Query paging data
@@ -49,6 +53,8 @@ var doAPIReadsEndpoint = function(pRequest, pResponse, fNext)
 					tmpCap = parseInt(pRequest.params.Cap);
 				}
 				tmpQuery.setCap(tmpCap).setBegin(tmpBegin);
+
+				// TODO: Set an upper limit for what can be returned in the select list
 
 				// Do the record read
 				pRequest.DAL.doReads(tmpQuery, fStageComplete);
@@ -68,6 +74,12 @@ var doAPIReadsEndpoint = function(pRequest, pResponse, fNext)
 
 				// Complete the waterfall operation
 				fStageComplete(false, pQuery, pRecords);
+			},
+			// 3. Marshalling of records into the hash list, using underscore templates.
+			function (pQuery, pRecords, fStageComplete)
+			{
+				// Look on the Endpoint Customization object for an underscore template to generate hashes.
+
 			}
 		],
 		// 3. Return the results to the user
@@ -80,9 +92,9 @@ var doAPIReadsEndpoint = function(pRequest, pResponse, fNext)
 
 			pRequest.CommonServices.log.info('Read a recordset with '+pRecords.length+' results.', {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Reads'});
 			pResponse.send(pRecords);
-			return fNext();
+			return tmpNext();
 		}
 	);
 };
 
-module.exports = doAPIReadsEndpoint;
+module.exports = doAPIReadSelectListEndpoint;

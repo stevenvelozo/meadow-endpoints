@@ -27,9 +27,11 @@ var MeadowEndpoints = function()
 
 		var _CommonServices = require('./Meadow-CommonServices.js').new(pMeadow);
 
+		// This holds any changed behaviors.
+		var _BehaviorModifications = require('./Meadow-BehaviorModifications.js').new(pMeadow);
+
 		// This checks that the user is authenticated.  In the future, it will be overloadable.
 		var _Authenticator = require('./Meadow-Authenticator.js');
-
 
 		// The default endpoints
 		var _Endpoints = (

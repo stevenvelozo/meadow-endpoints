@@ -20,7 +20,7 @@ var tmpFableSettings = 	(
 	Product: 'MockOratorAlternate',
 	ProductVersion: '0.0.0',
 
-	APIServerPort: 8080,
+	APIServerPort: 9080,
 
 	MySQL:
 		{
@@ -101,28 +101,34 @@ var ValidAuthentication = function(pRequest, pResponse, fNext)
 	fNext();
 }
 
+var _Meadow;
+var _MeadowEndpoints;
+
+// Now that we have some test data, wire up the endpoints!
+
+// Load up a Meadow (pointing at the Animal database)
+_Meadow = require('meadow')
+				.new(libFable, 'FableTest')
+				.setProvider('MySQL')
+				.setSchema(_AnimalSchema)
+				.setJsonSchema(_AnimalJsonSchema)
+				.setDefaultIdentifier('IDAnimal')
+				.setDefault(_AnimalDefault);
+// Instantiate the endpoints
+_MeadowEndpoints = require('../source/Meadow-Endpoints.js').new(_Meadow);
+
 suite
 (
 	'Meadow-Endpoints',
 	function()
 	{
+		// TODO: Abstract this so it can be run again and again.
 		var _SpooledUp = false;
 		var _Orator;
 
 		var getAnimalInsert = function(pName, pType)
 		{
 			return "INSERT INTO `FableTest` (`IDAnimal`, `GUIDAnimal`, `CreateDate`, `CreatingIDUser`, `UpdateDate`, `UpdatingIDUser`, `Deleted`, `DeleteDate`, `DeletingIDUser`, `Name`, `Type`) VALUES (NULL, '00000000-0000-0000-0000-000000000000', NOW(), 1, NOW(), 1, 0, NULL, 0, '"+pName+"', '"+pType+"'); ";
-		};
-
-		var newMeadow = function()
-		{
-			return require('meadow')
-				.new(libFable, 'FableTest')
-				.setProvider('MySQL')
-				.setSchema(_AnimalSchema)
-				.setJsonSchema(_AnimalJsonSchema)
-				.setDefaultIdentifier('IDAnimal')
-				.setDefault(_AnimalDefault)
 		};
 
 		setup
@@ -186,16 +192,6 @@ suite
 						},
 						function(fCallBack)
 						{
-							// Now that we have some test data, wire up the endpoints!
-
-							// Load up a Meadow (pointing at the Animal database)
-							var tmpMeadow = newMeadow();
-							// Wire up an "always logged in" user in the request chain, so session is set right.
-							_Orator.webServer.use(ValidAuthentication);
-							// Instantiate the endpoints
-							var tmpMeadowEndpoints = require('../source/Meadow-Endpoints.js').new(tmpMeadow);
-							// Wire the endpoints up
-							tmpMeadowEndpoints.connectRoutes(_Orator.webServer);
 							// Start the web server
 							_Orator.startWebServer (function() { fCallBack(null); });
 						}
@@ -204,6 +200,28 @@ suite
 						{
 							// Now continue the tests.
 							_SpooledUp = true;
+							// Wire up an "always logged in" user in the request chain, so session is set right.
+							_Orator.webServer.use(ValidAuthentication);
+							_MeadowEndpoints.setEndpointAuthorization
+							(
+								'Create',
+								2
+							);
+							_MeadowEndpoints.setEndpointAuthenticator ('Reads');
+							_MeadowEndpoints.setEndpointAuthenticator
+							(
+								'Reads', 
+								function(pRequest, pResponse, fNext)
+								{
+									pRequest.EndpointAuthenticated = true;
+									fNext();
+								}
+							);
+							_MeadowEndpoints.setEndpoint('Randomize');
+							_MeadowEndpoints.setEndpoint('Randomize', function() {});
+
+							// Wire the endpoints up
+							_MeadowEndpoints.connectRoutes(_Orator.webServer);
 							fDone();
 						}
 					);
@@ -215,13 +233,10 @@ suite
 			}
 		);
 
-		var _MeadowEndpoints;
-
 		setup
 		(
 			function()
 			{
-				_MeadowEndpoints = require('../source/Meadow-Endpoints.js').new();
 			}
 		);
 
@@ -235,8 +250,56 @@ suite
 					'initialize should build a happy little object',
 					function()
 					{
-						Expect(_MeadowEndpoints)
-							.to.be.an('object', 'MeadowEndpoints should initialize as an object directly from the require statement.');
+						Expect(_MeadowEndpoints).to.be.an('object', 'MeadowEndpoints should initialize as an object directly from the require statement.');
+					}
+				);
+			}
+		);
+		suite
+		(
+			'Behavior Modifications',
+			function()
+			{
+				test
+				(
+					'instantiate a behavior modification object',
+					function()
+					{
+						var tmpBehaviorMods = require('../source/Meadow-BehaviorModifications.js').new(libFable);
+						Expect(tmpBehaviorMods).to.be.an('object');
+					}
+				);
+				test
+				(
+					'exercise the templates api',
+					function()
+					{
+						var tmpBehaviorMods = require('../source/Meadow-BehaviorModifications.js').new(libFable);
+
+						var tmpCrossBehaviorState = 0;
+
+						Expect(tmpBehaviorMods.runBehavior('NoBehaviorsHere')).to.equal(false, 'nonexistant behaviors should return false');
+						tmpBehaviorMods.setBehavior('BigBehavior', function() { tmpCrossBehaviorState++ });
+						Expect(tmpCrossBehaviorState).to.equal(0);
+						Expect(tmpBehaviorMods.runBehavior('BigBehavior')).to.equal(true, 'existant behaviors should return true');
+						Expect(tmpCrossBehaviorState).to.equal(1);
+					}
+				);
+				test
+				(
+					'exercise the behavior modification api',
+					function()
+					{
+						var tmpBehaviorMods = require('../source/Meadow-BehaviorModifications.js').new(libFable);
+						Expect(tmpBehaviorMods.getTemplateFunction('NoTemplatesHere')).to.equal(false, 'empty template hashes on empty sets should return false');
+						Expect(tmpBehaviorMods.getTemplate('NoTemplatesHere')).to.equal(false,'emtpy template sets should be false');
+						tmpBehaviorMods.setTemplate('AnimalFormatter', '<p>An animal (id <%= Number %> is here</p>');
+						Expect(tmpBehaviorMods.getTemplate('AnimalFormatter')).to.contain('An animal');
+						Expect(tmpBehaviorMods.processTemplate('AnimalFormatter', {Number:5})).to.contain('id 5');
+						Expect(tmpBehaviorMods.processTemplate('FriendFormatter', {Number:5}, 'blit <%= Number %>')).to.contain('blit 5');
+						Expect(tmpBehaviorMods.processTemplate('Blank', {Number:5})).to.equal('');
+						tmpBehaviorMods.setTemplate('SimpleTemplate', 'Not so simple.');
+						Expect(tmpBehaviorMods.processTemplate('SimpleTemplate')).to.equal('Not so simple.');
 					}
 				);
 			}
@@ -252,7 +315,8 @@ suite
 					function(fDone)
 					{
 						var tmpRecord = {Name:'BatBrains', Type:'Mammoth'};
-						libSuperTest('http://localhost:8080/')
+						_MockSessionValidUser.UserRoleIndex = 2;
+						libSuperTest('http://localhost:9080/')
 						.post('1.0/FableTest')
 						.send(tmpRecord)
 						.end(
@@ -269,10 +333,31 @@ suite
 				);
 				test
 				(
+					'create: create a record',
+					function(fDone)
+					{
+						var tmpRecord = {Name:'BatBrains', Type:'Mammoth'};
+						_MockSessionValidUser.UserRoleIndex = 1;
+						libSuperTest('http://localhost:9080/')
+						.post('1.0/FableTest')
+						.send(tmpRecord)
+						.end(
+							function(pError, pResponse)
+							{
+								// Expect response to be the record we just created.
+								var tmpResult = JSON.parse(pResponse.text);
+								Expect(tmpResult.Error).to.contain('authenticated');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
 					'read: get a specific record',
 					function(fDone)
 					{
-						libSuperTest('http://localhost:8080/')
+						libSuperTest('http://localhost:9080/')
 						.get('1.0/FableTest/2')
 						.end(
 							function (pError, pResponse)
@@ -289,7 +374,7 @@ suite
 					'reads: get all records',
 					function(fDone)
 					{
-						libSuperTest('http://localhost:8080/')
+						libSuperTest('http://localhost:9080/')
 						.get('1.0/FableTests')
 						.end(
 							function (pError, pResponse)
@@ -308,7 +393,7 @@ suite
 					'reads: get a page of records',
 					function(fDone)
 					{
-						libSuperTest('http://localhost:8080/')
+						libSuperTest('http://localhost:9080/')
 						// Get page 2, 2 records per page.
 						.get('1.0/FableTests/2/2')
 						.end(
@@ -325,12 +410,12 @@ suite
 				);
 				test
 				(
-					'Update: update a record',
+					'update: update a record',
 					function(fDone)
 					{
 						// Change animal 4 ("Spot") to a Corgi
 						var tmpRecord = {IDAnimal:4, Type:'Corgi'};
-						libSuperTest('http://localhost:8080/')
+						libSuperTest('http://localhost:9080/')
 						.put('1.0/FableTest')
 						.send(tmpRecord)
 						.end(
@@ -348,12 +433,12 @@ suite
 				);
 				test
 				(
-					'Delete: delete a record',
+					'delete: delete a record',
 					function(fDone)
 					{
 						// Delete animal 3 ("Red")
 						var tmpRecord = {IDAnimal:3};
-						libSuperTest('http://localhost:8080/')
+						libSuperTest('http://localhost:9080/')
 						.del('1.0/FableTest')
 						.send(tmpRecord)
 						.end(
@@ -372,7 +457,7 @@ suite
 					'count: get the count of records',
 					function(fDone)
 					{
-						libSuperTest('http://localhost:8080/')
+						libSuperTest('http://localhost:9080/')
 						.get('1.0/FableTests/Count')
 						.end(
 							function (pError, pResponse)
@@ -382,6 +467,159 @@ suite
 								fDone();
 							}
 						);
+					}
+				);
+			}
+		);
+		suite
+		(
+			'Unauthorized server routes',
+			function()
+			{
+				test
+				(
+					'read: get a specific record',
+					function(fDone)
+					{
+						_MockSessionValidUser.UserRoleIndex = 0;
+						libSuperTest('http://localhost:9080/')
+						.get('1.0/FableTest/2')
+						.end(
+							function (pError, pResponse)
+							{
+								var tmpResult = JSON.parse(pResponse.text);
+								Expect(tmpResult.Error).to.contain('You must be appropriately authenticated');
+								fDone();
+							}
+						);
+					}
+				);
+			}
+		);
+		suite
+		(
+			'Bad user server routes',
+			function()
+			{
+				test
+				(
+					'create: create a record',
+					function(fDone)
+					{
+						_MockSessionValidUser.UserID = 0;
+						var tmpRecord = {Name:'BatBrains', Type:'Mammoth'};
+						libSuperTest('http://localhost:9080/')
+						.post('1.0/FableTest')
+						.send(tmpRecord)
+						.end(
+							function(pError, pResponse)
+							{
+								// Expect response to be the record we just created.
+								var tmpResult = JSON.parse(pResponse.text);
+								Expect(tmpResult.Error).to.contain('authenticated');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'read: get a specific record',
+					function(fDone)
+					{
+						libSuperTest('http://localhost:9080/')
+						.get('1.0/FableTest/2')
+						.end(
+							function (pError, pResponse)
+							{
+								var tmpResult = JSON.parse(pResponse.text);
+								Expect(tmpResult.Error).to.contain('authenticated');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'update: update a record',
+					function(fDone)
+					{
+						// Change animal 4 ("Spot") to a Corgi
+						var tmpRecord = {IDAnimal:4, Type:'Corgi'};
+						libSuperTest('http://localhost:9080/')
+						.put('1.0/FableTest')
+						.send(tmpRecord)
+						.end(
+							function(pError, pResponse)
+							{
+								// Expect response to be the record we just created.
+								var tmpResult = JSON.parse(pResponse.text);
+								Expect(tmpResult.Error).to.contain('authenticated');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'delete: delete a record',
+					function(fDone)
+					{
+						// Delete animal 3 ("Red")
+						var tmpRecord = {IDAnimal:3};
+						libSuperTest('http://localhost:9080/')
+						.del('1.0/FableTest')
+						.send(tmpRecord)
+						.end(
+							function(pError, pResponse)
+							{
+								// Expect response to be the count of deleted records.
+								var tmpResult = JSON.parse(pResponse.text);
+								Expect(tmpResult.Error).to.contain('authenticated');
+								fDone();
+							}
+						);
+					}
+				);
+			}
+		);
+		suite
+		(
+			'Not logged in server routes',
+			function()
+			{
+				test
+				(
+					'read: get a specific record',
+					function(fDone)
+					{
+						_MockSessionValidUser.LoggedIn = false;
+						libSuperTest('http://localhost:9080/')
+						.get('1.0/FableTest/2')
+						.end(
+							function (pError, pResponse)
+							{
+								var tmpResult = JSON.parse(pResponse.text);
+								Expect(tmpResult.Error).to.contain('You must be authenticated');
+								fDone();
+							}
+						);
+					}
+				);
+			}
+		);
+		suite
+		(
+			'Changing route requirement',
+			function()
+			{
+				test
+				(
+					'read: get a specific record',
+					function(fDone)
+					{
+						Expect(_MeadowEndpoints.endpointAuthorizationLevels.Read).to.equal(1);
+						fDone();
 					}
 				);
 			}

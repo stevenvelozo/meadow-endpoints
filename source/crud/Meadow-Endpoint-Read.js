@@ -12,13 +12,12 @@ var libAsync = require('async');
 */
 var doAPIReadEndpoint = function(pRequest, pResponse, fNext)
 {
-	var tmpNext = (typeof(fNext) === 'function') ? fNext : function() {};
-
 	// This state is the requirement for the UserRoleIndex value in the SessionData object... processed by default as >=
 	// The default here is that any authenticated user can use this endpoint.
 	pRequest.EndpointAuthorizationRequirement = pRequest.EndpointAuthorizationLevels.Read;
 	
 	// INJECT: Pre authorization (for instance to change the authorization level)
+	console.log('Read');
 	
 	// OVERLOAD: Endpoint authorization (for instance if it is a complex authorization requirement)
 	if (pRequest.CommonServices.authorizeEndpoint(pRequest, pResponse, fNext) === false)
@@ -76,7 +75,7 @@ var doAPIReadEndpoint = function(pRequest, pResponse, fNext)
 
 			pRequest.CommonServices.log.info('Read a record with ID '+pRequest.params.IDRecord+'.', {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Read'});
 			pResponse.send(pRecord);
-			return tmpNext();
+			return fNext();
 		}
 	);
 };

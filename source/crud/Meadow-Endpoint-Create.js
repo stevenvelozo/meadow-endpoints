@@ -11,8 +11,6 @@
 */
 var doAPICreateEndpoint = function(pRequest, pResponse, fNext)
 {
-	var tmpNext = (typeof(fNext) === 'function') ? fNext : function() {};
-
 	// This state is the requirement for the UserRoleIndex value in the SessionData object... processed by default as >=
 	// The default here is that any authenticated user can use this endpoint.
 	pRequest.EndpointAuthorizationRequirement = pRequest.EndpointAuthorizationLevels.Create;
@@ -56,7 +54,7 @@ var doAPICreateEndpoint = function(pRequest, pResponse, fNext)
 
 			pRequest.CommonServices.log.info('Created a record with ID '+pRecord[pRequest.DAL.defaultIdentifier]+'.', {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Create'});
 			pResponse.send(pRecord);
-			return tmpNext();
+			return fNext();
 		});
 };
 
