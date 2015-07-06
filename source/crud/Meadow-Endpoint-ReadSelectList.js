@@ -77,7 +77,21 @@ var doAPIReadSelectListEndpoint = function(pRequest, pResponse, fNext)
 			function (pQuery, pRecords, fStageComplete)
 			{
 				// Look on the Endpoint Customization object for an underscore template to generate hashes.
+				var tmpSelectList = [];
 
+				// Eventually we can cache this template to make the request faster
+				for (var i = 0; i < pRecords.length; i++)
+				{
+					tmpSelectList.push
+					(
+						{
+							Hash: pRecords[i][pRequest.DAL.defaultIdentifier], 
+							Value: pRequest.BehaviorModifications.processTemplate('SelectList', {Record:pRecords[i]}, pRequest.DAL.scope+' #<%= Record.'+pRequest.DAL.defaultIdentifier+'%>')
+						}
+					);
+				}
+
+				fStageComplete(false, pQuery, tmpSelectList);
 			}
 		],
 		// 3. Return the results to the user
@@ -88,7 +102,7 @@ var doAPIReadSelectListEndpoint = function(pRequest, pResponse, fNext)
 				return pRequest.CommonServices.sendError('Error retreiving a recordset.', pRequest, pResponse, fNext);
 			}
 
-			pRequest.CommonServices.log.info('Read a recordset with '+pRecords.length+' results.', {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Reads'});
+			pRequest.CommonServices.log.info('Read a recordset select list with '+pRecords.length+' results.', {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-ReadSelectList'});
 			pResponse.send(pRecords);
 			return fNext();
 		}

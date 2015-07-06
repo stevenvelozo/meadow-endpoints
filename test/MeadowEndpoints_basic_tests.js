@@ -394,6 +394,25 @@ suite
 				);
 				test
 				(
+					'readselect: get all records',
+					function(fDone)
+					{
+						libSuperTest('http://localhost:9080/')
+						.get('1.0/FableTestSelect')
+						.end(
+							function (pError, pResponse)
+							{
+								console.log(pResponse.text)
+								var tmpResults = JSON.parse(pResponse.text);
+								Expect(tmpResults.length).to.equal(6);
+								Expect(tmpResults[4].Value).to.equal('FableTest #5');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
 					'reads: get a page of records',
 					function(fDone)
 					{

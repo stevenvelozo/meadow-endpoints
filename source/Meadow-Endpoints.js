@@ -39,6 +39,7 @@ var MeadowEndpoints = function()
 			Create: require('./crud/Meadow-Endpoint-Create.js'),
 			Read: require('./crud/Meadow-Endpoint-Read.js'),
 			Reads: require('./crud/Meadow-Endpoint-Reads.js'),
+			ReadSelectList: require('./crud/Meadow-Endpoint-ReadSelectList'),
 			Update: require('./crud/Meadow-Endpoint-Update.js'),
 			Delete: require('./crud/Meadow-Endpoint-Delete.js'),
 			Count: require('./crud/Meadow-Endpoint-Count.js')
@@ -66,6 +67,7 @@ var MeadowEndpoints = function()
 			Create: _Authenticator,
 			Read: _Authenticator,
 			Reads: _Authenticator,
+			ReadSelectList: _Authenticator,
 			Update: _Authenticator,
 			Delete: _Authenticator,
 			Count: _Authenticator
@@ -93,6 +95,7 @@ var MeadowEndpoints = function()
 			Create: 1,
 			Read: 1,
 			Reads: 1,
+			ReadSelectList: 1,
 			Update: 1,
 			Delete: 1,
 			Count: 1
@@ -129,6 +132,7 @@ var MeadowEndpoints = function()
 			// TODO: There is a shared state issue with using this as the source for the authorization levels.  Fix it.
 			pRequest.EndpointAuthorizationLevels = _EndpointAuthorizationLevels;
 			pRequest.DAL = _Meadow;
+			pRequest.BehaviorModifications = _BehaviorModifications;
 			fNext();
 		};
 
@@ -154,6 +158,7 @@ var MeadowEndpoints = function()
 			pRestServer.post('/1.0/'+tmpEndpointName, _CommonServices.bodyParser(), _EndpointAuthenticators.Create, wireState, _Endpoints.Create);
 			pRestServer.get('/1.0/'+tmpEndpointName+'/:IDRecord', _EndpointAuthenticators.Read, wireState, _Endpoints.Read);
 			pRestServer.get('/1.0/'+tmpEndpointName+'s', _EndpointAuthenticators.Reads, wireState, _Endpoints.Reads);
+			pRestServer.get('/1.0/'+tmpEndpointName+'Select', _EndpointAuthenticators.ReadSelectList, wireState, _Endpoints.ReadSelectList);
 			pRestServer.get('/1.0/'+tmpEndpointName+'s/:Begin/:Cap', _EndpointAuthenticators.Reads, wireState, _Endpoints.Reads);
 			pRestServer.put('/1.0/'+tmpEndpointName, _CommonServices.bodyParser(), _EndpointAuthenticators.Update, wireState, _Endpoints.Update);
 			pRestServer.del('/1.0/'+tmpEndpointName, _CommonServices.bodyParser(), _EndpointAuthenticators.Delete, wireState, _Endpoints.Delete);
