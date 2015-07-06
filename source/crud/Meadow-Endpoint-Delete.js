@@ -27,14 +27,23 @@ var doAPIDeleteEndpoint = function(pRequest, pResponse, fNext)
 	// INJECT: Pre endpoint operation
 
 	// OVERLOAD: Body validation and parsing
-	if (typeof(pRequest.body) !== 'object')
+	var tmpIDRecord = 0;
+	if (typeof(pRequest.params.IDRecord) === 'string')
 	{
-		return pRequest.CommonServices.sendError('Record delete failure - a valid record is required.', pRequest, pResponse, tmpNext);
+		tmpIDRecord = pRequest.params.IDRecord;
+	}
+	else if (typeof(pRequest.body[pRequest.DAL.defaultIdentifier]) === 'number')
+	{
+		tmpIDRecord = pRequest.body[pRequest.DAL.defaultIdentifier];
+	}
+	else if (typeof(pRequest.body[pRequest.DAL.defaultIdentifier]) === 'string')
+	{
+		tmpIDRecord = pRequest.body[pRequest.DAL.defaultIdentifier];
 	}
 	// Although the delete request does allow multiple deletes, we require an identifier.
-	if (pRequest.body[pRequest.DAL.defaultIdentifier] < 1)
+	if (tmpIDRecord < 1)
 	{
-		return pRequest.CommonServices.sendError('Record delete failure - a valid record ID is required in the passed-in record.', pRequest, pResponse, tmpNext);
+		return pRequest.CommonServices.sendError('Record delete failure - a valid record ID is required in the passed-in record.', pRequest, pResponse, fNext);
 	}
 
 	// INJECT: Record modification before update
@@ -45,7 +54,7 @@ var doAPIDeleteEndpoint = function(pRequest, pResponse, fNext)
 	// INJECT: Query configuration and population
 
 	// This is not overloadable.`
-	tmpQuery.addFilter(pRequest.DAL.defaultIdentifier, pRequest.body[pRequest.DAL.defaultIdentifier]);
+	tmpQuery.addFilter(pRequest.DAL.defaultIdentifier, tmpIDRecord);
 
 	// Do the delete
 	pRequest.DAL.doDelete(tmpQuery,
@@ -56,7 +65,7 @@ var doAPIDeleteEndpoint = function(pRequest, pResponse, fNext)
 
 			// INJECT: After the delete count is grabbed, let the user alter the response content
 
-			pRequest.CommonServices.log.info('Deleted '+pCount+' records with ID '+pRequest.body[pRequest.DAL.defaultIdentifier]+'.', {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Delete'});
+			pRequest.CommonServices.log.info('Deleted '+pCount+' records with ID '+tmpIDRecord+'.', {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Delete'});
 			pResponse.send(tmpRecordCount);
 			return fNext();
 		}

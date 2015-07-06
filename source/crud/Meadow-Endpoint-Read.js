@@ -17,7 +17,6 @@ var doAPIReadEndpoint = function(pRequest, pResponse, fNext)
 	pRequest.EndpointAuthorizationRequirement = pRequest.EndpointAuthorizationLevels.Read;
 	
 	// INJECT: Pre authorization (for instance to change the authorization level)
-	console.log('Read');
 	
 	// OVERLOAD: Endpoint authorization (for instance if it is a complex authorization requirement)
 	if (pRequest.CommonServices.authorizeEndpoint(pRequest, pResponse, fNext) === false)
@@ -41,7 +40,7 @@ var doAPIReadEndpoint = function(pRequest, pResponse, fNext)
 				// OVERRIDE: Query autopopulation
 				if (!pRequest.params.hasOwnProperty('IDRecord'))
 				{
-					return pRequest.CommonServices.sendError('Record request failure - a valid default identifier ('+pRequest.DAL.defaultIdentifier+') is required at the end of the GET string.', pRequest, pResponse, tmpNext);
+					return pRequest.CommonServices.sendError('Record request failure - a valid default identifier ('+pRequest.DAL.defaultIdentifier+') is required at the end of the GET string.', pRequest, pResponse, fNext);
 				}
 				var tmpIDRecord =  pRequest.params.IDRecord;
 				// We use a custon name for this (RequestDefaultIdentifier) in case there is a query with a dot in the default identifier.

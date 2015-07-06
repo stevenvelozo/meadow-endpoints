@@ -151,12 +151,13 @@ var MeadowEndpoints = function()
 			// Connect the common services to the route
 			pRestServer.use(wireCommonServices);
 
-			pRestServer.post('/1.0/'+tmpEndpointName, _EndpointAuthenticators.Create, wireState, _Endpoints.Create);
+			pRestServer.post('/1.0/'+tmpEndpointName, _CommonServices.bodyParser(), _EndpointAuthenticators.Create, wireState, _Endpoints.Create);
 			pRestServer.get('/1.0/'+tmpEndpointName+'/:IDRecord', _EndpointAuthenticators.Read, wireState, _Endpoints.Read);
 			pRestServer.get('/1.0/'+tmpEndpointName+'s', _EndpointAuthenticators.Reads, wireState, _Endpoints.Reads);
 			pRestServer.get('/1.0/'+tmpEndpointName+'s/:Begin/:Cap', _EndpointAuthenticators.Reads, wireState, _Endpoints.Reads);
-			pRestServer.put('/1.0/'+tmpEndpointName, _EndpointAuthenticators.Update, wireState, _Endpoints.Update);
-			pRestServer.del('/1.0/'+tmpEndpointName, _EndpointAuthenticators.Delete, wireState, _Endpoints.Delete);
+			pRestServer.put('/1.0/'+tmpEndpointName, _CommonServices.bodyParser(), _EndpointAuthenticators.Update, wireState, _Endpoints.Update);
+			pRestServer.del('/1.0/'+tmpEndpointName, _CommonServices.bodyParser(), _EndpointAuthenticators.Delete, wireState, _Endpoints.Delete);
+			pRestServer.del('/1.0/'+tmpEndpointName+'/:IDRecord', _EndpointAuthenticators.Delete, wireState, _Endpoints.Delete);
 			pRestServer.get('/1.0/'+tmpEndpointName+'s/Count', _EndpointAuthenticators.Count, wireState, _Endpoints.Count);
 		};
 

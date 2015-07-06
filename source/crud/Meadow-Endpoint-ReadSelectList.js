@@ -12,8 +12,6 @@ var libAsync = require('async');
 */
 var doAPIReadSelectListEndpoint = function(pRequest, pResponse, fNext)
 {
-	var tmpNext = (typeof(fNext) === 'function') ? fNext : function() {};
-
 	// This state is the requirement for the UserRoleIndex value in the SessionData object... processed by default as >=
 	// The default here is that any authenticated user can use this endpoint.
 	pRequest.EndpointAuthorizationRequirement = pRequest.EndpointAuthorizationLevels.Reads;
@@ -92,7 +90,7 @@ var doAPIReadSelectListEndpoint = function(pRequest, pResponse, fNext)
 
 			pRequest.CommonServices.log.info('Read a recordset with '+pRecords.length+' results.', {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Reads'});
 			pResponse.send(pRecords);
-			return tmpNext();
+			return fNext();
 		}
 	);
 };

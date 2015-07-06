@@ -29,11 +29,11 @@ var doAPIUpdateEndpoint = function(pRequest, pResponse, fNext)
 	// OVERLOAD: Body validation and parsing
 	if (typeof(pRequest.body) !== 'object')
 	{
-		return pRequest.CommonServices.sendError('Record update failure - a valid record is required.', pRequest, pResponse, tmpNext);
+		return pRequest.CommonServices.sendError('Record update failure - a valid record is required.', pRequest, pResponse, fNext);
 	}
 	if (pRequest.body[pRequest.DAL.defaultIdentifier] < 1)
 	{
-		return pRequest.CommonServices.sendError('Record update failure - a valid record ID is required in the passed-in record.', pRequest, pResponse, tmpNext);
+		return pRequest.CommonServices.sendError('Record update failure - a valid record ID is required in the passed-in record.', pRequest, pResponse, fNext);
 	}
 	var tmpUpdatedRecord = pRequest.body;
 

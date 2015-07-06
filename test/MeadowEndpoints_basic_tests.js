@@ -139,6 +139,10 @@ suite
 				if (!_SpooledUp)
 				{
 					_Orator = require('orator').new(tmpFableSettings);
+					_Orator.enabledModules.CORS = true;
+					_Orator.enabledModules.FullResponse = true;
+					_Orator.enabledModules.Body = false;
+
 
 					var _SQLConnectionPool = libMySQL.createPool
 					(
@@ -193,13 +197,6 @@ suite
 						function(fCallBack)
 						{
 							// Start the web server
-							_Orator.startWebServer (function() { fCallBack(null); });
-						}
-					],
-						function(pError, pResult)
-						{
-							// Now continue the tests.
-							_SpooledUp = true;
 							// Wire up an "always logged in" user in the request chain, so session is set right.
 							_Orator.webServer.use(ValidAuthentication);
 							_MeadowEndpoints.setEndpointAuthorization
@@ -222,6 +219,13 @@ suite
 
 							// Wire the endpoints up
 							_MeadowEndpoints.connectRoutes(_Orator.webServer);
+							_Orator.startWebServer (function() { fCallBack(null); });
+						}
+					],
+						function(pError, pResult)
+						{
+							// Now continue the tests.
+							_SpooledUp = true;
 							fDone();
 						}
 					);

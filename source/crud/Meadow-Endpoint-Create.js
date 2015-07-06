@@ -29,7 +29,7 @@ var doAPICreateEndpoint = function(pRequest, pResponse, fNext)
 	// OVERLOAD: Body validation and parsing
 	if (typeof(pRequest.body) !== 'object')
 	{
-		return pRequest.CommonServices.sendError('Record create failure - a valid record is required.', pRequest, pResponse, tmpNext);
+		return pRequest.CommonServices.sendError('Record create failure - a valid record is required.', pRequest, pResponse, fNext);
 	}
 	var tmpNewRecord = pRequest.body;
 
