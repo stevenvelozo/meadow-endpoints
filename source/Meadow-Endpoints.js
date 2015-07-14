@@ -37,12 +37,23 @@ var MeadowEndpoints = function()
 		var _Endpoints = (
 		{
 			Create: require('./crud/Meadow-Endpoint-Create.js'),
+
 			Read: require('./crud/Meadow-Endpoint-Read.js'),
 			Reads: require('./crud/Meadow-Endpoint-Reads.js'),
 			ReadSelectList: require('./crud/Meadow-Endpoint-ReadSelectList'),
 			Update: require('./crud/Meadow-Endpoint-Update.js'),
 			Delete: require('./crud/Meadow-Endpoint-Delete.js'),
-			Count: require('./crud/Meadow-Endpoint-Count.js')
+			Count: require('./crud/Meadow-Endpoint-Count.js'),
+
+		// Get the JSONSchema spec schema
+		/* http://json-schema.org/examples.html
+		 * http://json-schema.org/latest/json-schema-core.html
+		 */
+			Schema: require('./schema/Meadow-Endpoint-Schema.js'),
+			// Validate a passed-in JSON object for if it matches the schema
+			Validate: require('./schema/Meadow-Endpoint-Validate.js'),
+			// Get an empty initialized JSON object for this.
+			New: require('./schema/Meadow-Endpoint-New.js')
 		});
 
 		/**
@@ -70,7 +81,11 @@ var MeadowEndpoints = function()
 			ReadSelectList: _Authenticator,
 			Update: _Authenticator,
 			Delete: _Authenticator,
-			Count: _Authenticator
+			Count: _Authenticator,
+
+			Schema: _Authenticator,
+			Validate: _Authenticator,
+			New: _Authenticator
 		});
 
 		/**
@@ -98,7 +113,11 @@ var MeadowEndpoints = function()
 			ReadSelectList: 1,
 			Update: 1,
 			Delete: 1,
-			Count: 1
+			Count: 1,
+
+			Schema: 1,
+			Validate: 1,
+			New: 1
 		});
 
 		/**
@@ -155,6 +174,15 @@ var MeadowEndpoints = function()
 			// Connect the common services to the route
 			pRestServer.use(wireCommonServices);
 
+			// These special schema services must come in the route table before the READ because they
+			// technically block out the routes for the IDRecord 'Schema' (e.g. /1.0/EntityName/Schema)
+			pRestServer.get('/1.0/'+tmpEndpointName+'/Schema', _EndpointAuthenticators.Schema, wireState, _Endpoints.Schema);
+			pRestServer.get('/1.0/'+tmpEndpointName+'/Schema/New', _EndpointAuthenticators.New, wireState, _Endpoints.New);
+			pRestServer.post('/1.0/'+tmpEndpointName+'/Schema/Validate', _CommonServices.bodyParser(), _EndpointAuthenticators.Validate, wireState, _Endpoints.Validate);
+
+			// Custom single record endpoints
+
+			// Standard CRUD and Count endpoints
 			pRestServer.post('/1.0/'+tmpEndpointName, _CommonServices.bodyParser(), _EndpointAuthenticators.Create, wireState, _Endpoints.Create);
 			pRestServer.get('/1.0/'+tmpEndpointName+'/:IDRecord', _EndpointAuthenticators.Read, wireState, _Endpoints.Read);
 			pRestServer.get('/1.0/'+tmpEndpointName+'s', _EndpointAuthenticators.Reads, wireState, _Endpoints.Reads);

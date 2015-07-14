@@ -284,10 +284,10 @@ suite
 
 						var tmpCrossBehaviorState = 0;
 
-						Expect(tmpBehaviorMods.runBehavior('NoBehaviorsHere')).to.equal(false, 'nonexistant behaviors should return false');
+						Expect(tmpBehaviorMods.runBehavior('NoBehaviorsHere', {}, function() {})).to.equal(undefined, 'nonexistant behaviors should just execute');
 						tmpBehaviorMods.setBehavior('BigBehavior', function() { tmpCrossBehaviorState++ });
 						Expect(tmpCrossBehaviorState).to.equal(0);
-						Expect(tmpBehaviorMods.runBehavior('BigBehavior')).to.equal(true, 'existant behaviors should return true');
+						Expect(tmpBehaviorMods.runBehavior('BigBehavior', {}, function() {})).to.equal(undefined, 'existant behaviors should just execute');
 						Expect(tmpCrossBehaviorState).to.equal(1);
 					}
 				);
@@ -494,6 +494,89 @@ suite
 						);
 					}
 				);
+				test
+				(
+					'schema: get the schema of a record',
+					function(fDone)
+					{
+						libSuperTest('http://localhost:9080/')
+						.get('1.0/FableTest/Schema')
+						.end(
+							function (pError, pResponse)
+							{
+								var tmpResults = JSON.parse(pResponse.text);
+								//console.log('SCHEMA --> '+JSON.stringify(tmpResults, null, 4))
+								Expect(tmpResults.title).to.equal('Animal');
+								Expect(tmpResults.description).to.contain('creature that lives in');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'new: get a new empty record',
+					function(fDone)
+					{
+						libSuperTest('http://localhost:9080/')
+						.get('1.0/FableTest/Schema/New')
+						.end(
+							function (pError, pResponse)
+							{
+								var tmpResults = JSON.parse(pResponse.text);
+								//console.log(JSON.stringify(tmpResults, null, 4))
+								Expect(tmpResults.IDAnimal).to.equal(null);
+								Expect(tmpResults.Name).to.equal('Unknown');
+								Expect(tmpResults.Type).to.equal('Unclassified');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'validate: validate an invalid record',
+					function(fDone)
+					{
+						var tmpRecord = {IDAnimal:4, Type:'Corgi'};
+						libSuperTest('http://localhost:9080/')
+						.post('1.0/FableTest/Schema/Validate')
+						.send(tmpRecord)
+						.end(
+							function(pError, pResponse)
+							{
+								// Expect response to be the record we just created.
+								var tmpResult = JSON.parse(pResponse.text);
+								//console.log(JSON.stringify(tmpResult, null, 4))
+								Expect(tmpResult.Valid).to.equal(false);
+								Expect(tmpResult.Errors[0].field).to.equal('data.Name');
+								Expect(tmpResult.Errors[0].message).to.equal('is required');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'validate: validate a valid record',
+					function(fDone)
+					{
+						var tmpRecord = {IDAnimal:4, Type:'Corgi', Name:'Doofer', CreatingIDUser:10};
+						libSuperTest('http://localhost:9080/')
+						.post('1.0/FableTest/Schema/Validate')
+						.send(tmpRecord)
+						.end(
+							function(pError, pResponse)
+							{
+								// Expect response to be the record we just created.
+								var tmpResult = JSON.parse(pResponse.text);
+								//console.log(JSON.stringify(tmpResult, null, 4))
+								Expect(tmpResult.Valid).to.equal(true);
+								fDone();
+							}
+						);
+					}
+				);
 			}
 		);
 		suite
@@ -514,6 +597,7 @@ suite
 							{
 								var tmpResult = JSON.parse(pResponse.text);
 								Expect(tmpResult.Error).to.contain('You must be appropriately authenticated');
+								_MockSessionValidUser.UserRoleIndex = 1;
 								fDone();
 							}
 						);
@@ -601,6 +685,7 @@ suite
 								// Expect response to be the count of deleted records.
 								var tmpResult = JSON.parse(pResponse.text);
 								Expect(tmpResult.Error).to.contain('authenticated');
+								_MockSessionValidUser.UserID = 10;
 								fDone();
 							}
 						);
@@ -626,6 +711,7 @@ suite
 							{
 								var tmpResult = JSON.parse(pResponse.text);
 								Expect(tmpResult.Error).to.contain('You must be authenticated');
+								_MockSessionValidUser.LoggedIn = true;
 								fDone();
 							}
 						);
@@ -645,6 +731,66 @@ suite
 					{
 						Expect(_MeadowEndpoints.endpointAuthorizationLevels.Read).to.equal(1);
 						fDone();
+					}
+				);
+			}
+		);
+		suite
+		(
+			'Behavior modifications',
+			function()
+			{
+				test
+				(
+					'read: modified get of a specific record',
+					function(fDone)
+					{
+						// Override the query configuration
+						_MeadowEndpoints.behaviorModifications.setBehavior('Read-QueryConfiguration',
+							function(pRequest, fComplete)
+							{
+								// Turn up logging on the request.
+								pRequest.Query.setLogLevel(5);
+								fComplete(false);
+							});
+						libSuperTest('http://localhost:9080/')
+						.get('1.0/FableTest/2')
+						.end(
+							function (pError, pResponse)
+							{
+								var tmpResult = JSON.parse(pResponse.text);
+								//console.log(JSON.stringify(tmpResult, null, 4))
+								Expect(tmpResult.Name).to.equal('Red Riding Hood');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'read: inject data into the record',
+					function(fDone)
+					{
+						// Override the query configuration
+						_MeadowEndpoints.behaviorModifications.setBehavior('Read-PostOperation',
+							function(pRequest, fComplete)
+							{
+								// Create a custom property on the record.
+								pRequest.Record.CustomProperty = 'Custom '+pRequest.Record.Type+' ID '+pRequest.Record.IDAnimal;
+								fComplete(false);
+							});
+						_MockSessionValidUser.LoggedIn = true;
+						libSuperTest('http://localhost:9080/')
+						.get('1.0/FableTest/2')
+						.end(
+							function (pError, pResponse)
+							{
+								var tmpResult = JSON.parse(pResponse.text);
+								//console.log(JSON.stringify(tmpResult, null, 4))
+								Expect(tmpResult.CustomProperty).to.equal('Custom Girl ID 2');
+								fDone();
+							}
+						);
 					}
 				);
 			}
