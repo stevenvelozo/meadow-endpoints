@@ -30,12 +30,12 @@
     "istanbul": "0.3.5",
     "mocha": "2.1.0",
     "mysql2": "^0.15.8",
-    "orator": "^0.1.11",
+    "orator": "^0.1.13",
     "supertest": "^1.0.1"
   },
   "dependencies": {
     "async": "^0.9.0",
-    "meadow": "0.1.10",
+    "meadow": "0.1.11",
     "restify": "^3.0.3",
     "underscore": "^1.8.3"
   }
