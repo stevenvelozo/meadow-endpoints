@@ -25,8 +25,21 @@ var MeadowBehaviorModifications = function()
 		var _Templates = {};
 		var _TemplateFunctions = {};
 
+
 		/**
 		* Set a specific behavior.
+		*
+		* The anatomy of a behavior function is as follows:
+		*
+		* var someBehavior = function(pRequest, fComplete)
+		* {
+		*      // Do some stuff with pRequest...
+		*      if (pRequest.SessionData.UserRoleIndex < 5)
+		*          pRequest.Query.addFilter('Customer', pRequest.SessionData.IDCustomer);
+		*      return fComplete(false);
+		* }
+		*
+		* It is important to note that the fComplete function expects false if no error, or a string message if there is one.
 		*/
 		var setBehavior = function(pBehaviorHash, fBehavior)
 		{
@@ -36,24 +49,20 @@ var MeadowBehaviorModifications = function()
 		/**
 		* This method runs a behavior at a specific hash, and returns true.
 		* Or it returns false if there was no behavior there.
-		* Behaviors should expect their state to be in the pRequest object.
-		* Some behaviors have specific results that may be expected on return.
+		* Behaviors should expect their state to be in the pRequest object, per the example in setBehavior
 		*/
-		var runBehavior = function(pBehaviorHash, pRequest, pResponse, fNext)
+		var runBehavior = function(pBehaviorHash, pRequest, fComplete)
 		{
 			// Run an injected behavior (if it exists)
 			if (_BehaviorFunctions.hasOwnProperty(pBehaviorHash))
 			{
-				_BehaviorFunctions[pBehaviorHash](pRequest, pResponse, fNext);
-				return true;
+				return _BehaviorFunctions[pBehaviorHash](pRequest, fComplete);
 			}
 			else
 			{
-				return false;
+				return fComplete(false);
 			}
 		};
-
-
 
 
 		/**
@@ -82,7 +91,7 @@ var MeadowBehaviorModifications = function()
 		};
 
 		/**
-		* Get a template.
+		* Get a template function.
 		*/
 		var getTemplateFunction = function(pTemplateHash)
 		{

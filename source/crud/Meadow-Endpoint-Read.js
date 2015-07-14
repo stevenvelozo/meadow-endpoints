@@ -18,7 +18,6 @@ var doAPIReadEndpoint = function(pRequest, pResponse, fNext)
 	
 	// INJECT: Pre authorization (for instance to change the authorization level)
 	
-	// OVERLOAD: Endpoint authorization (for instance if it is a complex authorization requirement)
 	if (pRequest.CommonServices.authorizeEndpoint(pRequest, pResponse, fNext) === false)
 	{
 		// If this endpoint fails, it's sent an error automatically.
@@ -32,40 +31,51 @@ var doAPIReadEndpoint = function(pRequest, pResponse, fNext)
 			// 1. Get the records
 			function (fStageComplete)
 			{
-				// OVERLOAD: Query instantiation
-				var tmpQuery = pRequest.DAL.query;
-
-				// INJECT: Query configuration and population
-
-				// OVERRIDE: Query autopopulation
+				pRequest.Query = pRequest.DAL.query;
+				fStageComplete(false);
+			},
+			// 2. Set the query up with the ecord ID, execute the query
+			function (fStageComplete)
+			{
 				if (!pRequest.params.hasOwnProperty('IDRecord'))
 				{
 					return pRequest.CommonServices.sendError('Record request failure - a valid default identifier ('+pRequest.DAL.defaultIdentifier+') is required at the end of the GET string.', pRequest, pResponse, fNext);
 				}
 				var tmpIDRecord =  pRequest.params.IDRecord;
 				// We use a custon name for this (RequestDefaultIdentifier) in case there is a query with a dot in the default identifier.
-				tmpQuery.addFilter(pRequest.DAL.defaultIdentifier, tmpIDRecord, '=', 'AND', 'RequestDefaultIdentifier');
-				pRequest.DAL.doRead(tmpQuery, fStageComplete);
+				pRequest.Query.addFilter(pRequest.DAL.defaultIdentifier, tmpIDRecord, '=', 'AND', 'RequestDefaultIdentifier');
+				fStageComplete(false);
 			},
-			// 2. Post processing of the records
+			// 3. INJECT: Query configuration
+			function (fStageComplete)
+			{
+				pRequest.BehaviorModifications.runBehavior('Read-QueryConfiguration', pRequest, fStageComplete);
+			},
+			// 4. Execute the query
+			function (fStageComplete)
+			{
+				pRequest.DAL.doRead(pRequest.Query, fStageComplete);
+			},
+			// 5. Post processing of the records
 			function (pQuery, pRecord, fStageComplete)
 			{
-				// INJECT: Results validation, pass in pRecords
-
 				if (!pRecord)
 				{
 					pRequest.CommonServices.log.info('Record not found', {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Read'});
 					return pResponse.send({});
 				}
-
-				// INJECT: Post process the records, tacking on or altering anything we want to do.
-
-				// Complete the waterfall operation
-				fStageComplete(false, pQuery, pRecord);
+				pRequest.Record = pRecord;
+				fStageComplete(false);
+			},
+			// 6. INJECT: Post process the record, tacking on or altering anything we want to.
+			function (fStageComplete)
+			{
+				// This will also complete the waterfall operation
+				pRequest.BehaviorModifications.runBehavior('Read-PostOperation', pRequest, fStageComplete);
 			}
 		],
 		// 3. Return the results to the user
-		function(pError, pQuery, pRecord)
+		function(pError)
 		{
 			if (pError)
 			{
@@ -73,7 +83,7 @@ var doAPIReadEndpoint = function(pRequest, pResponse, fNext)
 			}
 
 			pRequest.CommonServices.log.info('Read a record with ID '+pRequest.params.IDRecord+'.', {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Read'});
-			pResponse.send(pRecord);
+			pResponse.send(pRequest.Record);
 			return fNext();
 		}
 	);
