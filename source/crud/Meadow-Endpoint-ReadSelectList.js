@@ -17,8 +17,7 @@ var doAPIReadSelectListEndpoint = function(pRequest, pResponse, fNext)
 	pRequest.EndpointAuthorizationRequirement = pRequest.EndpointAuthorizationLevels.Reads;
 	
 	// INJECT: Pre authorization (for instance to change the authorization level)
-	
-	// OVERLOAD: Endpoint authorization (for instance if it is a complex authorization requirement)
+
 	if (pRequest.CommonServices.authorizeEndpoint(pRequest, pResponse, fNext) === false)
 	{
 		// If this endpoint fails, it's sent an error automatically.
@@ -32,14 +31,12 @@ var doAPIReadSelectListEndpoint = function(pRequest, pResponse, fNext)
 			// 1. Get the records
 			function (fStageComplete)
 			{
-				// OVERLOAD: Query instantiation
 				var tmpQuery = pRequest.DAL.query;
 
 				// TODO: Limit the query to the columns we need for the templated expression
 
 				// INJECT: Query configuration and population
 
-				// OVERLOAD: Query paging data
 				var tmpCap = false;
 				var tmpBegin = false;
 				if (typeof(pRequest.params.Begin) === 'string')
@@ -80,6 +77,8 @@ var doAPIReadSelectListEndpoint = function(pRequest, pResponse, fNext)
 				var tmpSelectList = [];
 
 				// Eventually we can cache this template to make the request faster
+
+				// INJECT: Dynamically alter templates for the select
 				for (var i = 0; i < pRecords.length; i++)
 				{
 					tmpSelectList.push

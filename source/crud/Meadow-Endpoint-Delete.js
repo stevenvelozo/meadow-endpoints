@@ -16,8 +16,7 @@ var doAPIDeleteEndpoint = function(pRequest, pResponse, fNext)
 	pRequest.EndpointAuthorizationRequirement = pRequest.EndpointAuthorizationLevels.Delete;
 	
 	// INJECT: Pre authorization (for instance to change the authorization level)
-	
-	// OVERLOAD: Endpoint authorization (for instance if it is a complex authorization requirement)
+
 	if (pRequest.CommonServices.authorizeEndpoint(pRequest, pResponse, fNext) === false)
 	{
 		// If this endpoint fails, it's sent an error automatically.
@@ -26,7 +25,6 @@ var doAPIDeleteEndpoint = function(pRequest, pResponse, fNext)
 
 	// INJECT: Pre endpoint operation
 
-	// OVERLOAD: Body validation and parsing
 	var tmpIDRecord = 0;
 	if (typeof(pRequest.params.IDRecord) === 'string')
 	{
@@ -48,7 +46,6 @@ var doAPIDeleteEndpoint = function(pRequest, pResponse, fNext)
 
 	// INJECT: Record modification before update
 
-	// OVERLOAD: Query instantiation
 	var tmpQuery = pRequest.DAL.query;
 
 	// INJECT: Query configuration and population

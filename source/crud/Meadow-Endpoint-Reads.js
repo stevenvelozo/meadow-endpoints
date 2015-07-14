@@ -17,8 +17,7 @@ var doAPIReadsEndpoint = function(pRequest, pResponse, fNext)
 	pRequest.EndpointAuthorizationRequirement = pRequest.EndpointAuthorizationLevels.Reads;
 	
 	// INJECT: Pre authorization (for instance to change the authorization level)
-	
-	// OVERLOAD: Endpoint authorization (for instance if it is a complex authorization requirement)
+
 	if (pRequest.CommonServices.authorizeEndpoint(pRequest, pResponse, fNext) === false)
 	{
 		// If this endpoint fails, it's sent an error automatically.
@@ -32,12 +31,10 @@ var doAPIReadsEndpoint = function(pRequest, pResponse, fNext)
 			// 1. Get the records
 			function (fStageComplete)
 			{
-				// OVERLOAD: Query instantiation
 				var tmpQuery = pRequest.DAL.query;
 
 				// INJECT: Query configuration and population
 
-				// OVERLOAD: Query paging data
 				var tmpCap = false;
 				var tmpBegin = false;
 				if (typeof(pRequest.params.Begin) === 'string')

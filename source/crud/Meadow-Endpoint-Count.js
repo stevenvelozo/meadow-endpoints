@@ -17,7 +17,6 @@ var doAPICountEndpoint = function(pRequest, pResponse, fNext)
 	
 	// INJECT: Pre authorization (for instance to change the authorization level)
 	
-	// OVERLOAD: Endpoint authorization (for instance if it is a complex authorization requirement)
 	if (pRequest.CommonServices.authorizeEndpoint(pRequest, pResponse, fNext) === false)
 	{
 		// If this endpoint fails, it's sent an error automatically.
@@ -26,7 +25,6 @@ var doAPICountEndpoint = function(pRequest, pResponse, fNext)
 
 	// INJECT: Pre endpoint operation
 
-	// OVERLOAD: Query instantiation
 	var tmpQuery = pRequest.DAL.query;
 
 	// INJECT: Query configuration and population
