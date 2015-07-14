@@ -37,10 +37,6 @@ var doAPIReadEndpoint = function(pRequest, pResponse, fNext)
 			// 2. Set the query up with the ecord ID, execute the query
 			function (fStageComplete)
 			{
-				if (!pRequest.params.hasOwnProperty('IDRecord'))
-				{
-					return pRequest.CommonServices.sendError('Record request failure - a valid default identifier ('+pRequest.DAL.defaultIdentifier+') is required at the end of the GET string.', pRequest, pResponse, fNext);
-				}
 				var tmpIDRecord =  pRequest.params.IDRecord;
 				// We use a custon name for this (RequestDefaultIdentifier) in case there is a query with a dot in the default identifier.
 				pRequest.Query.addFilter(pRequest.DAL.defaultIdentifier, tmpIDRecord, '=', 'AND', 'RequestDefaultIdentifier');
