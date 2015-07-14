@@ -360,6 +360,27 @@ suite
 				);
 				test
 				(
+					'create: create a record with a bad record passed in',
+					function(fDone)
+					{
+						var tmpRecord = ' ';
+						_MockSessionValidUser.UserRoleIndex = 2;
+						libSuperTest('http://localhost:9080/')
+						.post('1.0/FableTest')
+						.send(tmpRecord)
+						.end(
+							function(pError, pResponse)
+							{
+								// Expect response to be the record we just created.
+								var tmpResult = JSON.parse(pResponse.text);
+								Expect(tmpResult.Error).to.contain('a valid record is required');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
 					'read: get a specific record',
 					function(fDone)
 					{
@@ -370,6 +391,23 @@ suite
 							{
 								var tmpResult = JSON.parse(pResponse.text);
 								Expect(tmpResult.Type).to.equal('Girl');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'read: get a specific record with a bad parameter',
+					function(fDone)
+					{
+						libSuperTest('http://localhost:9080/')
+						.get('1.0/FableTest/')
+						.end(
+							function (pError, pResponse)
+							{
+								var tmpResult = JSON.parse(pResponse.text);
+								Expect(tmpResult.Error).to.be.an('undefined');
 								fDone();
 							}
 						);
@@ -408,6 +446,43 @@ suite
 								var tmpResults = JSON.parse(pResponse.text);
 								Expect(tmpResults.length).to.equal(6);
 								Expect(tmpResults[4].Value).to.equal('FableTest #5');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'readselect: get a page of records',
+					function(fDone)
+					{
+						libSuperTest('http://localhost:9080/')
+						.get('1.0/FableTestSelect/2/2')
+						.end(
+							function (pError, pResponse)
+							{
+								console.log(pResponse.text)
+								var tmpResults = JSON.parse(pResponse.text);
+								Expect(tmpResults.length).to.equal(2);
+								Expect(tmpResults[1].Value).to.equal('FableTest #4');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'readselect: get an empty page of records',
+					function(fDone)
+					{
+						libSuperTest('http://localhost:9080/')
+						.get('1.0/FableTestSelect/200/200')
+						.end(
+							function (pError, pResponse)
+							{
+								console.log(pResponse.text)
+								var tmpResults = JSON.parse(pResponse.text);
+								Expect(tmpResults.length).to.equal(0);
 								fDone();
 							}
 						);
@@ -472,6 +547,27 @@ suite
 								// Expect response to be the count of deleted records.
 								var tmpResult = JSON.parse(pResponse.text);
 								Expect(tmpResult.Count).to.equal(1);
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'delete: delete a record with a bad parameter',
+					function(fDone)
+					{
+						// Delete animal 3 ("Red")
+						var tmpRecord = {IDAnimal:{MyStuff:4}};
+						libSuperTest('http://localhost:9080/')
+						.del('1.0/FableTest')
+						.send(tmpRecord)
+						.end(
+							function(pError, pResponse)
+							{
+								// Expect response to be the count of deleted records.
+								var tmpResult = JSON.parse(pResponse.text);
+								Expect(tmpResult.Error).to.contain('a valid record ID is required');
 								fDone();
 							}
 						);
@@ -577,6 +673,27 @@ suite
 						);
 					}
 				);
+				test
+				(
+					'validate: validate bad data',
+					function(fDone)
+					{
+						var tmpRecord = 'IAMBAD';
+						libSuperTest('http://localhost:9080/')
+						.post('1.0/FableTest/Schema/Validate')
+						.send(tmpRecord)
+						.end(
+							function(pError, pResponse)
+							{
+								// Expect response to be the record we just created.
+								var tmpResult = JSON.parse(pResponse.text);
+								//console.log(JSON.stringify(tmpResult, null, 4))
+								Expect(tmpResult.Error).to.contain('validate failure');
+								fDone();
+							}
+						);
+					}
+				);
 			}
 		);
 		suite
@@ -650,6 +767,24 @@ suite
 				);
 				test
 				(
+					'readselect: get all records',
+					function(fDone)
+					{
+						libSuperTest('http://localhost:9080/')
+						.get('1.0/FableTestSelect')
+						.end(
+							function (pError, pResponse)
+							{
+								console.log(pResponse.text)
+								var tmpResults = JSON.parse(pResponse.text);
+								Expect(tmpResults.Error).to.contain('authenticated');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
 					'update: update a record',
 					function(fDone)
 					{
@@ -662,6 +797,81 @@ suite
 							function(pError, pResponse)
 							{
 								// Expect response to be the record we just created.
+								var tmpResult = JSON.parse(pResponse.text);
+								Expect(tmpResult.Error).to.contain('authenticated');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'schema: get the schema of a record',
+					function(fDone)
+					{
+						libSuperTest('http://localhost:9080/')
+						.get('1.0/FableTest/Schema')
+						.end(
+							function (pError, pResponse)
+							{
+								var tmpResults = JSON.parse(pResponse.text);
+								//console.log('SCHEMA --> '+JSON.stringify(tmpResults, null, 4))
+								Expect(tmpResults.Error).to.contain('authenticated');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'new: get a new empty record',
+					function(fDone)
+					{
+						libSuperTest('http://localhost:9080/')
+						.get('1.0/FableTest/Schema/New')
+						.end(
+							function (pError, pResponse)
+							{
+								var tmpResults = JSON.parse(pResponse.text);
+								//console.log(JSON.stringify(tmpResults, null, 4))
+								Expect(tmpResults.Error).to.contain('authenticated');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'validate: validate an invalid record',
+					function(fDone)
+					{
+						var tmpRecord = {IDAnimal:4, Type:'Corgi'};
+						libSuperTest('http://localhost:9080/')
+						.post('1.0/FableTest/Schema/Validate')
+						.send(tmpRecord)
+						.end(
+							function(pError, pResponse)
+							{
+								// Expect response to be the record we just created.
+								var tmpResult = JSON.parse(pResponse.text);
+								//console.log(JSON.stringify(tmpResult, null, 4))
+								Expect(tmpResult.Error).to.contain('authenticated');
+								fDone();
+
+							}
+						);
+					}
+				);
+				test
+				(
+					'count: get the count of records',
+					function(fDone)
+					{
+						libSuperTest('http://localhost:9080/')
+						.get('1.0/FableTests/Count')
+						.end(
+							function (pError, pResponse)
+							{
 								var tmpResult = JSON.parse(pResponse.text);
 								Expect(tmpResult.Error).to.contain('authenticated');
 								fDone();

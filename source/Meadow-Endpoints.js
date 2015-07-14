@@ -187,6 +187,7 @@ var MeadowEndpoints = function()
 			pRestServer.get('/1.0/'+tmpEndpointName+'/:IDRecord', _EndpointAuthenticators.Read, wireState, _Endpoints.Read);
 			pRestServer.get('/1.0/'+tmpEndpointName+'s', _EndpointAuthenticators.Reads, wireState, _Endpoints.Reads);
 			pRestServer.get('/1.0/'+tmpEndpointName+'Select', _EndpointAuthenticators.ReadSelectList, wireState, _Endpoints.ReadSelectList);
+			pRestServer.get('/1.0/'+tmpEndpointName+'Select/:Begin/:Cap', _EndpointAuthenticators.ReadSelectList, wireState, _Endpoints.ReadSelectList);
 			pRestServer.get('/1.0/'+tmpEndpointName+'s/:Begin/:Cap', _EndpointAuthenticators.Reads, wireState, _Endpoints.Reads);
 			pRestServer.put('/1.0/'+tmpEndpointName, _CommonServices.bodyParser(), _EndpointAuthenticators.Update, wireState, _Endpoints.Update);
 			pRestServer.del('/1.0/'+tmpEndpointName, _CommonServices.bodyParser(), _EndpointAuthenticators.Delete, wireState, _Endpoints.Delete);

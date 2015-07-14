@@ -25,7 +25,7 @@ var doAPIValidateEndpoint = function(pRequest, pResponse, fNext)
 
 	if (typeof(pRequest.body) !== 'object')
 	{
-		return pRequest.CommonServices.sendError('Record create failure - a valid record is required.', pRequest, pResponse, fNext);
+		return pRequest.CommonServices.sendError('Record validate failure - a valid JSON object is required.', pRequest, pResponse, fNext);
 	}
 	var tmpRecord = pRequest.body;
 
