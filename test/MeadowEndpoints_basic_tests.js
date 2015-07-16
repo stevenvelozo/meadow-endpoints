@@ -63,11 +63,12 @@ var _AnimalSchema = (
 	{ Column: "GUIDAnimal",      Type:"AutoGUID" },
 	{ Column: "CreateDate",      Type:"CreateDate" },
 	{ Column: "CreatingIDUser",  Type:"CreateIDUser" },
-	{ Column: "UpdateDate",        Type:"UpdateDate" },
-	{ Column: "UpdatingIDUser", Type:"UpdateIDUser" },
+	{ Column: "UpdateDate",      Type:"UpdateDate" },
+	{ Column: "UpdatingIDUser",  Type:"UpdateIDUser" },
 	{ Column: "Deleted",         Type:"Deleted" },
 	{ Column: "DeletingIDUser",  Type:"DeleteIDUser" },
-	{ Column: "DeleteDate",      Type:"DeleteDate" }
+	{ Column: "DeleteDate",      Type:"DeleteDate" },
+	{ Column: "Type",            Type:"String"}
 ]);
 var _AnimalDefault = (
 {
@@ -427,6 +428,42 @@ suite
 								Expect(tmpResults.length).to.equal(6);
 								Expect(tmpResults[0].Type).to.equal('Bunny');
 								Expect(tmpResults[4].Name).to.equal('Gertrude');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'readsby: get all records by Type',
+					function(fDone)
+					{
+						libSuperTest('http://localhost:9080/')
+						.get('1.0/FableTests/By/Type/Dog')
+						.end(
+							function (pError, pResponse)
+							{
+								var tmpResults = JSON.parse(pResponse.text);
+								Expect(tmpResults.length).to.equal(2);
+								Expect(tmpResults[0].Type).to.equal('Dog');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'readsby: get paged records by Type',
+					function(fDone)
+					{
+						libSuperTest('http://localhost:9080/')
+						.get('1.0/FableTests/By/Type/Dog/1/1')
+						.end(
+							function (pError, pResponse)
+							{
+								var tmpResults = JSON.parse(pResponse.text);
+								Expect(tmpResults.length).to.equal(1);
+								Expect(tmpResults[0].Name).to.equal('Spot');
 								fDone();
 							}
 						);

@@ -12,7 +12,9 @@
 		{ "Column": "UpdatingIDUser",  "Type":"UpdateIDUser" },
 		{ "Column": "Deleted",         "Type":"Deleted" },
 		{ "Column": "DeletingIDUser",  "Type":"DeleteIDUser" },
-		{ "Column": "DeleteDate",      "Type":"DeleteDate" }
+		{ "Column": "DeleteDate",      "Type":"DeleteDate" },
+		{ "Column": "Name",  "Type":"String" },
+		{ "Column": "Type",  "Type":"String" }
 	],
 
 	"DefaultObject": {

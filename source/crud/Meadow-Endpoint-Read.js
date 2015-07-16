@@ -15,26 +15,22 @@ var doAPIReadEndpoint = function(pRequest, pResponse, fNext)
 	// This state is the requirement for the UserRoleIndex value in the SessionData object... processed by default as >=
 	// The default here is that any authenticated user can use this endpoint.
 	pRequest.EndpointAuthorizationRequirement = pRequest.EndpointAuthorizationLevels.Read;
-	
-	// INJECT: Pre authorization (for instance to change the authorization level)
-	
+
 	if (pRequest.CommonServices.authorizeEndpoint(pRequest, pResponse, fNext) === false)
 	{
 		// If this endpoint fails, it's sent an error automatically.
 		return;
 	}
 
-	// INJECT: Pre endpoint operation
-
 	libAsync.waterfall(
 		[
-			// 1. Get the records
+			// 1. Create the query
 			function (fStageComplete)
 			{
 				pRequest.Query = pRequest.DAL.query;
 				fStageComplete(false);
 			},
-			// 2. Set the query up with the record ID, execute the query
+			// 2. Set the query up with the record ID
 			function (fStageComplete)
 			{
 				var tmpIDRecord =  pRequest.params.IDRecord;
