@@ -34,7 +34,7 @@ var doAPIReadEndpoint = function(pRequest, pResponse, fNext)
 				pRequest.Query = pRequest.DAL.query;
 				fStageComplete(false);
 			},
-			// 2. Set the query up with the ecord ID, execute the query
+			// 2. Set the query up with the record ID, execute the query
 			function (fStageComplete)
 			{
 				var tmpIDRecord =  pRequest.params.IDRecord;
