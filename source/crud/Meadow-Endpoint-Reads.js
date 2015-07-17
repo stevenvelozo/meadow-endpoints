@@ -17,7 +17,7 @@ var doAPIReadsEndpoint = function(pRequest, pResponse, fNext)
 	pRequest.EndpointAuthorizationRequirement = pRequest.EndpointAuthorizationLevels.Reads;
 	
 	// INJECT: Pre authorization (for instance to change the authorization level)
-
+	
 	if (pRequest.CommonServices.authorizeEndpoint(pRequest, pResponse, fNext) === false)
 	{
 		// If this endpoint fails, it's sent an error automatically.
@@ -28,12 +28,10 @@ var doAPIReadsEndpoint = function(pRequest, pResponse, fNext)
 
 	libAsync.waterfall(
 		[
-			// 1. Get the records
+			// 1. Construct the Query
 			function (fStageComplete)
 			{
-				var tmpQuery = pRequest.DAL.query;
-
-				// INJECT: Query configuration and population
+				pRequest.Query = pRequest.DAL.query;
 
 				var tmpCap = false;
 				var tmpBegin = false;
@@ -45,38 +43,48 @@ var doAPIReadsEndpoint = function(pRequest, pResponse, fNext)
 				{
 					tmpCap = parseInt(pRequest.params.Cap);
 				}
-				tmpQuery.setCap(tmpCap).setBegin(tmpBegin);
+				pRequest.Query.setCap(tmpCap).setBegin(tmpBegin);
 
-				// Do the record read
-				pRequest.DAL.doReads(tmpQuery, fStageComplete);
+				fStageComplete(false);
 			},
-			// 2. Post processing of the records
+			// 2. INJECT: Query configuration
+			function (fStageComplete)
+			{
+				pRequest.BehaviorModifications.runBehavior('Reads-QueryConfiguration', pRequest, fStageComplete);
+			},
+			// 3. Execute the query
+			function (fStageComplete)
+			{
+				pRequest.DAL.doReads(pRequest.Query, fStageComplete);
+			},
+			// 4. Post processing of the records
 			function (pQuery, pRecords, fStageComplete)
 			{
-				// INJECT: Results validation, pass in pRecords
-
-				if (pRecords.length < 1)
+				if (!pRecords)
 				{
-					pRequest.CommonServices.log.info('Successfully delivered empty recordset', {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Reads'});
+					pRequest.CommonServices.log.info('Records not found', {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Reads'});
 					return pResponse.send([]);
 				}
-
-				// INJECT: Post process the records, tacking on or altering anything we want to do.
-
-				// Complete the waterfall operation
-				fStageComplete(false, pQuery, pRecords);
+				pRequest.Records = pRecords;
+				fStageComplete(false);
+			},
+			// 5. INJECT: Post process the record, tacking on or altering anything we want to.
+			function (fStageComplete)
+			{
+				// This will also complete the waterfall operation
+				pRequest.BehaviorModifications.runBehavior('Reads-PostOperation', pRequest, fStageComplete);
 			}
 		],
-		// 3. Return the results to the user
-		function(pError, pQuery, pRecords)
+		// 6. Return the results to the user
+		function(pError)
 		{
 			if (pError)
 			{
-				return pRequest.CommonServices.sendError('Error retreiving a recordset.', pRequest, pResponse, fNext);
+				return pRequest.CommonServices.sendError('Error retreiving records by value.', pRequest, pResponse, fNext);
 			}
 
-			pRequest.CommonServices.log.info('Read a recordset with '+pRecords.length+' results.', {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Reads'});
-			pResponse.send(pRecords);
+			pRequest.CommonServices.log.info('Read a list of records.', {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Reads'});
+			pResponse.send(pRequest.Records);
 			return fNext();
 		}
 	);

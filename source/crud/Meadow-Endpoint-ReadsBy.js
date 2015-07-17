@@ -86,7 +86,7 @@ var doAPIReadsByEndpoint = function(pRequest, pResponse, fNext)
 				pRequest.BehaviorModifications.runBehavior('Reads-PostOperation', pRequest, fStageComplete);
 			}
 		],
-		// 3. Return the results to the user
+		// 7. Return the results to the user
 		function(pError)
 		{
 			if (pError)
