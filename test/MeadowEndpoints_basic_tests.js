@@ -453,6 +453,23 @@ suite
 				);
 				test
 				(
+					'countby: get cout of records by Type',
+					function(fDone)
+					{
+						libSuperTest('http://localhost:9080/')
+						.get('1.0/FableTests/Count/By/Type/Dog')
+						.end(
+							function (pError, pResponse)
+							{
+								var tmpResults = JSON.parse(pResponse.text);
+								Expect(tmpResults.Count).to.equal(2);
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
 					'readsby: get paged records by Type',
 					function(fDone)
 					{

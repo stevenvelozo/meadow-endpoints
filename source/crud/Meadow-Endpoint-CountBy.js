@@ -1,5 +1,5 @@
 /**
-* Meadow Endpoint - Count a Record
+* Meadow Endpoint - Count a Record filtered by a single value
 *
 * @license MIT
 *
@@ -9,7 +9,7 @@
 /**
 * Count a record using the Meadow DAL object
 */
-var doAPICountEndpoint = function(pRequest, pResponse, fNext)
+var doAPICountByEndpoint = function(pRequest, pResponse, fNext)
 {
 	// This state is the requirement for the UserRoleIndex value in the SessionData object... processed by default as >=
 	// The default here is that any authenticated user can use this endpoint.
@@ -25,16 +25,24 @@ var doAPICountEndpoint = function(pRequest, pResponse, fNext)
 
 	pRequest.Query = pRequest.DAL.query;
 
+	var tmpByField =  pRequest.params.ByField;
+	var tmpByValue =  pRequest.params.ByValue;
+	// TODO: Validate theat the ByField exists in the current database
+
+	// The count tries to match the Reads, since they are called together.
+	pRequest.Query.addFilter(tmpByField, tmpByValue, '=', 'AND', 'RequestByField');
+
 	// Do the count
 	pRequest.DAL.doCount(pRequest.Query,
 		function(pError, pQuery, pCount)
 		{
 			pRequest.Result = {Count:pCount};
 
-			pRequest.CommonServices.log.info('Delivered recordset count of '+pRequest.Result+'.', {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Count'});
+
+			pRequest.CommonServices.log.info('Delivered recordset count of '+pRequest.Result.Count+'.', {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-CountBy'});
 			pResponse.send(pRequest.Result);
 			return fNext();
 		});
 };
 
-module.exports = doAPICountEndpoint;
+module.exports = doAPICountByEndpoint;

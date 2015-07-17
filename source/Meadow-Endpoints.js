@@ -45,6 +45,7 @@ var MeadowEndpoints = function()
 			Update: require('./crud/Meadow-Endpoint-Update.js'),
 			Delete: require('./crud/Meadow-Endpoint-Delete.js'),
 			Count: require('./crud/Meadow-Endpoint-Count.js'),
+			CountBy: require('./crud/Meadow-Endpoint-CountBy.js'),
 
 		// Get the JSONSchema spec schema
 		/* http://json-schema.org/examples.html
@@ -194,6 +195,7 @@ var MeadowEndpoints = function()
 			pRestServer.del('/1.0/'+tmpEndpointName, _CommonServices.bodyParser(), _EndpointAuthenticators.Delete, wireState, _Endpoints.Delete);
 			pRestServer.del('/1.0/'+tmpEndpointName+'/:IDRecord', _EndpointAuthenticators.Delete, wireState, _Endpoints.Delete);
 			pRestServer.get('/1.0/'+tmpEndpointName+'s/Count', _EndpointAuthenticators.Count, wireState, _Endpoints.Count);
+			pRestServer.get('/1.0/'+tmpEndpointName+'s/Count/By/:ByField/:ByValue', _EndpointAuthenticators.Count, wireState, _Endpoints.CountBy);
 		};
 
 
