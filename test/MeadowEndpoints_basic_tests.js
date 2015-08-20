@@ -208,7 +208,7 @@ suite
 							_MeadowEndpoints.setEndpointAuthenticator ('Reads');
 							_MeadowEndpoints.setEndpointAuthenticator
 							(
-								'Reads', 
+								'Reads',
 								function(pRequest, pResponse, fNext)
 								{
 									pRequest.EndpointAuthenticated = true;
@@ -1052,6 +1052,40 @@ suite
 								var tmpResult = JSON.parse(pResponse.text);
 								//console.log(JSON.stringify(tmpResult, null, 4))
 								Expect(tmpResult.CustomProperty).to.equal('Custom Girl ID 2');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'read-max: get the max record ID',
+					function(fDone)
+					{
+						libSuperTest('http://localhost:9080/')
+						.get('1.0/FableTest/Max/IDAnimal')
+						.end(
+							function (pError, pResponse)
+							{
+								var tmpResult = JSON.parse(pResponse.text);
+								Expect(tmpResult.IDAnimal).to.equal(6);
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'read-max: get the max name',
+					function(fDone)
+					{
+						libSuperTest('http://localhost:9080/')
+						.get('1.0/FableTest/Max/Name')
+						.end(
+							function (pError, pResponse)
+							{
+								var tmpResult = JSON.parse(pResponse.text);
+								Expect(tmpResult.Name).to.equal('Spot');
 								fDone();
 							}
 						);

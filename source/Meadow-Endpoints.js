@@ -39,6 +39,7 @@ var MeadowEndpoints = function()
 			Create: require('./crud/Meadow-Endpoint-Create.js'),
 
 			Read: require('./crud/Meadow-Endpoint-Read.js'),
+			ReadMax: require('./crud/Meadow-Endpoint-ReadMax.js'),
 			Reads: require('./crud/Meadow-Endpoint-Reads.js'),
 			ReadsBy: require('./crud/Meadow-Endpoint-ReadsBy.js'),
 			ReadSelectList: require('./crud/Meadow-Endpoint-ReadSelectList'),
@@ -184,6 +185,7 @@ var MeadowEndpoints = function()
 
 			// Standard CRUD and Count endpoints
 			pRestServer.post('/1.0/'+tmpEndpointName, _CommonServices.bodyParser(), _EndpointAuthenticators.Create, wireState, _Endpoints.Create);
+			pRestServer.get('/1.0/'+tmpEndpointName+'/Max/:ColumnName', _EndpointAuthenticators.Read, wireState, _Endpoints.ReadMax);
 			pRestServer.get('/1.0/'+tmpEndpointName+'/:IDRecord', _EndpointAuthenticators.Read, wireState, _Endpoints.Read);
 			pRestServer.get('/1.0/'+tmpEndpointName+'s', _EndpointAuthenticators.Reads, wireState, _Endpoints.Reads);
 			pRestServer.get('/1.0/'+tmpEndpointName+'s/By/:ByField/:ByValue', _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadsBy);
