@@ -40,11 +40,15 @@ var MeadowEndpoints = function()
 
 			Read: require('./crud/Meadow-Endpoint-Read.js'),
 			ReadMax: require('./crud/Meadow-Endpoint-ReadMax.js'),
+
 			Reads: require('./crud/Meadow-Endpoint-Reads.js'),
 			ReadsBy: require('./crud/Meadow-Endpoint-ReadsBy.js'),
 			ReadSelectList: require('./crud/Meadow-Endpoint-ReadSelectList'),
+
 			Update: require('./crud/Meadow-Endpoint-Update.js'),
+
 			Delete: require('./crud/Meadow-Endpoint-Delete.js'),
+
 			Count: require('./crud/Meadow-Endpoint-Count.js'),
 			CountBy: require('./crud/Meadow-Endpoint-CountBy.js'),
 
@@ -213,6 +217,9 @@ var MeadowEndpoints = function()
 			wireState: wireState,
 
 			connectRoutes: connectRoutes,
+
+			// Expose the DAL
+			DAL: _Meadow,
 
 			// Factory
 			new: createNew
