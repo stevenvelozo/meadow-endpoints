@@ -9,6 +9,9 @@
 /**
 * Update a record using the Meadow DAL object
 */
+
+var libAsync = require('async');
+
 var doAPIUpdateEndpoint = function(pRequest, pResponse, fNext)
 {
 	// This state is the requirement for the UserRoleIndex value in the SessionData object... processed by default as >=
@@ -25,38 +28,66 @@ var doAPIUpdateEndpoint = function(pRequest, pResponse, fNext)
 
 	// INJECT: Pre endpoint operation
 
-	if (typeof(pRequest.body) !== 'object')
-	{
-		return pRequest.CommonServices.sendError('Record update failure - a valid record is required.', pRequest, pResponse, fNext);
-	}
-	if (pRequest.body[pRequest.DAL.defaultIdentifier] < 1)
-	{
-		return pRequest.CommonServices.sendError('Record update failure - a valid record ID is required in the passed-in record.', pRequest, pResponse, fNext);
-	}
-	var tmpUpdatedRecord = pRequest.body;
-
-	// INJECT: Record modification before update
-
-	var tmpQuery = pRequest.DAL.query;
-
-	// INJECT: Query configuration and population
-
-	tmpQuery.addRecord(tmpUpdatedRecord);
-	
-	pRequest.DAL.setIDUser(pRequest.SessionData.UserID).doUpdate(tmpQuery,
-		function(pError, pQuery, pReadQuery, pRecord)
-		{
-			if (!pRecord)
+	libAsync.waterfall(
+		[
+			function(fStageComplete)
 			{
-				return pRequest.CommonServices.sendError('Error updating a record.', pRequest, pResponse, fNext);
+				//1. Validate request body to ensure it is a valid record
+				if (typeof(pRequest.body) !== 'object')
+				{
+					return pRequest.CommonServices.sendError('Record update failure - a valid record is required.', pRequest, pResponse, fNext);
+				}
+				if (pRequest.body[pRequest.DAL.defaultIdentifier] < 1)
+				{
+					return pRequest.CommonServices.sendError('Record update failure - a valid record ID is required in the passed-in record.', pRequest, pResponse, fNext);
+				}
+
+				pRequest.Record = pRequest.body;
+
+				return fStageComplete(null);
+			},
+			function(fStageComplete)
+			{
+				//2. INJECT: Record modification before update
+				pRequest.BehaviorModifications.runBehavior('Update-PreOperation', pRequest, fStageComplete);
+			},
+			function(fStageComplete)
+			{
+				//3. Prepare update query
+				var tmpQuery = pRequest.DAL.query;
+
+				// INJECT: Query configuration and population
+
+				tmpQuery.addRecord(pRequest.Record);
+
+				return fStageComplete(null, tmpQuery);
+			},
+			function(pPreparedQuery, fStageComplete)
+			{
+				//4. Do the update operation
+				pRequest.DAL.setIDUser(pRequest.SessionData.UserID).doUpdate(pPreparedQuery,
+					function(pError, pQuery, pReadQuery, pRecord)
+					{
+						if (!pRecord)
+						{
+							return pRequest.CommonServices.sendError('Error updating a record.', pRequest, pResponse, fNext);
+						}
+
+						pRequest.Record = pRecord;
+
+						pRequest.CommonServices.log.info('Updated a record with ID '+pRecord[pRequest.DAL.defaultIdentifier]+'.', {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Update'});
+
+						// INJECT: Post modification with record
+						pRequest.BehaviorModifications.runBehavior('Update-PostOperation', pRequest, fStageComplete);
+					});
+			},
+			function(fStageComplete)
+			{
+				//5. Respond with the new record
+				pResponse.send(pRequest.Record);
+				return fStageComplete();
 			}
-
-			// INJECT: Post modification with record
-
-			pRequest.CommonServices.log.info('Updated a record with ID '+pRecord[pRequest.DAL.defaultIdentifier]+'.', {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Update'});
-			pResponse.send(pRecord);
-			return fNext();
-		});
+		], fNext);
 };
 
 module.exports = doAPIUpdateEndpoint;
