@@ -73,15 +73,19 @@ var doAPICreateEndpoint = function(pRequest, pResponse, fNext)
 
 						pRequest.CommonServices.log.info('Created a record with ID '+pRecord[pRequest.DAL.defaultIdentifier]+'.', {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Create'});
 
-						// INJECT: Post insert record modifications
-						pRequest.BehaviorModifications.runBehavior('Create-PostOperation', pRequest, fStageComplete);
+						return fStageComplete(null);
 					});
+			},
+			function(fStageComplete)
+			{
+				// INJECT: Post insert record modifications
+				return pRequest.BehaviorModifications.runBehavior('Create-PostOperation', pRequest, fStageComplete);
 			},
 			function(fStageComplete)
 			{
 				//5. Respond with the new record
 				pResponse.send(pRequest.Record);
-				return fStageComplete();
+				return fStageComplete(null);
 			}
 		], fNext);
 };

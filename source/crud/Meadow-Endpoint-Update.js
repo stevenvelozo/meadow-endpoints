@@ -77,15 +77,19 @@ var doAPIUpdateEndpoint = function(pRequest, pResponse, fNext)
 
 						pRequest.CommonServices.log.info('Updated a record with ID '+pRecord[pRequest.DAL.defaultIdentifier]+'.', {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Update'});
 
-						// INJECT: Post modification with record
-						pRequest.BehaviorModifications.runBehavior('Update-PostOperation', pRequest, fStageComplete);
+						return fStageComplete(null);
 					});
+			},
+			function(fStageComplete)
+			{
+				// INJECT: Post modification with record
+				return pRequest.BehaviorModifications.runBehavior('Update-PostOperation', pRequest, fStageComplete);
 			},
 			function(fStageComplete)
 			{
 				//5. Respond with the new record
 				pResponse.send(pRequest.Record);
-				return fStageComplete();
+				return fStageComplete(null);
 			}
 		], fNext);
 };
