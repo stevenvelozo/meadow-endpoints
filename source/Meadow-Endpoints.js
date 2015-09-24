@@ -207,12 +207,26 @@ var MeadowEndpoints = function()
 		};
 
 		
-		//
+		/**
+		* Emulate a response object
+		*/
 		var wireResponse = function(pResponse, fCallback)
 		{
 			pResponse.send = function(data)
 			{
 				this.body = data;
+
+				if (!data.Error)
+				{
+					if (data.constructor === Array)
+					{
+						this.Records = data;
+					}
+					else
+					{
+						this.Record = data;
+					}
+				}
 			}
 
 			Object.defineProperty(pResponse, 'text',
@@ -236,7 +250,7 @@ var MeadowEndpoints = function()
 			if (!_Endpoints[pMethod])
 			{
 				_CommonServices.log.error('Endpoint \'' + pMethod + '\' does not exist!')
-				return tmpCallback('Endpoint \'' + pMethod + '\' does not exist!'); //may want this to be an exception actually
+				return tmpCallback('Endpoint \'' + pMethod + '\' does not exist!'); //might be better as an exception
 			}
 
 			//TODO: should switch depending on type
@@ -276,6 +290,7 @@ var MeadowEndpoints = function()
 				},
 				function(fStageComplete)
 				{
+					//Invoke the endpoint method
 					return _Endpoints[pMethod](pRequest, pResponse, function(err)
 						{
 							return tmpCallback(err, pResponse);

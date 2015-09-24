@@ -1241,8 +1241,7 @@ suite
 						_MeadowEndpoints.invokeEndpoint('ReadSelectList', {Begin: 2, Cap: 2},
 							function (pError, pResponse)
 							{
-								//console.log(pResponse.text)
-								var tmpResults = pResponse.body; //JSON.parse(pResponse.text);
+								var tmpResults = pResponse.Records; //JSON.parse(pResponse.text);
 								Expect(tmpResults.length).to.equal(2);
 								Expect(tmpResults[1].Value).to.equal('FableTest #5');
 								fDone();
@@ -1258,7 +1257,7 @@ suite
 						_MeadowEndpoints.invokeEndpoint('ReadSelectList', {Begin: 200, Cap: 200},
 							function (pError, pResponse)
 							{
-								var tmpResults = pResponse.body; //JSON.parse(pResponse.text);
+								var tmpResults = pResponse.Records; //JSON.parse(pResponse.text);
 								Expect(tmpResults.length).to.equal(0);
 								fDone();
 							}
@@ -1270,10 +1269,10 @@ suite
 					'invoke reads: get a page of records',
 					function(fDone)
 					{
-						_MeadowEndpoints.invokeEndpoint('ReadsBy', {Begin: 2, Cap: 2},
+						_MeadowEndpoints.invokeEndpoint('Reads', {Begin: 2, Cap: 2},
 							function (pError, pResponse)
 							{
-								var tmpResults = JSON.parse(pResponse.text);
+								var tmpResults = pResponse.Records; //JSON.parse(pResponse.text);
 								Expect(tmpResults.length).to.equal(2);
 								Expect(tmpResults[0].Type).to.equal('Corgi');
 								Expect(tmpResults[1].Name).to.equal('Gertrude');
@@ -1293,10 +1292,152 @@ suite
 							function(pError, pResponse)
 							{
 								// Expect response to be the record we just created.
-								var tmpResult = JSON.parse(pResponse.text);
+								var tmpResult = pResponse.Record; //JSON.parse(pResponse.text);
 								Expect(tmpResult.Type).to.equal('Corgi');
 								Expect(tmpResult.CreatingIDUser).to.equal(1);
 								Expect(tmpResult.UpdatingIDUser).to.equal(0);
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'invoke delete: delete a record',
+					function(fDone)
+					{
+						// Delete animal 4 ("Corgi")
+						var tmpRecord = {IDAnimal:4};
+						_MeadowEndpoints.invokeEndpoint('Delete', tmpRecord,
+							function(pError, pResponse)
+							{
+								// Expect response to be the count of deleted records.
+								var tmpResult = pResponse.body; //JSON.parse(pResponse.text);
+								Expect(tmpResult.Count).to.equal(1);
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'invoke delete: delete a record with a bad parameter',
+					function(fDone)
+					{
+						// Delete animal 3 ("Red")
+						var tmpRecord = {IDAnimal:{MyStuff:4}};
+						_MeadowEndpoints.invokeEndpoint('Delete', tmpRecord,
+							function(pError, pResponse)
+							{
+								// Expect response to be the count of deleted records.
+								var tmpResult = pResponse.body; //JSON.parse(pResponse.text);
+								Expect(tmpResult.Error).to.contain('a valid record ID is required');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'count: get the count of records',
+					function(fDone)
+					{
+						_MeadowEndpoints.invokeEndpoint('Count', {},
+							function (pError, pResponse)
+							{
+								var tmpResults = pResponse.body; //JSON.parse(pResponse.text);
+								Expect(tmpResults.Count).to.equal(5);
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'schema: get the schema of a record',
+					function(fDone)
+					{
+						_MeadowEndpoints.invokeEndpoint('Schema', {},
+							function (pError, pResponse)
+							{
+								var tmpResults = pResponse.body; //JSON.parse(pResponse.text);
+								//console.log('SCHEMA --> '+JSON.stringify(tmpResults, null, 4))
+								Expect(tmpResults.title).to.equal('Animal');
+								Expect(tmpResults.description).to.contain('creature that lives in');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'new: get a new empty record',
+					function(fDone)
+					{
+						_MeadowEndpoints.invokeEndpoint('New', {},
+							function (pError, pResponse)
+							{
+								var tmpResults = pResponse.body; //JSON.parse(pResponse.text);
+								//console.log(JSON.stringify(tmpResults, null, 4))
+								Expect(tmpResults.IDAnimal).to.equal(null);
+								Expect(tmpResults.Name).to.equal('Unknown');
+								Expect(tmpResults.Type).to.equal('Unclassified');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'validate: validate an invalid record',
+					function(fDone)
+					{
+						var tmpRecord = {IDAnimal:4, Type:'Corgi'};
+						_MeadowEndpoints.invokeEndpoint('Validate', tmpRecord,
+							function(pError, pResponse)
+							{
+								// Expect response to be the record we just created.
+								var tmpResult = pResponse.body; //JSON.parse(pResponse.text);
+								//console.log(JSON.stringify(tmpResult, null, 4))
+								Expect(tmpResult.Valid).to.equal(false);
+								Expect(tmpResult.Errors[0].field).to.equal('data.Name');
+								Expect(tmpResult.Errors[0].message).to.equal('is required');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'validate: validate a valid record',
+					function(fDone)
+					{
+						var tmpRecord = {IDAnimal:4, Type:'Corgi', Name:'Doofer', CreatingIDUser:10};
+						_MeadowEndpoints.invokeEndpoint('Validate', tmpRecord,
+							function(pError, pResponse)
+							{
+								// Expect response to be the record we just created.
+								var tmpResult = pResponse.body; //JSON.parse(pResponse.text);
+								//console.log(JSON.stringify(tmpResult, null, 4))
+								Expect(tmpResult.Valid).to.equal(true);
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'validate: validate bad data',
+					function(fDone)
+					{
+						var tmpRecord = 'IAMBAD';
+						_MeadowEndpoints.invokeEndpoint('Validate', tmpRecord,
+							function(pError, pResponse)
+							{
+								// Expect response to be the record we just created.
+								var tmpResult = pResponse.body; //JSON.parse(pResponse.text);
+								//console.log(JSON.stringify(tmpResult, null, 4))
+								Expect(tmpResult.Error).to.contain('validate failure');
 								fDone();
 							}
 						);
