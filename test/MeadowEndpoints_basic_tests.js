@@ -1093,5 +1093,216 @@ suite
 				);
 			}
 		);
+		suite
+		(
+			'Direct invocation',
+			function()
+			{
+				test
+				(
+					'invoke create: create a record',
+					function(fDone)
+					{
+						var tmpRecord = {Name:'BatBrains', Type:'Mammoth'};
+						_MockSessionValidUser.UserRoleIndex = 1;
+						_MeadowEndpoints.invokeEndpoint('Create', tmpRecord,
+							function(pError, pResponse)
+							{
+								// Expect response to be the record we just created.
+								Expect(pResponse.body.Name)
+									.to.equal(tmpRecord.Name);
+
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'invoke create: create a record with a bad record passed in',
+					function(fDone)
+					{
+						var tmpRecord = ' ';
+						_MockSessionValidUser.UserRoleIndex = 2;
+						_MeadowEndpoints.invokeEndpoint('Create', tmpRecord,
+							function(pError, pResponse)
+							{
+								// Expect response to be the record we just created.
+								var tmpResult = JSON.parse(pResponse.text);
+								Expect(tmpResult.Error).to.contain('a valid record is required');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'invoke read: get a specific record',
+					function(fDone)
+					{
+						_MeadowEndpoints.invokeEndpoint('Read', {IDRecord: 2},
+							function (pError, pResponse)
+							{
+								var tmpResult = JSON.parse(pResponse.text);
+								Expect(tmpResult.Type).to.equal('Girl');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'read: get a specific record with a bad parameter',
+					function(fDone)
+					{
+						_MeadowEndpoints.invokeEndpoint('Read', {},
+							function (pError, pResponse)
+							{
+								var tmpResult = JSON.parse(pResponse.text);
+								//console.log(tmpResult);
+								Expect(tmpResult.Error).to.be.an('undefined'); //
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'invoke readselect: get all records',
+					function(fDone)
+					{
+						_MeadowEndpoints.invokeEndpoint('ReadSelectList', {},
+							function (pError, pResponse)
+							{
+								console.log(pResponse.body)
+								Expect(pResponse.body)
+									.to.be.an('array');
+								//var tmpResults = JSON.parse(pResponse.text);
+								//Expect(tmpResults.Error).to.contain('authenticated');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'invoke readsby: get all records by Type',
+					function(fDone)
+					{
+						_MeadowEndpoints.invokeEndpoint('ReadsBy', {ByField: 'Type', ByValue: 'Mammoth'},
+							function (pError, pResponse)
+							{
+								//console.log(pResponse.body);
+
+								var tmpResults = pResponse.body; //JSON.parse(pResponse.text);
+								Expect(tmpResults.length).to.equal(2);
+								Expect(tmpResults[0].Type).to.equal('Mammoth');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'invoke countby: get cout of records by Type',
+					function(fDone)
+					{
+						_MeadowEndpoints.invokeEndpoint('CountBy', {ByField: 'Type', ByValue: 'Mammoth'},
+							function (pError, pResponse)
+							{
+								var tmpResults = pResponse.body; //JSON.parse(pResponse.text);
+								Expect(tmpResults.Count).to.equal(2);
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'invoke readsby: get paged records by Type',
+					function(fDone)
+					{
+						_MeadowEndpoints.invokeEndpoint('ReadsBy', {ByField: 'Type', ByValue: 'Mammoth', Begin: 1, Cap: 1},
+							function (pError, pResponse)
+							{
+								var tmpResults = pResponse.body;
+								Expect(tmpResults.length).to.equal(1);
+								Expect(tmpResults[0].Type).to.equal('Mammoth');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'invoke readselect: get a page of records',
+					function(fDone)
+					{
+						_MeadowEndpoints.invokeEndpoint('ReadSelectList', {Begin: 2, Cap: 2},
+							function (pError, pResponse)
+							{
+								//console.log(pResponse.text)
+								var tmpResults = pResponse.body; //JSON.parse(pResponse.text);
+								Expect(tmpResults.length).to.equal(2);
+								Expect(tmpResults[1].Value).to.equal('FableTest #5');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'invoke readselect: get an empty page of records',
+					function(fDone)
+					{
+						_MeadowEndpoints.invokeEndpoint('ReadSelectList', {Begin: 200, Cap: 200},
+							function (pError, pResponse)
+							{
+								var tmpResults = pResponse.body; //JSON.parse(pResponse.text);
+								Expect(tmpResults.length).to.equal(0);
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'invoke reads: get a page of records',
+					function(fDone)
+					{
+						_MeadowEndpoints.invokeEndpoint('ReadsBy', {Begin: 2, Cap: 2},
+							function (pError, pResponse)
+							{
+								var tmpResults = JSON.parse(pResponse.text);
+								Expect(tmpResults.length).to.equal(2);
+								Expect(tmpResults[0].Type).to.equal('Corgi');
+								Expect(tmpResults[1].Name).to.equal('Gertrude');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'invoke update: update a record',
+					function(fDone)
+					{
+						// Change animal 4 ("Spot") to a Corgi
+						var tmpRecord = {IDAnimal:4, Type:'Corgi'};
+						_MeadowEndpoints.invokeEndpoint('Update', tmpRecord,
+							function(pError, pResponse)
+							{
+								// Expect response to be the record we just created.
+								var tmpResult = JSON.parse(pResponse.text);
+								Expect(tmpResult.Type).to.equal('Corgi');
+								Expect(tmpResult.CreatingIDUser).to.equal(1);
+								Expect(tmpResult.UpdatingIDUser).to.equal(0);
+								fDone();
+							}
+						);
+					}
+				);
+			}
+		);
 	}
 );
