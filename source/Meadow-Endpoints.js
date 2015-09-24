@@ -291,9 +291,9 @@ var MeadowEndpoints = function()
 				function(fStageComplete)
 				{
 					//Invoke the endpoint method
-					return _Endpoints[pMethod](pRequest, pResponse, function(err)
+					_Endpoints[pMethod](pRequest, pResponse, function(err)
 						{
-							return tmpCallback(err, pResponse);
+							return fStageComplete(err, pResponse);
 						});
 				}
 			],
