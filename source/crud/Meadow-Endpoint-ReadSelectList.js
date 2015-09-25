@@ -39,11 +39,13 @@ var doAPIReadSelectListEndpoint = function(pRequest, pResponse, fNext)
 
 				var tmpCap = false;
 				var tmpBegin = false;
-				if (typeof(pRequest.params.Begin) === 'string')
+				if (typeof(pRequest.params.Begin) === 'string' ||
+					typeof(pRequest.params.Begin) === 'number')
 				{
 					tmpBegin = parseInt(pRequest.params.Begin);
 				}
-				if (typeof(pRequest.params.Cap) === 'string')
+				if (typeof(pRequest.params.Cap) === 'string' ||
+					typeof(pRequest.params.Cap) === 'number')
 				{
 					tmpCap = parseInt(pRequest.params.Cap);
 				}
@@ -61,8 +63,7 @@ var doAPIReadSelectListEndpoint = function(pRequest, pResponse, fNext)
 
 				if (pRecords.length < 1)
 				{
-					pRequest.CommonServices.log.info('Successfully delivered empty recordset', {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Reads'});
-					return pResponse.send([]);
+					pRecords = [];
 				}
 
 				// INJECT: Post process the records, tacking on or altering anything we want to do.

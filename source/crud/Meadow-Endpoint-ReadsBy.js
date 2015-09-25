@@ -35,11 +35,13 @@ var doAPIReadsByEndpoint = function(pRequest, pResponse, fNext)
 
 				var tmpCap = false;
 				var tmpBegin = false;
-				if (typeof(pRequest.params.Begin) === 'string')
+				if (typeof(pRequest.params.Begin) === 'string' ||
+					typeof(pRequest.params.Begin) === 'number')
 				{
 					tmpBegin = parseInt(pRequest.params.Begin);
 				}
-				if (typeof(pRequest.params.Cap) === 'string')
+				if (typeof(pRequest.params.Cap) === 'string' ||
+					typeof(pRequest.params.Cap) === 'number')
 				{
 					tmpCap = parseInt(pRequest.params.Cap);
 				}

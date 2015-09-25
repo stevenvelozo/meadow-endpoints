@@ -25,6 +25,8 @@ var MeadowEndpoints = function()
 		var _Meadow = pMeadow;
 		var _Fable = pMeadow.fable;
 
+		var libAsync = require('async');
+
 		var _CommonServices = require('./Meadow-CommonServices.js').new(pMeadow);
 
 		// This holds any changed behaviors.
@@ -204,6 +206,103 @@ var MeadowEndpoints = function()
 			pRestServer.get('/1.0/'+tmpEndpointName+'s/Count/By/:ByField/:ByValue', _EndpointAuthenticators.Count, wireState, _Endpoints.CountBy);
 		};
 
+		
+		/**
+		* Emulate a response object
+		*/
+		var wireResponse = function(pResponse, fCallback)
+		{
+			pResponse.send = function(data)
+			{
+				this.body = data;
+
+				if (!data.Error)
+				{
+					if (data.constructor === Array)
+					{
+						this.Records = data;
+					}
+					else
+					{
+						this.Record = data;
+					}
+				}
+			}
+
+			Object.defineProperty(pResponse, 'text',
+			{
+				get: function() { return JSON.stringify(pResponse.body); },
+				enumerable: true
+			});
+
+			return fCallback();
+		}
+
+		/**
+		* Invoke a meadow endpoint programmatically
+		*
+		* @method invokeEndpoint
+		*/
+		var invokeEndpoint = function(pMethod, pData, pOptions, fCallback)
+		{
+			var tmpCallback = (typeof(pOptions) === 'function') ? pOptions : fCallback;
+
+			if (!_Endpoints[pMethod])
+			{
+				_CommonServices.log.error('Endpoint \'' + pMethod + '\' does not exist!')
+				return tmpCallback('Endpoint \'' + pMethod + '\' does not exist!'); //might be better as an exception
+			}
+
+			//TODO: should switch depending on type
+			var pRequest = {params: pData, body: pData};
+			var pResponse = {};
+
+			libAsync.waterfall([
+				function(fStageComplete)
+				{
+					return wireResponse(pResponse, fStageComplete);
+				},
+				function(fStageComplete)
+				{
+					//allow consumer to specify user session data
+					if (pOptions.SessionData)
+					{
+						pRequest.SessionData = pOptions.SessionData;
+					}
+					else
+					{
+						//else fill in default user session data
+						pRequest.EndpointInvoked = true; //bypass session auth check
+						pRequest.SessionData = { UserID: 0, UserRoleIndex: 0 };
+					}
+					
+					pRequest.EndpointAuthenticated = true;
+					
+					return fStageComplete();
+				},
+				function(fStageComplete)
+				{
+					return wireCommonServices(pRequest, pResponse, fStageComplete);
+				},
+				function(fStageComplete)
+				{
+					return wireState(pRequest, pResponse, fStageComplete);
+				},
+				function(fStageComplete)
+				{
+					//Invoke the endpoint method
+					_Endpoints[pMethod](pRequest, pResponse, function(err)
+						{
+							return fStageComplete(err, pResponse);
+						});
+				}
+			],
+			function complete(err)
+			{
+				return tmpCallback(err, pResponse);
+			});
+		}
+
 
 		/**
 		* Container Object for our Factory Pattern
@@ -220,6 +319,8 @@ var MeadowEndpoints = function()
 
 			// Expose the DAL
 			DAL: _Meadow,
+
+			invokeEndpoint: invokeEndpoint,
 
 			// Factory
 			new: createNew

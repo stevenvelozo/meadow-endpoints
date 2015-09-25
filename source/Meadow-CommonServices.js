@@ -50,6 +50,13 @@ var MeadowCommonServices = function()
 				return false;
 			}
 
+			//Check if endpoint is being invoked programmatically, in which case
+			// we bypass session authentication checks
+			if (pRequest.EndpointInvoked)
+			{
+				return true;
+			}
+
 			// Check that the user has a valid ID.
 			var tmpIDUser = pRequest.SessionData.UserID;
 			if (tmpIDUser < 1)
