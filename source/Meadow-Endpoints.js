@@ -26,6 +26,7 @@ var MeadowEndpoints = function()
 		var _Fable = pMeadow.fable;
 
 		var libAsync = require('async');
+		var libRestRouteParse = require('./Restify-RouteParser.js');
 
 		var _CommonServices = require('./Meadow-CommonServices.js').new(pMeadow);
 
@@ -162,6 +163,43 @@ var MeadowEndpoints = function()
 			fNext();
 		};
 
+		/**
+		* Reparse route parameters, attach 'formattedParams' to Request obj
+		*/
+		var formatRouteParams = function(pRequest, pResponse, fNext)
+		{
+			if (pRequest.method === 'GET')
+			{
+				var tmpParams = libRestRouteParse(
+					pRequest.route.path,
+					pRequest.url
+				);
+
+				for(var key in tmpParams)
+				{
+					var tmpArray = tmpParams[key].split(',');
+					if (tmpArray.length > 1)
+					{
+						for(var i=0; i<tmpArray.length; i++)
+						{
+							tmpArray[i] = decodeURIComponent(tmpArray[i]);
+						}
+
+						tmpParams[key] = tmpArray;
+					}
+					else
+					{
+						tmpParams[key] = decodeURIComponent(tmpParams[key]);
+					}
+				}
+
+				pRequest.formattedParams = tmpParams;
+			}
+
+			//libRestRouteParse
+			return fNext();
+		}
+
 
 		/**
 		* Wire up routes for the API
@@ -180,6 +218,9 @@ var MeadowEndpoints = function()
 
 			// Connect the common services to the route
 			pRestServer.use(wireCommonServices);
+
+			// Build formattedParams route parameters
+			pRestServer.use(formatRouteParams);
 
 			// These special schema services must come in the route table before the READ because they
 			// technically block out the routes for the IDRecord 'Schema' (e.g. /1.0/EntityName/Schema)
@@ -254,7 +295,7 @@ var MeadowEndpoints = function()
 			}
 
 			//TODO: should switch depending on type
-			var pRequest = {params: pData, body: pData};
+			var pRequest = {params: pData, formattedParams: pData, body: pData};
 			var pResponse = {};
 
 			libAsync.waterfall([

@@ -53,10 +53,10 @@ var doAPIReadsByEndpoint = function(pRequest, pResponse, fNext)
 			function (fStageComplete)
 			{
 				var tmpByField =  pRequest.params.ByField;
-				var tmpByValue =  pRequest.params.ByValue;
+				var tmpByValue =  pRequest.formattedParams.ByValue;
 				// TODO: Validate theat the ByField exists in the current database
 
-				if (tmpByValue.constructor == Array)
+				if (tmpByValue.constructor === Array)
 				{
 					pRequest.Query.addFilter(tmpByField, tmpByValue, 'IN', 'AND', 'RequestByField');
 				}

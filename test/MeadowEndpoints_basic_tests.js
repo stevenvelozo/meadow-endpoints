@@ -27,8 +27,8 @@ var tmpFableSettings = 	(
 			// This is queued up for Travis defaults.
 			Server: "localhost",
 			Port: 3306,
-			User: "admin",
-			Password: "zKVMD14cPC5N",
+			User: "root",
+			Password: "",
 			Database: "FableTest",
 			ConnectionPoolLimit: 20
 		}
@@ -453,7 +453,25 @@ suite
 				);
 				test
 				(
-					'countby: get cout of records by Type',
+					'readsby: get all records by Type IN LIST',
+					function(fDone)
+					{
+						libSuperTest('http://localhost:9080/')
+						.get('1.0/FableTests/By/Type/Mammoth%2C%20WithComma,Dog')
+						.end(
+							function (pError, pResponse)
+							{
+								var tmpResults = JSON.parse(pResponse.text);
+								Expect(tmpResults.length).to.equal(2);
+								Expect(tmpResults[0].Type).to.equal('Dog');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'countby: get count of records by Type',
 					function(fDone)
 					{
 						libSuperTest('http://localhost:9080/')
@@ -463,6 +481,23 @@ suite
 							{
 								var tmpResults = JSON.parse(pResponse.text);
 								Expect(tmpResults.Count).to.equal(2);
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'countby: get count of records by multiple Types',
+					function(fDone)
+					{
+						libSuperTest('http://localhost:9080/')
+						.get('1.0/FableTests/Count/By/Type/Dog,Mammoth')
+						.end(
+							function (pError, pResponse)
+							{
+								var tmpResults = JSON.parse(pResponse.text);
+								Expect(tmpResults.Count).to.equal(3);
 								fDone();
 							}
 						);
