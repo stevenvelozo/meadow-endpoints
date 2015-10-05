@@ -453,7 +453,25 @@ suite
 				);
 				test
 				(
-					'countby: get cout of records by Type',
+					'readsby: get all records by Type IN LIST',
+					function(fDone)
+					{
+						libSuperTest('http://localhost:9080/')
+						.get('1.0/FableTests/By/Type/Mammoth%2C%20WithComma,Dog')
+						.end(
+							function (pError, pResponse)
+							{
+								var tmpResults = JSON.parse(pResponse.text);
+								Expect(tmpResults.length).to.equal(2);
+								Expect(tmpResults[0].Type).to.equal('Dog');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'countby: get count of records by Type',
 					function(fDone)
 					{
 						libSuperTest('http://localhost:9080/')
@@ -463,6 +481,23 @@ suite
 							{
 								var tmpResults = JSON.parse(pResponse.text);
 								Expect(tmpResults.Count).to.equal(2);
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'countby: get count of records by multiple Types',
+					function(fDone)
+					{
+						libSuperTest('http://localhost:9080/')
+						.get('1.0/FableTests/Count/By/Type/Dog,Mammoth')
+						.end(
+							function (pError, pResponse)
+							{
+								var tmpResults = JSON.parse(pResponse.text);
+								Expect(tmpResults.Count).to.equal(3);
 								fDone();
 							}
 						);
@@ -1190,6 +1225,24 @@ suite
 					function(fDone)
 					{
 						_MeadowEndpoints.invokeEndpoint('ReadsBy', {ByField: 'Type', ByValue: 'Mammoth'},
+							function (pError, pResponse)
+							{
+								//console.log(pResponse.body);
+
+								var tmpResults = pResponse.body; //JSON.parse(pResponse.text);
+								Expect(tmpResults.length).to.equal(2);
+								Expect(tmpResults[0].Type).to.equal('Mammoth');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'invoke readsby: get all records by Type IN LIST',
+					function(fDone)
+					{
+						_MeadowEndpoints.invokeEndpoint('ReadsBy', {ByField: 'Type', ByValue: ['Mammoth', 'Dog']},
 							function (pError, pResponse)
 							{
 								//console.log(pResponse.body);

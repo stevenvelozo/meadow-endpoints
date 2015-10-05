@@ -26,11 +26,18 @@ var doAPICountByEndpoint = function(pRequest, pResponse, fNext)
 	pRequest.Query = pRequest.DAL.query;
 
 	var tmpByField =  pRequest.params.ByField;
-	var tmpByValue =  pRequest.params.ByValue;
+	var tmpByValue =  pRequest.formattedParams.ByValue;
 	// TODO: Validate theat the ByField exists in the current database
 
-	// The count tries to match the Reads, since they are called together.
-	pRequest.Query.addFilter(tmpByField, tmpByValue, '=', 'AND', 'RequestByField');
+	if (tmpByValue.constructor === Array)
+	{
+		pRequest.Query.addFilter(tmpByField, tmpByValue, 'IN', 'AND', 'RequestByField');
+	}
+	else
+	{
+		// The count tries to match the Reads, since they are called together.
+		pRequest.Query.addFilter(tmpByField, tmpByValue, '=', 'AND', 'RequestByField');
+	}
 
 	// Do the count
 	pRequest.DAL.doCount(pRequest.Query,
