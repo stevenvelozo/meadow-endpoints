@@ -56,8 +56,15 @@ var doAPIReadsByEndpoint = function(pRequest, pResponse, fNext)
 				var tmpByValue =  pRequest.params.ByValue;
 				// TODO: Validate theat the ByField exists in the current database
 
-				// We use a custon name for this (RequestDefaultIdentifier) in case there is a query with a dot in the default identifier.
-				pRequest.Query.addFilter(tmpByField, tmpByValue, '=', 'AND', 'RequestByField');
+				if (tmpByValue.constructor == Array)
+				{
+					pRequest.Query.addFilter(tmpByField, tmpByValue, 'IN', 'AND', 'RequestByField');
+				}
+				else
+				{
+					// We use a custon name for this (RequestDefaultIdentifier) in case there is a query with a dot in the default identifier.
+					pRequest.Query.addFilter(tmpByField, tmpByValue, '=', 'AND', 'RequestByField');
+				}
 				fStageComplete(false);
 			},
 			// 3. INJECT: Query configuration

@@ -27,8 +27,8 @@ var tmpFableSettings = 	(
 			// This is queued up for Travis defaults.
 			Server: "localhost",
 			Port: 3306,
-			User: "root",
-			Password: "",
+			User: "admin",
+			Password: "zKVMD14cPC5N",
 			Database: "FableTest",
 			ConnectionPoolLimit: 20
 		}
@@ -1190,6 +1190,24 @@ suite
 					function(fDone)
 					{
 						_MeadowEndpoints.invokeEndpoint('ReadsBy', {ByField: 'Type', ByValue: 'Mammoth'},
+							function (pError, pResponse)
+							{
+								//console.log(pResponse.body);
+
+								var tmpResults = pResponse.body; //JSON.parse(pResponse.text);
+								Expect(tmpResults.length).to.equal(2);
+								Expect(tmpResults[0].Type).to.equal('Mammoth');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'invoke readsby: get all records by Type IN LIST',
+					function(fDone)
+					{
+						_MeadowEndpoints.invokeEndpoint('ReadsBy', {ByField: 'Type', ByValue: ['Mammoth', 'Dog']},
 							function (pError, pResponse)
 							{
 								//console.log(pResponse.body);
