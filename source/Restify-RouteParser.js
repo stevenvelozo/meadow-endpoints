@@ -45,10 +45,16 @@ function matchURL(re, req) {
     return (params);
 }
 
+var _RegexCache = {};
+
 function compileURL(options) {
     if (options.url instanceof RegExp)
         return (options.url);
     //assert.string(options.url, 'url');
+    if (_RegexCache[options.url])
+    {
+        return _RegexCache[options.url];
+    }
 
     var params = [];
     var pattern = '^';
@@ -87,6 +93,8 @@ function compileURL(options) {
 
     re = new RegExp(pattern, options.flags);
     re.restifyParams = params;
+
+    _RegexCache[options.url] = re;
 
     return (re);
 }
