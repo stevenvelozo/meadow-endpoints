@@ -1,6 +1,6 @@
 {
   "name": "meadow-endpoints",
-  "version": "0.1.18",
+  "version": "0.1.19",
   "description": "Automatic API endpoints for Meadow data.",
   "main": "source/Meadow-Endpoints.js",
   "scripts": {
@@ -34,7 +34,7 @@
     "supertest": "^1.0.1"
   },
   "dependencies": {
-    "async": "^0.9.0",
+    "async": "^1.5.0",
     "meadow": "0.1.16",
     "restify": "^3.0.3",
     "underscore": "^1.8.3"

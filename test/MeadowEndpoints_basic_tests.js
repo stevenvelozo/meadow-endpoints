@@ -1045,13 +1045,18 @@ suite
 					function(fDone)
 					{
 						// Override the query configuration
-						_MeadowEndpoints.behaviorModifications.setBehavior('Read-QueryConfiguration',
+						_MeadowEndpoints.behaviorModifications.setBehavior('Read-QueryConfiguration', [
+							function(pRequest, fComplete)
+							{
+								//implicitly test behvaior-cascade
+								return fComplete(false);
+							},
 							function(pRequest, fComplete)
 							{
 								// Turn up logging on the request.
 								pRequest.Query.setLogLevel(5);
 								fComplete(false);
-							});
+							} ]);
 						libSuperTest('http://localhost:9080/')
 						.get('1.0/FableTest/2')
 						.end(
