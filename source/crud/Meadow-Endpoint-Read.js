@@ -54,7 +54,7 @@ var doAPIReadEndpoint = function(pRequest, pResponse, fNext)
 				if (!pRecord)
 				{
 					pRequest.CommonServices.log.info('Record not found', {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Read'});
-					return pResponse.send({});
+					return fStageComplete('Record not found');
 				}
 				pRequest.Record = pRecord;
 				fStageComplete(false);

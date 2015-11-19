@@ -408,7 +408,7 @@ suite
 							function (pError, pResponse)
 							{
 								var tmpResult = JSON.parse(pResponse.text);
-								Expect(tmpResult.Error).to.be.an('undefined');
+								Expect(tmpResult.Error).to.equal('Error retreiving a record.');
 								fDone();
 							}
 						);
