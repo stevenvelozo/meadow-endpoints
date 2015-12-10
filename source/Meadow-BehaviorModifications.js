@@ -18,6 +18,8 @@ var MeadowBehaviorModifications = function()
 			return {new: createNew};
 		}
 
+		var libAsync = require('async');
+
 		// An object to hold modifications to specific behaviors.
 		var _BehaviorFunctions = {};
 
@@ -56,7 +58,23 @@ var MeadowBehaviorModifications = function()
 			// Run an injected behavior (if it exists)
 			if (_BehaviorFunctions.hasOwnProperty(pBehaviorHash))
 			{
-				return _BehaviorFunctions[pBehaviorHash](pRequest, fComplete);
+				//Array of functions. Aborts on first error.
+				if (Array.isArray(_BehaviorFunctions[pBehaviorHash]))
+				{
+					libAsync.timesLimit(_BehaviorFunctions[pBehaviorHash].length, 1, function(idx, fNext)
+					{
+						_BehaviorFunctions[pBehaviorHash][idx](pRequest, fNext);
+					},
+					function complete(err)
+					{
+						return fComplete(err);
+					});
+				}
+				else
+				{
+					//Single function
+					return _BehaviorFunctions[pBehaviorHash](pRequest, fComplete);
+				}
 			}
 			else
 			{
