@@ -163,6 +163,7 @@ var MeadowEndpoints = function()
 			pRequest.EndpointAuthorizationLevels = _EndpointAuthorizationLevels;
 			pRequest.DAL = _Meadow;
 			pRequest.BehaviorModifications = _BehaviorModifications;
+			pRequest.Authorizers = _Authorizers;
 			fNext();
 		};
 

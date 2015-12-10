@@ -59,19 +59,39 @@ var doAPIReadEndpoint = function(pRequest, pResponse, fNext)
 				pRequest.Record = pRecord;
 				fStageComplete(false);
 			},
+			// 5.5: Check if there is an authorizer set for this endpoint and user role combination, and authorize based on that
+			function (fStageComplete)
+			{
+				pRequest.Authorizers.authorizeRequest('Read', pRequest, fStageComplete);
+			},
 			// 6. INJECT: Post process the record, tacking on or altering anything we want to.
 			function (fStageComplete)
 			{
 				// This will also complete the waterfall operation
 				pRequest.BehaviorModifications.runBehavior('Read-PostOperation', pRequest, fStageComplete);
-			}
+			},
+			// 6.5: Check if authorization or post processing denied security access to the record
+			function (fStageComplete)
+			{
+				if (pRequest.MeadowAuthorization)
+				{
+					return fStageComplete(false);
+				}
+
+				// It looks like this record was not authorized.  Send an error.
+				return fStageComplete({Code:405,Message:'UNAUTHORIZED ACCESS IS NOT ALLOWED'});
+			},
 		],
 		// 3. Return the results to the user
 		function(pError)
 		{
 			if (pError)
 			{
-				return pRequest.CommonServices.sendError('Error retreiving a record.', pRequest, pResponse, fNext);
+				var tmpErrorMessage = 'Error retreiving a record.';
+				if (typeof(pError) === 'object')
+					tmpErrorMessage = pError.Message;
+
+				return pRequest.CommonServices.sendError(tmpErrorMessage, pRequest, pResponse, fNext);
 			}
 
 			pRequest.CommonServices.log.info('Read a record with ID '+pRequest.params.IDRecord+'.', {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Read'});
