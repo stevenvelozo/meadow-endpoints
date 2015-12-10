@@ -309,6 +309,30 @@ suite
 						Expect(tmpBehaviorMods.processTemplate('SimpleTemplate')).to.equal('Not so simple.');
 					}
 				);
+				test
+				(
+					'exercise the security modification api',
+					function()
+					{
+						var tmpBehaviorMods = require('../source/Meadow-Authorizers.js').new(libFable);
+						tmpBehaviorMods.setAuthorizer('AlwaysAuthorize', 
+							function(pRequest, fComplete)
+							{
+								pRequest.MeadowAuthorization = true;
+							});
+						var tmpMockRequest = {MeadowAuthorization: 'Green'};
+						tmpBehaviorMods.authorize('BadHash', tmpMockRequest,
+							function()
+							{
+								Expect(tmpMockRequest.MeadowAuthorization).to.equal('Green');
+							});
+						tmpBehaviorMods.authorize('AlwaysAuthorize', tmpMockRequest,
+							function()
+							{
+								Expect(tmpMockRequest.MeadowAuthorization).to.equal(true);
+							});
+					}
+				);
 			}
 		);
 		suite
