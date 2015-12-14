@@ -33,6 +33,9 @@ var MeadowEndpoints = function()
 		// This holds any changed behaviors.
 		var _BehaviorModifications = require('./Meadow-BehaviorModifications.js').new(pMeadow);
 
+		// This holds the authorizers.
+		var _Authorizers = require('./Meadow-Authorizers.js').new(pMeadow);
+
 		// This checks that the user is authenticated.  In the future, it will be overloadable.
 		var _Authenticator = require('./Meadow-Authenticator.js');
 
@@ -160,6 +163,7 @@ var MeadowEndpoints = function()
 			pRequest.EndpointAuthorizationLevels = _EndpointAuthorizationLevels;
 			pRequest.DAL = _Meadow;
 			pRequest.BehaviorModifications = _BehaviorModifications;
+			pRequest.Authorizers = _Authorizers;
 			fNext();
 		};
 

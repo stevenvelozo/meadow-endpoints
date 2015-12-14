@@ -309,6 +309,99 @@ suite
 						Expect(tmpBehaviorMods.processTemplate('SimpleTemplate')).to.equal('Not so simple.');
 					}
 				);
+				test
+				(
+					'exercise the security modification api',
+					function()
+					{
+						var tmpAuthorizers = require('../source/Meadow-Authorizers.js').new(libFable);
+						tmpAuthorizers.setAuthorizer('AlwaysAuthorize', 
+							function(pRequest, fComplete)
+							{
+								pRequest.MeadowAuthorization = true;
+							});
+						var tmpMockRequest = {MeadowAuthorization: 'Green'};
+						tmpAuthorizers.authorize('BadHash', tmpMockRequest,
+							function()
+							{
+								Expect(tmpMockRequest.MeadowAuthorization).to.equal('Green');
+							});
+						tmpAuthorizers.authorize('AlwaysAuthorize', tmpMockRequest,
+							function()
+							{
+								Expect(tmpMockRequest.MeadowAuthorization).to.equal(true);
+							});
+						tmpAuthorizers.authorize('Allow', tmpMockRequest,
+							function()
+							{
+								Expect(tmpMockRequest.MeadowAuthorization).to.equal(true);
+							});
+						tmpAuthorizers.authorize('Deny', tmpMockRequest,
+							function()
+							{
+								Expect(tmpMockRequest.MeadowAuthorization).to.equal(false);
+							});
+						var tmpMockFullRequest = 
+						{
+							SessionData:
+							{
+								CustomerID: 10,
+								UserID: 1
+							},
+							Record:
+							{
+								IDCustomer: 10,
+								IDUser: 1
+							}
+						};
+						// Test that 
+					}
+				);
+				test
+				(
+					'exercise the security modification authenticators',
+					function()
+					{
+						var tmpAuthorizers = require('../source/Meadow-Authorizers.js').new(libFable);
+						var tmpMockFullRequest = 
+						{
+							SessionData:
+							{
+								CustomerID: 10,
+								UserID: 1
+							},
+							Record:
+							{
+								IDCustomer: 10,
+								CreatingIDUser: 1
+							}
+						};
+						// Mine and MyCustomer should both work
+						tmpAuthorizers.authorize('Mine', tmpMockFullRequest,
+							function()
+							{
+								Expect(tmpMockFullRequest.MeadowAuthorization).to.equal(true);
+							});
+						tmpAuthorizers.authorize('MyCustomer', tmpMockFullRequest,
+							function()
+							{
+								Expect(tmpMockFullRequest.MeadowAuthorization).to.equal(true);
+							});
+						tmpMockFullRequest.SessionData.CustomerID = 100;
+						tmpMockFullRequest.SessionData.UserID = 100;
+						// Now they should both fail
+						tmpAuthorizers.authorize('Mine', tmpMockFullRequest,
+							function()
+							{
+								Expect(tmpMockFullRequest.MeadowAuthorization).to.equal(false);
+							});
+						tmpAuthorizers.authorize('MyCustomer', tmpMockFullRequest,
+							function()
+							{
+								Expect(tmpMockFullRequest.MeadowAuthorization).to.equal(false);
+							});
+					}
+				);
 			}
 		);
 		suite
@@ -392,6 +485,27 @@ suite
 							{
 								var tmpResult = JSON.parse(pResponse.text);
 								Expect(tmpResult.Type).to.equal('Girl');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'read: get a specific record but be denied by security',
+					function(fDone)
+					{
+						_Meadow.schemaFull.authorizer.Manager = {};
+						_Meadow.schemaFull.authorizer.Manager.Read = 'Deny';
+
+						libSuperTest('http://localhost:9080/')
+						.get('1.0/FableTest/2')
+						.end(
+							function (pError, pResponse)
+							{					
+								Expect(pResponse.text).to.contain('UNAUTHORIZED ACCESS IS NOT ALLOWED');
+								// Reset authorization
+								_Meadow.schemaFull.authorizer.Manager.Read = 'Allow';
 								fDone();
 							}
 						);
