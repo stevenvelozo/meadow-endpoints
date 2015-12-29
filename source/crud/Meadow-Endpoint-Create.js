@@ -66,7 +66,7 @@ var doAPICreateEndpoint = function(pRequest, pResponse, fNext)
 					{
 						if (!pRecord)
 						{
-							return pRequest.CommonServices.sendError('Error creating a record.', pRequest, pResponse, fStageComplete);
+							return fStageComplete('Error creating a record.');
 						}
 
 						pRequest.Record = pRecord;
@@ -87,7 +87,15 @@ var doAPICreateEndpoint = function(pRequest, pResponse, fNext)
 				pResponse.send(pRequest.Record);
 				return fStageComplete(null);
 			}
-		], fNext);
+		], function(err)
+		{
+			if (err)
+			{
+				return pRequest.CommonServices.sendError(err, pRequest, pResponse, fNext);
+			}
+
+			return fNext();
+		});
 };
 
 module.exports = doAPICreateEndpoint;

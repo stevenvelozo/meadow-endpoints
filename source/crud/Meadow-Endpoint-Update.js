@@ -70,7 +70,7 @@ var doAPIUpdateEndpoint = function(pRequest, pResponse, fNext)
 					{
 						if (!pRecord)
 						{
-							return pRequest.CommonServices.sendError('Error updating a record.', pRequest, pResponse, fNext);
+							return fStageComplete('Error updating a record.');
 						}
 
 						pRequest.Record = pRecord;
@@ -91,7 +91,15 @@ var doAPIUpdateEndpoint = function(pRequest, pResponse, fNext)
 				pResponse.send(pRequest.Record);
 				return fStageComplete(null);
 			}
-		], fNext);
+		], function(err)
+		{
+			if (err)
+			{
+				return pRequest.CommonServices.sendError(err, pRequest, pResponse, fNext);
+			}
+
+			return fNext();
+		});
 };
 
 module.exports = doAPIUpdateEndpoint;
