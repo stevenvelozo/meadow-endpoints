@@ -89,6 +89,11 @@ var MeadowAuthorizers = function()
 
 			// See if there is an authorizer collection for the role of the user
 			var tmpRoleAuthorizer = pRequest.DAL.schemaFull.authorizer[pRequest.DAL.getRoleName(pRequest.SessionData.UserRoleIndex)];
+			if (!tmpRoleAuthorizer)
+			{
+				// Fallback to default definition, if present
+				tmpRoleAuthorizer = pRequest.DAL.schemaFull.authorizer['__DefaultAPISecurity'];
+			}
 
 			// Authorizing Endpoint
 			console.log(pRequestHash + ' >>> '+pRequest.DAL.getRoleName(pRequest.SessionData.UserRoleIndex)+'   -   '+pRequest.SessionData.UserRoleIndex+' Authorization Configuration: '+JSON.stringify(tmpRoleAuthorizer));

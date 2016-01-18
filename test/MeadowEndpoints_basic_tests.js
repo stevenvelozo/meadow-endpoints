@@ -25,67 +25,16 @@ var tmpFableSettings = 	(
 	MySQL:
 		{
 			// This is queued up for Travis defaults.
-			Server: "localhost",
+			Server: "192.168.99.100",
 			Port: 3306,
-			User: "root",
-			Password: "",
+			User: "admin",
+			Password: "zKVMD14cPC5N",
 			Database: "FableTest",
 			ConnectionPoolLimit: 20
 		}
 });
 
 var libFable = require('fable').new(tmpFableSettings);
-
-var _AnimalJsonSchema = (
-{
-	title: "Animal",
-	description: "A creature that lives in a meadow.",
-	type: "object",
-	properties: {
-		IDAnimal: {
-			description: "The unique identifier for an animal",
-			type: "integer"
-		},
-		Name: {
-			description: "The animal's name",
-			type: "string"
-		},
-		Type: {
-			description: "The type of the animal",
-			type: "string"
-		}
-	},
-	required: ["IDAnimal", "Name", "CreatingIDUser"]
-});
-var _AnimalSchema = (
-[
-	{ Column: "IDAnimal",        Type:"AutoIdentity" },
-	{ Column: "GUIDAnimal",      Type:"AutoGUID" },
-	{ Column: "CreateDate",      Type:"CreateDate" },
-	{ Column: "CreatingIDUser",  Type:"CreateIDUser" },
-	{ Column: "UpdateDate",      Type:"UpdateDate" },
-	{ Column: "UpdatingIDUser",  Type:"UpdateIDUser" },
-	{ Column: "Deleted",         Type:"Deleted" },
-	{ Column: "DeletingIDUser",  Type:"DeleteIDUser" },
-	{ Column: "DeleteDate",      Type:"DeleteDate" },
-	{ Column: "Type",            Type:"String"}
-]);
-var _AnimalDefault = (
-{
-	IDAnimal: null,
-	GUIDAnimal: '',
-
-	CreateDate: false,
-	CreatingIDUser: 0,
-	UpdateDate: false,
-	UpdatingIDUser: 0,
-	Deleted: 0,
-	DeleteDate: false,
-	DeletingIDUser: 0,
-
-	Name: 'Unknown',
-	Type: 'Unclassified'
-});
 
 var _MockSessionValidUser = (
 	{
@@ -105,16 +54,19 @@ var ValidAuthentication = function(pRequest, pResponse, fNext)
 var _Meadow;
 var _MeadowEndpoints;
 
+var _AnimalSchema = require('./Animal.json');
+
 // Now that we have some test data, wire up the endpoints!
 
 // Load up a Meadow (pointing at the Animal database)
 _Meadow = require('meadow')
 				.new(libFable, 'FableTest')
 				.setProvider('MySQL')
-				.setSchema(_AnimalSchema)
-				.setJsonSchema(_AnimalJsonSchema)
-				.setDefaultIdentifier('IDAnimal')
-				.setDefault(_AnimalDefault);
+				.setSchema(_AnimalSchema.Schema)
+				.setJsonSchema(_AnimalSchema.JsonSchema)
+				.setDefaultIdentifier(_AnimalSchema.DefaultIdentifier)
+				.setDefault(_AnimalSchema.DefaultObject)
+				.setAuthorizer(_AnimalSchema.Authorization);
 // Instantiate the endpoints
 _MeadowEndpoints = require('../source/Meadow-Endpoints.js').new(_Meadow);
 
