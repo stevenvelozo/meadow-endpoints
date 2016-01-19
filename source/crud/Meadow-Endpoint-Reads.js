@@ -70,11 +70,27 @@ var doAPIReadsEndpoint = function(pRequest, pResponse, fNext)
 				pRequest.Records = pRecords;
 				fStageComplete(false);
 			},
+			// 4.5: Check if there is an authorizer set for this endpoint and user role combination, and authorize based on that
+			function (fStageComplete)
+			{
+				pRequest.Authorizers.authorizeRequest('Reads', pRequest, fStageComplete);
+			},
 			// 5. INJECT: Post process the record, tacking on or altering anything we want to.
 			function (fStageComplete)
 			{
-				// This will also complete the waterfall operation
 				pRequest.BehaviorModifications.runBehavior('Reads-PostOperation', pRequest, fStageComplete);
+			},
+			// 5.5: Check if authorization or post processing denied security access to the record
+			function (fStageComplete)
+			{
+				if (pRequest.MeadowAuthorization)
+				{
+					// This will complete the waterfall operation
+					return fStageComplete(false);
+				}
+
+				// It looks like this record was not authorized.  Send an error.
+				return fStageComplete({Code:405,Message:'UNAUTHORIZED ACCESS IS NOT ALLOWED'});
 			}
 		],
 		// 6. Return the results to the user
@@ -82,7 +98,7 @@ var doAPIReadsEndpoint = function(pRequest, pResponse, fNext)
 		{
 			if (pError)
 			{
-				return pRequest.CommonServices.sendError('Error retreiving records by value.', pRequest, pResponse, fNext);
+				return pRequest.CommonServices.sendCodedError('Error retreiving records by value.', pError, pRequest, pResponse, fNext);
 			}
 
 			pRequest.CommonServices.log.info('Read a list of records.', {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Reads'});

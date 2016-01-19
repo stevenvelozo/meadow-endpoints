@@ -68,7 +68,42 @@ var MeadowAuthorizers = function()
 			// Run an injected authorizer (if it exists)
 			if (_AuthorizerFunctions.hasOwnProperty(pAuthorizerHash))
 			{
-				return _AuthorizerFunctions[pAuthorizerHash](pRequest, fComplete);
+				if (!pRequest.Record &&
+					pRequest.Records)
+				{
+					// Run the authorizer for multiple records
+
+					libAsync.eachSeries(pRequest.Records, function(pRecord, fNext)
+					{
+						pRequest.Record = pRecord;
+
+						_AuthorizerFunctions[pAuthorizerHash](pRequest, function(err)
+						{
+							if (err)
+								return fNext({Error: err});
+
+							// If MeadowAuthorization fails, keep the state and pass it on
+							return fNext(!pRequest.MeadowAuthorization);
+						});
+					},
+					function(pCancelled)
+					{
+						delete pRequest['Record']; //remove this property as it should only contains 'Records'
+
+						if (pCancelled &&
+							pCancelled.Error)
+						{
+							return fComplete(pCancelled.Error);
+						}
+
+						return fComplete(false);
+					});
+				}
+				else
+				{
+					// Run the authorizer for one record
+					return _AuthorizerFunctions[pAuthorizerHash](pRequest, fComplete);
+				}
 			}
 			else
 			{

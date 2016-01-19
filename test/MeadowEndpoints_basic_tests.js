@@ -1627,7 +1627,6 @@ suite
 						);
 					}
 				);
-				/*
 				test
 				(
 					'invoke readselect: get all records',
@@ -1649,14 +1648,11 @@ suite
 					'invoke readsby: get all records by Type',
 					function(fDone)
 					{
-						_MeadowEndpoints.invokeEndpoint('ReadsBy', {ByField: 'Type', ByValue: 'Mammoth'},
+						_MeadowEndpoints.invokeEndpoint('ReadsBy', {ByField: 'Type', ByValue: 'Mammoth'}, {SessionData: _MockSessionValidUser},
 							function (pError, pResponse)
 							{
-								//console.log(pResponse.body);
-
-								var tmpResults = pResponse.body; //JSON.parse(pResponse.text);
-								Expect(tmpResults.length).to.equal(2);
-								Expect(tmpResults[0].Type).to.equal('Mammoth');
+								Expect(pResponse.body.ErrorCode).to.equal(405);
+								Expect(pResponse.body.Error).to.equal('UNAUTHORIZED ACCESS IS NOT ALLOWED');
 								fDone();
 							}
 						);
@@ -1667,14 +1663,11 @@ suite
 					'invoke readsby: get all records by Type IN LIST',
 					function(fDone)
 					{
-						_MeadowEndpoints.invokeEndpoint('ReadsBy', {ByField: 'Type', ByValue: ['Mammoth', 'Dog']},
+						_MeadowEndpoints.invokeEndpoint('ReadsBy', {ByField: 'Type', ByValue: ['Mammoth', 'Dog']}, {SessionData: _MockSessionValidUser},
 							function (pError, pResponse)
 							{
-								//console.log(pResponse.body);
-
-								var tmpResults = pResponse.body; //JSON.parse(pResponse.text);
-								Expect(tmpResults.length).to.equal(2);
-								Expect(tmpResults[0].Type).to.equal('Mammoth');
+								Expect(pResponse.body.ErrorCode).to.equal(405);
+								Expect(pResponse.body.Error).to.equal('UNAUTHORIZED ACCESS IS NOT ALLOWED');
 								fDone();
 							}
 						);
@@ -1685,11 +1678,11 @@ suite
 					'invoke countby: get cout of records by Type',
 					function(fDone)
 					{
-						_MeadowEndpoints.invokeEndpoint('CountBy', {ByField: 'Type', ByValue: 'Mammoth'},
+						_MeadowEndpoints.invokeEndpoint('CountBy', {ByField: 'Type', ByValue: 'Mammoth'}, {SessionData: _MockSessionValidUser},
 							function (pError, pResponse)
 							{
-								var tmpResults = pResponse.body; //JSON.parse(pResponse.text);
-								Expect(tmpResults.Count).to.equal(2);
+								Expect(pResponse.body.ErrorCode).to.equal(405);
+								Expect(pResponse.body.Error).to.equal('UNAUTHORIZED ACCESS IS NOT ALLOWED');
 								fDone();
 							}
 						);
@@ -1697,15 +1690,14 @@ suite
 				);
 				test
 				(
-					'invoke readsby: get paged records by Type',
+					'invoke countby: get cout of records by Type',
 					function(fDone)
 					{
-						_MeadowEndpoints.invokeEndpoint('ReadsBy', {ByField: 'Type', ByValue: 'Mammoth', Begin: 1, Cap: 1},
+						_MeadowEndpoints.invokeEndpoint('Count', {}, {SessionData: _MockSessionValidUser},
 							function (pError, pResponse)
 							{
-								var tmpResults = pResponse.body;
-								Expect(tmpResults.length).to.equal(1);
-								Expect(tmpResults[0].Type).to.equal('Mammoth');
+								Expect(pResponse.body.ErrorCode).to.equal(405);
+								Expect(pResponse.body.Error).to.equal('UNAUTHORIZED ACCESS IS NOT ALLOWED');
 								fDone();
 							}
 						);
@@ -1716,12 +1708,11 @@ suite
 					'invoke readselect: get a page of records',
 					function(fDone)
 					{
-						_MeadowEndpoints.invokeEndpoint('ReadSelectList', {Begin: 2, Cap: 2},
+						_MeadowEndpoints.invokeEndpoint('ReadSelectList', {Begin: 2, Cap: 2}, {SessionData: _MockSessionValidUser},
 							function (pError, pResponse)
 							{
-								var tmpResults = pResponse.Records; //JSON.parse(pResponse.text);
-								Expect(tmpResults.length).to.equal(2);
-								Expect(tmpResults[1].Value).to.equal('FableTest #5');
+								Expect(pResponse.body.ErrorCode).to.equal(405);
+								Expect(pResponse.body.Error).to.equal('UNAUTHORIZED ACCESS IS NOT ALLOWED');
 								fDone();
 							}
 						);
@@ -1732,9 +1723,11 @@ suite
 					'invoke readselect: get an empty page of records',
 					function(fDone)
 					{
-						_MeadowEndpoints.invokeEndpoint('ReadSelectList', {Begin: 200, Cap: 200},
+						_MeadowEndpoints.invokeEndpoint('ReadSelectList', {Begin: 200, Cap: 200}, {SessionData: _MockSessionValidUser},
 							function (pError, pResponse)
 							{
+								// Because no records were returned, it should show as Authorized
+
 								var tmpResults = pResponse.Records; //JSON.parse(pResponse.text);
 								Expect(tmpResults.length).to.equal(0);
 								fDone();
@@ -1747,19 +1740,17 @@ suite
 					'invoke reads: get a page of records',
 					function(fDone)
 					{
-						_MeadowEndpoints.invokeEndpoint('Reads', {Begin: 2, Cap: 2},
+						_MeadowEndpoints.invokeEndpoint('Reads', {Begin: 2, Cap: 2}, {SessionData: _MockSessionValidUser},
 							function (pError, pResponse)
 							{
-								var tmpResults = pResponse.Records; //JSON.parse(pResponse.text);
-								Expect(tmpResults.length).to.equal(2);
-								Expect(tmpResults[0].Type).to.equal('Corgi');
-								Expect(tmpResults[1].Name).to.equal('Gertrude');
+								Expect(pResponse.body.ErrorCode).to.equal(405);
+								Expect(pResponse.body.Error).to.equal('UNAUTHORIZED ACCESS IS NOT ALLOWED');
+
 								fDone();
 							}
 						);
 					}
 				);
-*/
 				test
 				(
 					'invoke update: update a record',

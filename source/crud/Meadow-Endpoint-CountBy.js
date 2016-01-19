@@ -6,6 +6,9 @@
 * @author Steven Velozo <steven@velozo.com>
 * @module Meadow
 */
+
+var libAsync = require('async');
+
 /**
 * Count a record using the Meadow DAL object
 */
@@ -23,33 +26,72 @@ var doAPICountByEndpoint = function(pRequest, pResponse, fNext)
 		return;
 	}
 
-	pRequest.Query = pRequest.DAL.query;
+	libAsync.waterfall(
+		[
+			// 1. Create the query
+			function (fStageComplete)
+			{
+				pRequest.Query = pRequest.DAL.query;
 
-	var tmpByField =  pRequest.params.ByField;
-	var tmpByValue =  pRequest.formattedParams.ByValue;
-	// TODO: Validate theat the ByField exists in the current database
+				var tmpByField =  pRequest.params.ByField;
+				var tmpByValue =  pRequest.formattedParams.ByValue;
+				// TODO: Validate theat the ByField exists in the current database
 
-	if (tmpByValue.constructor === Array)
-	{
-		pRequest.Query.addFilter(tmpByField, tmpByValue, 'IN', 'AND', 'RequestByField');
-	}
-	else
-	{
-		// The count tries to match the Reads, since they are called together.
-		pRequest.Query.addFilter(tmpByField, tmpByValue, '=', 'AND', 'RequestByField');
-	}
+				if (tmpByValue.constructor === Array)
+				{
+					pRequest.Query.addFilter(tmpByField, tmpByValue, 'IN', 'AND', 'RequestByField');
+				}
+				else
+				{
+					// The count tries to match the Reads, since they are called together.
+					pRequest.Query.addFilter(tmpByField, tmpByValue, '=', 'AND', 'RequestByField');
+				}
 
-	// Do the count
-	pRequest.DAL.doCount(pRequest.Query,
-		function(pError, pQuery, pCount)
+				return fStageComplete(false);
+			},
+			// 2. INJECT: Query configuration
+			// 3: Check if there is an authorizer set for this endpoint and user role combination, and authorize based on that
+			function (fStageComplete)
+			{
+				pRequest.Authorizers.authorizeRequest('CountBy', pRequest, fStageComplete);
+			},
+			// 4: Check if authorization denies security access to the record
+			function (fStageComplete)
+			{
+				if (pRequest.MeadowAuthorization)
+				{
+					// This will complete the waterfall operation
+					return fStageComplete(false);
+				}
+
+				// It looks like this record was not authorized.  Send an error.
+				return fStageComplete({Code:405,Message:'UNAUTHORIZED ACCESS IS NOT ALLOWED'});
+			},
+			// 5: Do the count
+			function (fStageComplete)
+			{
+				pRequest.DAL.doCount(pRequest.Query,
+					function(pError, pQuery, pCount)
+					{
+						pRequest.Result = {Count:pCount};
+
+						return fStageComplete(pError);
+					});
+			}
+		],
+		function(pError)
 		{
-			pRequest.Result = {Count:pCount};
-
+			if (pError)
+			{
+				return pRequest.CommonServices.sendCodedError('Error retreiving a count.', pError, pRequest, pResponse, fNext);
+			}
 
 			pRequest.CommonServices.log.info('Delivered recordset count of '+pRequest.Result.Count+'.', {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-CountBy'});
 			pResponse.send(pRequest.Result);
+
 			return fNext();
-		});
+		}
+	);
 };
 
 module.exports = doAPICountByEndpoint;

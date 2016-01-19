@@ -67,7 +67,6 @@ var doAPIReadEndpoint = function(pRequest, pResponse, fNext)
 			// 6. INJECT: Post process the record, tacking on or altering anything we want to.
 			function (fStageComplete)
 			{
-				// This will also complete the waterfall operation
 				pRequest.BehaviorModifications.runBehavior('Read-PostOperation', pRequest, fStageComplete);
 			},
 			// 6.5: Check if authorization or post processing denied security access to the record
@@ -75,6 +74,7 @@ var doAPIReadEndpoint = function(pRequest, pResponse, fNext)
 			{
 				if (pRequest.MeadowAuthorization)
 				{
+					// This will complete the waterfall operation
 					return fStageComplete(false);
 				}
 
