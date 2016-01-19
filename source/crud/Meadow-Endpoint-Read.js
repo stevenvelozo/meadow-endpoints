@@ -87,11 +87,7 @@ var doAPIReadEndpoint = function(pRequest, pResponse, fNext)
 		{
 			if (pError)
 			{
-				var tmpErrorMessage = 'Error retreiving a record.';
-				if (typeof(pError) === 'object')
-					tmpErrorMessage = pError.Message;
-
-				return pRequest.CommonServices.sendError(tmpErrorMessage, pRequest, pResponse, fNext);
+				return pRequest.CommonServices.sendCodedError('Error retreiving a record.', pError, pRequest, pResponse, fNext);
 			}
 
 			pRequest.CommonServices.log.info('Read a record with ID '+pRequest.params.IDRecord+'.', {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Read'});

@@ -22,6 +22,33 @@ var MeadowCommonServices = function()
 		var libRestify = require('restify');
 
 
+		var tmpErrorMessage = 'Error creating a record.';
+				if (typeof(pError) === 'object')
+					tmpErrorMessage = pError.Message;
+
+		/**
+		 * Send an Error Code and Error Message to the client, and log it as an error in the log files.
+		 *
+		 * @method sendCodedError
+		 */
+		var sendCodedError = function(pDefaultMessage, pError, pRequest, pResponse, fNext)
+		{
+			var tmpErrorMessage = pDefaultMessage;
+			var tmpErrorCode = 1;
+			if (typeof(pError) === 'object')
+			{
+				tmpErrorMessage = pError.Message;
+				if (pError.Code)
+					tmpErrorCode = pError.Code;
+			}
+
+			_Log.warn('API Error: '+tmpErrorMessage, {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:'APIError'});
+			pResponse.send({Error:tmpErrorMessage, ErrorCode: tmpErrorCode});
+
+			return fNext();
+		};
+
+
 		/**
 		 * Send an Error to the client, and log it as an error in the log files.
 		 *
@@ -101,6 +128,7 @@ var MeadowCommonServices = function()
 		{
 			authorizeEndpoint: authorizeEndpoint,
 
+			sendCodedError: sendCodedError,
 			sendError: sendError,
 			sendNotAuthorized: sendNotAuthorized,
 

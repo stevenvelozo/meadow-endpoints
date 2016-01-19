@@ -44,8 +44,22 @@ var doAPICreateEndpoint = function(pRequest, pResponse, fNext)
 			},
 			function(fStageComplete)
 			{
+				pRequest.Authorizers.authorizeRequest('Create', pRequest, fStageComplete);
+			},
+			function(fStageComplete)
+			{
 				//2. INJECT: Record modification before insert
 				pRequest.BehaviorModifications.runBehavior('Create-PreOperation', pRequest, fStageComplete);
+			},
+			function (fStageComplete)
+			{
+				if (pRequest.MeadowAuthorization)
+				{
+					return fStageComplete(false);
+				}
+
+				// It looks like this record was not authorized.  Send an error.
+				return fStageComplete({Code:405,Message:'UNAUTHORIZED ACCESS IS NOT ALLOWED'});
 			},
 			function(fStageComplete)
 			{
@@ -87,11 +101,11 @@ var doAPICreateEndpoint = function(pRequest, pResponse, fNext)
 				pResponse.send(pRequest.Record);
 				return fStageComplete(null);
 			}
-		], function(err)
+		], function(pError)
 		{
-			if (err)
+			if (pError)
 			{
-				return pRequest.CommonServices.sendError(err, pRequest, pResponse, fNext);
+				return pRequest.CommonServices.sendCodedError('Error creating a record.', pError, pRequest, pResponse, fNext);
 			}
 
 			return fNext();
