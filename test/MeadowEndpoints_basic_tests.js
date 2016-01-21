@@ -25,10 +25,10 @@ var tmpFableSettings = 	(
 	MySQL:
 		{
 			// This is queued up for Travis defaults.
-			Server: "192.168.99.100",
+			Server: "localhost",
 			Port: 3306,
-			User: "admin",
-			Password: "zKVMD14cPC5N",
+			User: "root",
+			Password: "",
 			Database: "FableTest",
 			ConnectionPoolLimit: 20
 		}
