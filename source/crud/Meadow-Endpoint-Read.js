@@ -67,7 +67,6 @@ var doAPIReadEndpoint = function(pRequest, pResponse, fNext)
 			// 6. INJECT: Post process the record, tacking on or altering anything we want to.
 			function (fStageComplete)
 			{
-				// This will also complete the waterfall operation
 				pRequest.BehaviorModifications.runBehavior('Read-PostOperation', pRequest, fStageComplete);
 			},
 			// 6.5: Check if authorization or post processing denied security access to the record
@@ -75,6 +74,7 @@ var doAPIReadEndpoint = function(pRequest, pResponse, fNext)
 			{
 				if (pRequest.MeadowAuthorization)
 				{
+					// This will complete the waterfall operation
 					return fStageComplete(false);
 				}
 
@@ -87,11 +87,7 @@ var doAPIReadEndpoint = function(pRequest, pResponse, fNext)
 		{
 			if (pError)
 			{
-				var tmpErrorMessage = 'Error retreiving a record.';
-				if (typeof(pError) === 'object')
-					tmpErrorMessage = pError.Message;
-
-				return pRequest.CommonServices.sendError(tmpErrorMessage, pRequest, pResponse, fNext);
+				return pRequest.CommonServices.sendCodedError('Error retreiving a record.', pError, pRequest, pResponse, fNext);
 			}
 
 			pRequest.CommonServices.log.info('Read a record with ID '+pRequest.params.IDRecord+'.', {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Read'});

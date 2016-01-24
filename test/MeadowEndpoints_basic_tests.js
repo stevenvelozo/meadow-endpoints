@@ -36,57 +36,6 @@ var tmpFableSettings = 	(
 
 var libFable = require('fable').new(tmpFableSettings);
 
-var _AnimalJsonSchema = (
-{
-	title: "Animal",
-	description: "A creature that lives in a meadow.",
-	type: "object",
-	properties: {
-		IDAnimal: {
-			description: "The unique identifier for an animal",
-			type: "integer"
-		},
-		Name: {
-			description: "The animal's name",
-			type: "string"
-		},
-		Type: {
-			description: "The type of the animal",
-			type: "string"
-		}
-	},
-	required: ["IDAnimal", "Name", "CreatingIDUser"]
-});
-var _AnimalSchema = (
-[
-	{ Column: "IDAnimal",        Type:"AutoIdentity" },
-	{ Column: "GUIDAnimal",      Type:"AutoGUID" },
-	{ Column: "CreateDate",      Type:"CreateDate" },
-	{ Column: "CreatingIDUser",  Type:"CreateIDUser" },
-	{ Column: "UpdateDate",      Type:"UpdateDate" },
-	{ Column: "UpdatingIDUser",  Type:"UpdateIDUser" },
-	{ Column: "Deleted",         Type:"Deleted" },
-	{ Column: "DeletingIDUser",  Type:"DeleteIDUser" },
-	{ Column: "DeleteDate",      Type:"DeleteDate" },
-	{ Column: "Type",            Type:"String"}
-]);
-var _AnimalDefault = (
-{
-	IDAnimal: null,
-	GUIDAnimal: '',
-
-	CreateDate: false,
-	CreatingIDUser: 0,
-	UpdateDate: false,
-	UpdatingIDUser: 0,
-	Deleted: 0,
-	DeleteDate: false,
-	DeletingIDUser: 0,
-
-	Name: 'Unknown',
-	Type: 'Unclassified'
-});
-
 var _MockSessionValidUser = (
 	{
 		SessionID: '0000-VALID',
@@ -105,16 +54,19 @@ var ValidAuthentication = function(pRequest, pResponse, fNext)
 var _Meadow;
 var _MeadowEndpoints;
 
+var _AnimalSchema = require('./Animal.json');
+
 // Now that we have some test data, wire up the endpoints!
 
 // Load up a Meadow (pointing at the Animal database)
 _Meadow = require('meadow')
 				.new(libFable, 'FableTest')
 				.setProvider('MySQL')
-				.setSchema(_AnimalSchema)
-				.setJsonSchema(_AnimalJsonSchema)
-				.setDefaultIdentifier('IDAnimal')
-				.setDefault(_AnimalDefault);
+				.setSchema(_AnimalSchema.Schema)
+				.setJsonSchema(_AnimalSchema.JsonSchema)
+				.setDefaultIdentifier(_AnimalSchema.DefaultIdentifier)
+				.setDefault(_AnimalSchema.DefaultObject)
+				.setAuthorizer(_AnimalSchema.Authorization);
 // Instantiate the endpoints
 _MeadowEndpoints = require('../source/Meadow-Endpoints.js').new(_Meadow);
 
@@ -1294,7 +1246,7 @@ suite
 					'invoke read: get a specific record',
 					function(fDone)
 					{
-						_MeadowEndpoints.invokeEndpoint('Read', {IDRecord: 2},
+						_MeadowEndpoints.invokeEndpoint('Read', {IDRecord: 2}, {SessionData: _MockSessionValidUser},
 							function (pError, pResponse)
 							{
 								var tmpResult = JSON.parse(pResponse.text);
@@ -1325,7 +1277,7 @@ suite
 					'invoke readselect: get all records',
 					function(fDone)
 					{
-						_MeadowEndpoints.invokeEndpoint('ReadSelectList', {},
+						_MeadowEndpoints.invokeEndpoint('ReadSelectList', {}, {SessionData: _MockSessionValidUser},
 							function (pError, pResponse)
 							{
 								console.log(pResponse.body)
@@ -1343,7 +1295,7 @@ suite
 					'invoke readsby: get all records by Type',
 					function(fDone)
 					{
-						_MeadowEndpoints.invokeEndpoint('ReadsBy', {ByField: 'Type', ByValue: 'Mammoth'},
+						_MeadowEndpoints.invokeEndpoint('ReadsBy', {ByField: 'Type', ByValue: 'Mammoth'}, {SessionData: _MockSessionValidUser},
 							function (pError, pResponse)
 							{
 								//console.log(pResponse.body);
@@ -1361,7 +1313,7 @@ suite
 					'invoke readsby: get all records by Type IN LIST',
 					function(fDone)
 					{
-						_MeadowEndpoints.invokeEndpoint('ReadsBy', {ByField: 'Type', ByValue: ['Mammoth', 'Dog']},
+						_MeadowEndpoints.invokeEndpoint('ReadsBy', {ByField: 'Type', ByValue: ['Mammoth', 'Dog']}, {SessionData: _MockSessionValidUser},
 							function (pError, pResponse)
 							{
 								//console.log(pResponse.body);
@@ -1379,7 +1331,7 @@ suite
 					'invoke countby: get cout of records by Type',
 					function(fDone)
 					{
-						_MeadowEndpoints.invokeEndpoint('CountBy', {ByField: 'Type', ByValue: 'Mammoth'},
+						_MeadowEndpoints.invokeEndpoint('CountBy', {ByField: 'Type', ByValue: 'Mammoth'}, {SessionData: _MockSessionValidUser},
 							function (pError, pResponse)
 							{
 								var tmpResults = pResponse.body; //JSON.parse(pResponse.text);
@@ -1394,7 +1346,7 @@ suite
 					'invoke readsby: get paged records by Type',
 					function(fDone)
 					{
-						_MeadowEndpoints.invokeEndpoint('ReadsBy', {ByField: 'Type', ByValue: 'Mammoth', Begin: 1, Cap: 1},
+						_MeadowEndpoints.invokeEndpoint('ReadsBy', {ByField: 'Type', ByValue: 'Mammoth', Begin: 1, Cap: 1}, {SessionData: _MockSessionValidUser},
 							function (pError, pResponse)
 							{
 								var tmpResults = pResponse.body;
@@ -1410,7 +1362,7 @@ suite
 					'invoke readselect: get a page of records',
 					function(fDone)
 					{
-						_MeadowEndpoints.invokeEndpoint('ReadSelectList', {Begin: 2, Cap: 2},
+						_MeadowEndpoints.invokeEndpoint('ReadSelectList', {Begin: 2, Cap: 2}, {SessionData: _MockSessionValidUser},
 							function (pError, pResponse)
 							{
 								var tmpResults = pResponse.Records; //JSON.parse(pResponse.text);
@@ -1426,7 +1378,7 @@ suite
 					'invoke readselect: get an empty page of records',
 					function(fDone)
 					{
-						_MeadowEndpoints.invokeEndpoint('ReadSelectList', {Begin: 200, Cap: 200},
+						_MeadowEndpoints.invokeEndpoint('ReadSelectList', {Begin: 200, Cap: 200}, {SessionData: _MockSessionValidUser},
 							function (pError, pResponse)
 							{
 								var tmpResults = pResponse.Records; //JSON.parse(pResponse.text);
@@ -1441,7 +1393,7 @@ suite
 					'invoke reads: get a page of records',
 					function(fDone)
 					{
-						_MeadowEndpoints.invokeEndpoint('Reads', {Begin: 2, Cap: 2},
+						_MeadowEndpoints.invokeEndpoint('Reads', {Begin: 2, Cap: 2}, {SessionData: _MockSessionValidUser},
 							function (pError, pResponse)
 							{
 								var tmpResults = pResponse.Records; //JSON.parse(pResponse.text);
@@ -1460,14 +1412,14 @@ suite
 					{
 						// Change animal 4 ("Spot") to a Corgi
 						var tmpRecord = {IDAnimal:4, Type:'Corgi'};
-						_MeadowEndpoints.invokeEndpoint('Update', tmpRecord,
+						_MeadowEndpoints.invokeEndpoint('Update', tmpRecord, {SessionData: _MockSessionValidUser},
 							function(pError, pResponse)
 							{
 								// Expect response to be the record we just created.
 								var tmpResult = pResponse.Record; //JSON.parse(pResponse.text);
 								Expect(tmpResult.Type).to.equal('Corgi');
 								Expect(tmpResult.CreatingIDUser).to.equal(1);
-								Expect(tmpResult.UpdatingIDUser).to.equal(0);
+								Expect(tmpResult.UpdatingIDUser).to.equal(_MockSessionValidUser.UserID);
 								fDone();
 							}
 						);
@@ -1480,7 +1432,7 @@ suite
 					{
 						// Delete animal 4 ("Corgi")
 						var tmpRecord = {IDAnimal:4};
-						_MeadowEndpoints.invokeEndpoint('Delete', tmpRecord,
+						_MeadowEndpoints.invokeEndpoint('Delete', tmpRecord, {SessionData: _MockSessionValidUser},
 							function(pError, pResponse)
 							{
 								// Expect response to be the count of deleted records.
@@ -1498,7 +1450,7 @@ suite
 					{
 						// Delete animal 3 ("Red")
 						var tmpRecord = {IDAnimal:{MyStuff:4}};
-						_MeadowEndpoints.invokeEndpoint('Delete', tmpRecord,
+						_MeadowEndpoints.invokeEndpoint('Delete', tmpRecord, {SessionData: _MockSessionValidUser},
 							function(pError, pResponse)
 							{
 								// Expect response to be the count of deleted records.
@@ -1514,7 +1466,7 @@ suite
 					'count: get the count of records',
 					function(fDone)
 					{
-						_MeadowEndpoints.invokeEndpoint('Count', {},
+						_MeadowEndpoints.invokeEndpoint('Count', {}, {SessionData: _MockSessionValidUser},
 							function (pError, pResponse)
 							{
 								var tmpResults = pResponse.body; //JSON.parse(pResponse.text);
@@ -1546,7 +1498,7 @@ suite
 					'new: get a new empty record',
 					function(fDone)
 					{
-						_MeadowEndpoints.invokeEndpoint('New', {},
+						_MeadowEndpoints.invokeEndpoint('New', {}, {SessionData: _MockSessionValidUser},
 							function (pError, pResponse)
 							{
 								var tmpResults = pResponse.body; //JSON.parse(pResponse.text);
@@ -1565,7 +1517,7 @@ suite
 					function(fDone)
 					{
 						var tmpRecord = {IDAnimal:4, Type:'Corgi'};
-						_MeadowEndpoints.invokeEndpoint('Validate', tmpRecord,
+						_MeadowEndpoints.invokeEndpoint('Validate', tmpRecord, {SessionData: _MockSessionValidUser},
 							function(pError, pResponse)
 							{
 								// Expect response to be the record we just created.
@@ -1585,7 +1537,7 @@ suite
 					function(fDone)
 					{
 						var tmpRecord = {IDAnimal:4, Type:'Corgi', Name:'Doofer', CreatingIDUser:10};
-						_MeadowEndpoints.invokeEndpoint('Validate', tmpRecord,
+						_MeadowEndpoints.invokeEndpoint('Validate', tmpRecord, {SessionData: _MockSessionValidUser},
 							function(pError, pResponse)
 							{
 								// Expect response to be the record we just created.
@@ -1603,13 +1555,233 @@ suite
 					function(fDone)
 					{
 						var tmpRecord = 'IAMBAD';
-						_MeadowEndpoints.invokeEndpoint('Validate', tmpRecord,
+						_MeadowEndpoints.invokeEndpoint('Validate', tmpRecord, {SessionData: _MockSessionValidUser},
 							function(pError, pResponse)
 							{
 								// Expect response to be the record we just created.
 								var tmpResult = pResponse.body; //JSON.parse(pResponse.text);
 								//console.log(JSON.stringify(tmpResult, null, 4))
 								Expect(tmpResult.Error).to.contain('validate failure');
+								fDone();
+							}
+						);
+					}
+				);
+			}
+		);
+
+		suite
+		(
+			'Endpoint Security - Deny',
+			function()
+			{
+				test
+				(
+					'invoke read: get a specific record',
+					function(fDone)
+					{
+						_MockSessionValidUser.LoggedIn = true;
+						_MockSessionValidUser.UserRoleIndex = 5; //set it to an undefined role, so the DefaultAPISecurity definitions of 'Deny' get used.
+
+						_MeadowEndpoints.invokeEndpoint('Read', {IDRecord: 2}, {SessionData: _MockSessionValidUser},
+							function (pError, pResponse)
+							{
+								Expect(pResponse.body.ErrorCode).to.equal(405);
+								Expect(pResponse.body.Error).to.equal('UNAUTHORIZED ACCESS IS NOT ALLOWED');
+								return fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'invoke create: create a record',
+					function(fDone)
+					{
+						var tmpRecord = {Name:'BatBrains', Type:'Mammoth'};
+						_MeadowEndpoints.invokeEndpoint('Create', tmpRecord, {SessionData: _MockSessionValidUser},
+							function(pError, pResponse)
+							{
+								Expect(pResponse.body.ErrorCode).to.equal(405);
+								Expect(pResponse.body.Error).to.equal('UNAUTHORIZED ACCESS IS NOT ALLOWED');
+
+								return fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'invoke create: create a record with a bad record passed in',
+					function(fDone)
+					{
+						var tmpRecord = ' ';
+						_MeadowEndpoints.invokeEndpoint('Create', tmpRecord, {SessionData: _MockSessionValidUser},
+							function(pError, pResponse)
+							{
+								// Expect response to be the record we just created.
+								var tmpResult = JSON.parse(pResponse.text);
+								Expect(tmpResult.Error).to.contain('a valid record is required');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'invoke readselect: get all records',
+					function(fDone)
+					{
+						_MeadowEndpoints.invokeEndpoint('ReadSelectList', {}, {SessionData: _MockSessionValidUser},
+							function (pError, pResponse)
+							{
+								Expect(pResponse.body.ErrorCode).to.equal(405);
+								Expect(pResponse.body.Error).to.equal('UNAUTHORIZED ACCESS IS NOT ALLOWED');
+
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'invoke readsby: get all records by Type',
+					function(fDone)
+					{
+						_MeadowEndpoints.invokeEndpoint('ReadsBy', {ByField: 'Type', ByValue: 'Mammoth'}, {SessionData: _MockSessionValidUser},
+							function (pError, pResponse)
+							{
+								Expect(pResponse.body.ErrorCode).to.equal(405);
+								Expect(pResponse.body.Error).to.equal('UNAUTHORIZED ACCESS IS NOT ALLOWED');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'invoke readsby: get all records by Type IN LIST',
+					function(fDone)
+					{
+						_MeadowEndpoints.invokeEndpoint('ReadsBy', {ByField: 'Type', ByValue: ['Mammoth', 'Dog']}, {SessionData: _MockSessionValidUser},
+							function (pError, pResponse)
+							{
+								Expect(pResponse.body.ErrorCode).to.equal(405);
+								Expect(pResponse.body.Error).to.equal('UNAUTHORIZED ACCESS IS NOT ALLOWED');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'invoke countby: get cout of records by Type',
+					function(fDone)
+					{
+						_MeadowEndpoints.invokeEndpoint('CountBy', {ByField: 'Type', ByValue: 'Mammoth'}, {SessionData: _MockSessionValidUser},
+							function (pError, pResponse)
+							{
+								Expect(pResponse.body.ErrorCode).to.equal(405);
+								Expect(pResponse.body.Error).to.equal('UNAUTHORIZED ACCESS IS NOT ALLOWED');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'invoke countby: get cout of records by Type',
+					function(fDone)
+					{
+						_MeadowEndpoints.invokeEndpoint('Count', {}, {SessionData: _MockSessionValidUser},
+							function (pError, pResponse)
+							{
+								Expect(pResponse.body.ErrorCode).to.equal(405);
+								Expect(pResponse.body.Error).to.equal('UNAUTHORIZED ACCESS IS NOT ALLOWED');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'invoke readselect: get a page of records',
+					function(fDone)
+					{
+						_MeadowEndpoints.invokeEndpoint('ReadSelectList', {Begin: 2, Cap: 2}, {SessionData: _MockSessionValidUser},
+							function (pError, pResponse)
+							{
+								Expect(pResponse.body.ErrorCode).to.equal(405);
+								Expect(pResponse.body.Error).to.equal('UNAUTHORIZED ACCESS IS NOT ALLOWED');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'invoke readselect: get an empty page of records',
+					function(fDone)
+					{
+						_MeadowEndpoints.invokeEndpoint('ReadSelectList', {Begin: 200, Cap: 200}, {SessionData: _MockSessionValidUser},
+							function (pError, pResponse)
+							{
+								// Because no records were returned, it should show as Authorized
+
+								var tmpResults = pResponse.Records; //JSON.parse(pResponse.text);
+								Expect(tmpResults.length).to.equal(0);
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'invoke reads: get a page of records',
+					function(fDone)
+					{
+						_MeadowEndpoints.invokeEndpoint('Reads', {Begin: 2, Cap: 2}, {SessionData: _MockSessionValidUser},
+							function (pError, pResponse)
+							{
+								Expect(pResponse.body.ErrorCode).to.equal(405);
+								Expect(pResponse.body.Error).to.equal('UNAUTHORIZED ACCESS IS NOT ALLOWED');
+
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'invoke update: update a record',
+					function(fDone)
+					{
+						// Change animal 4 ("Spot") to a Corgi
+						var tmpRecord = {IDAnimal:4, Type:'Corgi'};
+						_MeadowEndpoints.invokeEndpoint('Update', tmpRecord, {SessionData: _MockSessionValidUser},
+							function(pError, pResponse)
+							{
+								Expect(pResponse.body.ErrorCode).to.equal(405);
+								Expect(pResponse.body.Error).to.equal('UNAUTHORIZED ACCESS IS NOT ALLOWED');
+
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'invoke delete: delete a record',
+					function(fDone)
+					{
+						// Delete animal 4 ("Corgi")
+						var tmpRecord = {IDAnimal:4};
+						_MeadowEndpoints.invokeEndpoint('Delete', tmpRecord, {SessionData: _MockSessionValidUser},
+							function(pError, pResponse)
+							{
+								Expect(pResponse.body.ErrorCode).to.equal(405);
+								Expect(pResponse.body.Error).to.equal('UNAUTHORIZED ACCESS IS NOT ALLOWED');
+
 								fDone();
 							}
 						);

@@ -59,20 +59,37 @@ var doAPIReadSelectListEndpoint = function(pRequest, pResponse, fNext)
 			// 2. Post processing of the records
 			function (pQuery, pRecords, fStageComplete)
 			{
-				// INJECT: Results validation, pass in pRecords
-
 				if (pRecords.length < 1)
 				{
 					pRecords = [];
 				}
 
-				// INJECT: Post process the records, tacking on or altering anything we want to do.
+				// INJECT: Results validation, pass in pRecords
+				pRequest.Records = pRecords;
 
 				// Complete the waterfall operation
-				fStageComplete(false, pQuery, pRecords);
+				fStageComplete(false);
+			},
+			// 2.5: Check if there is an authorizer set for this endpoint and user role combination, and authorize based on that
+			function (fStageComplete)
+			{
+				pRequest.Authorizers.authorizeRequest('ReadSelectList', pRequest, fStageComplete);
+			},
+			// INJECT: Post process the records, tacking on or altering anything we want to do.
+
+			// 2.6: Check if authorization or post processing denied security access to the record
+			function (fStageComplete)
+			{
+				if (pRequest.MeadowAuthorization)
+				{
+					return fStageComplete(false);
+				}
+
+				// It looks like this record was not authorized.  Send an error.
+				return fStageComplete({Code:405,Message:'UNAUTHORIZED ACCESS IS NOT ALLOWED'});
 			},
 			// 3. Marshalling of records into the hash list, using underscore templates.
-			function (pQuery, pRecords, fStageComplete)
+			function (fStageComplete)
 			{
 				// Look on the Endpoint Customization object for an underscore template to generate hashes.
 				var tmpSelectList = [];
@@ -80,30 +97,33 @@ var doAPIReadSelectListEndpoint = function(pRequest, pResponse, fNext)
 				// Eventually we can cache this template to make the request faster
 
 				// INJECT: Dynamically alter templates for the select
-				for (var i = 0; i < pRecords.length; i++)
+				for (var i = 0; i < pRequest.Records.length; i++)
 				{
 					tmpSelectList.push
 					(
 						{
-							Hash: pRecords[i][pRequest.DAL.defaultIdentifier], 
-							Value: pRequest.BehaviorModifications.processTemplate('SelectList', {Record:pRecords[i]}, pRequest.DAL.scope+' #<%= Record.'+pRequest.DAL.defaultIdentifier+'%>')
+							Hash: pRequest.Records[i][pRequest.DAL.defaultIdentifier], 
+							Value: pRequest.BehaviorModifications.processTemplate('SelectList', {Record:pRequest.Records[i]}, pRequest.DAL.scope+' #<%= Record.'+pRequest.DAL.defaultIdentifier+'%>')
 						}
 					);
 				}
 
-				fStageComplete(false, pQuery, tmpSelectList);
+				fStageComplete(false, tmpSelectList);
 			}
 		],
 		// 3. Return the results to the user
-		function(pError, pQuery, pRecords)
+		function(pError, pResultRecords)
 		{
+			//remove 'Records' object from pRequest, instead return template results (pResultRecords) for the records
+			delete pRequest['Records'];
+
 			if (pError)
 			{
-				return pRequest.CommonServices.sendError('Error retreiving a recordset.', pRequest, pResponse, fNext);
+				return pRequest.CommonServices.sendCodedError('Error retreiving a recordset.', pError, pRequest, pResponse, fNext);
 			}
 
-			pRequest.CommonServices.log.info('Read a recordset select list with '+pRecords.length+' results.', {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-ReadSelectList'});
-			pResponse.send(pRecords);
+			pRequest.CommonServices.log.info('Read a recordset select list with '+pResultRecords.length+' results.', {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-ReadSelectList'});
+			pResponse.send(pResultRecords);
 			return fNext();
 		}
 	);

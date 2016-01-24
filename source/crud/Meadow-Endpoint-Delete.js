@@ -9,6 +9,10 @@
 /**
 * Delete a record using the Meadow DAL object
 */
+
+var libAsync = require('async');
+
+
 var doAPIDeleteEndpoint = function(pRequest, pResponse, fNext)
 {
 	// This state is the requirement for the UserRoleIndex value in the SessionData object... processed by default as >=
@@ -44,26 +48,63 @@ var doAPIDeleteEndpoint = function(pRequest, pResponse, fNext)
 		return pRequest.CommonServices.sendError('Record delete failure - a valid record ID is required in the passed-in record.', pRequest, pResponse, fNext);
 	}
 
-	// INJECT: Record modification before update
+	var tmpRecordCount = {};
+	var tmpQuery;
 
-	var tmpQuery = pRequest.DAL.query;
+	libAsync.waterfall(
+		[
+			function(fStageComplete)
+			{
+				tmpQuery = pRequest.DAL.query;
 
-	// INJECT: Query configuration and population
+				// INJECT: Query configuration and population
 
-	// This is not overloadable.`
-	tmpQuery.addFilter(pRequest.DAL.defaultIdentifier, tmpIDRecord);
+				// This is not overloadable.`
+				tmpQuery.addFilter(pRequest.DAL.defaultIdentifier, tmpIDRecord);
 
-	// Do the delete
-	pRequest.DAL.doDelete(tmpQuery,
-		function(pError, pQuery, pCount)
+				return fStageComplete();
+			},
+			function(fStageComplete)
+			{
+				pRequest.Authorizers.authorizeRequest('Delete', pRequest, fStageComplete);
+			},
+			function(fStageComplete)
+			{
+				// INJECT: Record modification before delete
+
+				if (pRequest.MeadowAuthorization)
+				{
+					return fStageComplete(false);
+				}
+
+				// It looks like this record was not authorized.  Send an error.
+				return fStageComplete({Code:405,Message:'UNAUTHORIZED ACCESS IS NOT ALLOWED'});
+			},
+			function(fStageComplete)
+			{
+				// Do the delete
+				pRequest.DAL.doDelete(tmpQuery,
+					function(pError, pQuery, pCount)
+					{
+						// It returns the number of rows deleted
+						tmpRecordCount = {Count:pCount};
+
+						// INJECT: After the delete count is grabbed, let the user alter the response content
+
+						
+						return fStageComplete(pError);
+					});
+			}
+		], function(pError)
 		{
-			// It returns the number of rows deleted
-			var tmpRecordCount = {Count:pCount};
+			if (pError)
+			{
+				return pRequest.CommonServices.sendCodedError('Error deleting a record.', pError, pRequest, pResponse, fNext);
+			}
 
-			// INJECT: After the delete count is grabbed, let the user alter the response content
-
-			pRequest.CommonServices.log.info('Deleted '+pCount+' records with ID '+tmpIDRecord+'.', {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Delete'});
+			pRequest.CommonServices.log.info('Deleted '+tmpRecordCount.Count+' records with ID '+tmpIDRecord+'.', {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Delete'});
 			pResponse.send(tmpRecordCount);
+
 			return fNext();
 		}
 	);
