@@ -7,6 +7,7 @@
 * @module Meadow
 */
 var libAsync = require('async');
+var meadowFilterParser = require('./Meadow-Filter-Parse.js');
 /**
 * Get a set of records from a DAL.
 */
@@ -16,15 +17,11 @@ var doAPIReadsEndpoint = function(pRequest, pResponse, fNext)
 	// The default here is that any authenticated user can use this endpoint.
 	pRequest.EndpointAuthorizationRequirement = pRequest.EndpointAuthorizationLevels.Reads;
 	
-	// INJECT: Pre authorization (for instance to change the authorization level)
-	
 	if (pRequest.CommonServices.authorizeEndpoint(pRequest, pResponse, fNext) === false)
 	{
 		// If this endpoint fails, it's sent an error automatically.
 		return;
 	}
-
-	// INJECT: Pre endpoint operation
 
 	libAsync.waterfall(
 		[
@@ -46,6 +43,11 @@ var doAPIReadsEndpoint = function(pRequest, pResponse, fNext)
 					tmpCap = parseInt(pRequest.params.Cap);
 				}
 				pRequest.Query.setCap(tmpCap).setBegin(tmpBegin);
+				if (typeof(pRequest.params.Filter) === 'string')
+				{
+					// If a filter has been passed in, parse it and add the values to the query.
+					meadowFilterParser(pRequest.params.Filter, pRequest.Query);
+				}
 
 				fStageComplete(false);
 			},

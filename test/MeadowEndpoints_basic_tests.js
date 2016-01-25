@@ -627,6 +627,63 @@ suite
 				);
 				test
 				(
+					'readselect: get a page of records',
+					function(fDone)
+					{
+						libSuperTest('http://localhost:9080/')
+						.get('1.0/FableTestSelect/2/2')
+						.end(
+							function (pError, pResponse)
+							{
+								console.log(pResponse.text)
+								var tmpResults = JSON.parse(pResponse.text);
+								Expect(tmpResults.length).to.equal(2);
+								Expect(tmpResults[1].Value).to.equal('FableTest #4');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'readselect: get filtered records',
+					function(fDone)
+					{
+						libSuperTest('http://localhost:9080/')
+						.get('1.0/FableTestSelect/FilteredTo/FBV~Type~EQ~Dog')
+						.end(
+							function (pError, pResponse)
+							{
+								console.log('FUCK'+pResponse.text)
+								var tmpResults = JSON.parse(pResponse.text);
+								Expect(tmpResults.length).to.equal(6);
+								Expect(tmpResults[0].Value).to.equal('FableTest #1');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'readselect: get a page of filtered records',
+					function(fDone)
+					{
+						libSuperTest('http://localhost:9080/')
+						.get('1.0/FableTestSelect/FilteredTo/FBV~Type~EQ~Dog/1/1')
+						.end(
+							function (pError, pResponse)
+							{
+								console.log(pResponse.text)
+								var tmpResults = JSON.parse(pResponse.text);
+								Expect(tmpResults.length).to.equal(1);
+								Expect(tmpResults[0].Value).to.equal('FableTest #4');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
 					'readselect: get an empty page of records',
 					function(fDone)
 					{
@@ -658,6 +715,43 @@ suite
 								Expect(tmpResults.length).to.equal(2);
 								Expect(tmpResults[0].Type).to.equal('Dog');
 								Expect(tmpResults[1].Name).to.equal('Spot');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'reads: get a filtered set of records',
+					function(fDone)
+					{
+						libSuperTest('http://localhost:9080/')
+						// Get page 2, 2 records per page.
+						.get('1.0/FableTests/FilteredTo/FBV~Type~EQ~Frog')
+						.end(
+							function (pError, pResponse)
+							{
+								var tmpResults = JSON.parse(pResponse.text);
+								Expect(tmpResults.length).to.equal(1);
+								Expect(tmpResults[0].Type).to.equal('Frog');
+								fDone();
+							}
+						);
+					}
+				);				test
+				(
+					'reads: get a filtered paged set of records',
+					function(fDone)
+					{
+						libSuperTest('http://localhost:9080/')
+						// Get page 2, 2 records per page.
+						.get('1.0/FableTests/FilteredTo/FBV~Type~EQ~Dog/1/2')
+						.end(
+							function (pError, pResponse)
+							{
+								var tmpResults = JSON.parse(pResponse.text);
+								Expect(tmpResults.length).to.equal(1);
+								Expect(tmpResults[0].Type).to.equal('Dog');
 								fDone();
 							}
 						);
@@ -740,6 +834,23 @@ suite
 							{
 								var tmpResults = JSON.parse(pResponse.text);
 								Expect(tmpResults.Count).to.equal(5);
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'count: get the count of filtered records',
+					function(fDone)
+					{
+						libSuperTest('http://localhost:9080/')
+						.get('1.0/FableTests/Count/FilteredTo/FBV~Type~EQ~Girl')
+						.end(
+							function (pError, pResponse)
+							{
+								var tmpResults = JSON.parse(pResponse.text);
+								Expect(tmpResults.Count).to.equal(1);
 								fDone();
 							}
 						);

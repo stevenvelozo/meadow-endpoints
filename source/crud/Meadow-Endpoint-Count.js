@@ -8,7 +8,7 @@
 */
 
 var libAsync = require('async');
-
+var meadowFilterParser = require('./Meadow-Filter-Parse.js');
 /**
 * Count a record using the Meadow DAL object
 */
@@ -18,8 +18,6 @@ var doAPICountEndpoint = function(pRequest, pResponse, fNext)
 	// The default here is that any authenticated user can use this endpoint.
 	pRequest.EndpointAuthorizationRequirement = pRequest.EndpointAuthorizationLevels.Count;
 	
-	// INJECT: Pre authorization (for instance to change the authorization level)
-	
 	if (pRequest.CommonServices.authorizeEndpoint(pRequest, pResponse, fNext) === false)
 	{
 		// If this endpoint fails, it's sent an error automatically.
@@ -28,14 +26,18 @@ var doAPICountEndpoint = function(pRequest, pResponse, fNext)
 
 	libAsync.waterfall(
 		[
-			// 1. Create the query
+			// 1: Create the query
 			function (fStageComplete)
 			{
 				pRequest.Query = pRequest.DAL.query;
+				if (typeof(pRequest.params.Filter) === 'string')
+				{
+					// If a filter has been passed in, parse it and add the values to the query.
+					meadowFilterParser(pRequest.params.Filter, pRequest.Query);
+				}
 				fStageComplete(false);
 			},
-			// 2. INJECT: Query configuration
-			// 3: Check if there is an authorizer set for this endpoint and user role combination, and authorize based on that
+			// 2: Check if there is an authorizer set for this endpoint and user role combination, and authorize based on that
 			function (fStageComplete)
 			{
 				pRequest.Authorizers.authorizeRequest('Count', pRequest, fStageComplete);
@@ -64,7 +66,7 @@ var doAPICountEndpoint = function(pRequest, pResponse, fNext)
 					});
 			}
 		],
-		// 3. Return the results to the user
+		// 6. Return the results to the user
 		function(pError)
 		{
 			if (pError)

@@ -7,6 +7,7 @@
 * @module Meadow
 */
 var libAsync = require('async');
+var meadowFilterParser = require('./Meadow-Filter-Parse.js');
 /**
 * Get a set of records from a DAL.
 */
@@ -24,8 +25,6 @@ var doAPIReadSelectListEndpoint = function(pRequest, pResponse, fNext)
 		return;
 	}
 
-	// INJECT: Pre endpoint operation
-
 	libAsync.waterfall(
 		[
 			// 1. Get the records
@@ -34,8 +33,6 @@ var doAPIReadSelectListEndpoint = function(pRequest, pResponse, fNext)
 				var tmpQuery = pRequest.DAL.query;
 
 				// TODO: Limit the query to the columns we need for the templated expression
-
-				// INJECT: Query configuration and population
 
 				var tmpCap = false;
 				var tmpBegin = false;
@@ -50,6 +47,11 @@ var doAPIReadSelectListEndpoint = function(pRequest, pResponse, fNext)
 					tmpCap = parseInt(pRequest.params.Cap);
 				}
 				tmpQuery.setCap(tmpCap).setBegin(tmpBegin);
+				if (typeof(pRequest.params.Filter) === 'string')
+				{
+					// If a filter has been passed in, parse it and add the values to the query.
+					meadowFilterParser(pRequest.params.Filter, tmpQuery);
+				}
 
 				// TODO: Set an upper limit for what can be returned in the select list
 
@@ -64,7 +66,6 @@ var doAPIReadSelectListEndpoint = function(pRequest, pResponse, fNext)
 					pRecords = [];
 				}
 
-				// INJECT: Results validation, pass in pRecords
 				pRequest.Records = pRecords;
 
 				// Complete the waterfall operation
@@ -75,8 +76,6 @@ var doAPIReadSelectListEndpoint = function(pRequest, pResponse, fNext)
 			{
 				pRequest.Authorizers.authorizeRequest('ReadSelectList', pRequest, fStageComplete);
 			},
-			// INJECT: Post process the records, tacking on or altering anything we want to do.
-
 			// 2.6: Check if authorization or post processing denied security access to the record
 			function (fStageComplete)
 			{
@@ -94,9 +93,6 @@ var doAPIReadSelectListEndpoint = function(pRequest, pResponse, fNext)
 				// Look on the Endpoint Customization object for an underscore template to generate hashes.
 				var tmpSelectList = [];
 
-				// Eventually we can cache this template to make the request faster
-
-				// INJECT: Dynamically alter templates for the select
 				for (var i = 0; i < pRequest.Records.length; i++)
 				{
 					tmpSelectList.push
@@ -114,7 +110,7 @@ var doAPIReadSelectListEndpoint = function(pRequest, pResponse, fNext)
 		// 3. Return the results to the user
 		function(pError, pResultRecords)
 		{
-			//remove 'Records' object from pRequest, instead return template results (pResultRecords) for the records
+			// Remove 'Records' object from pRequest, instead return template results (pResultRecords) for the records
 			delete pRequest['Records'];
 
 			if (pError)

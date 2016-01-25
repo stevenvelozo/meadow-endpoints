@@ -131,13 +131,13 @@ var MeadowAuthorizers = function()
 			}
 
 			// Authorizing Endpoint
-			console.log(pRequestHash + ' >>> '+pRequest.DAL.getRoleName(pRequest.SessionData.UserRoleIndex)+'   -   '+pRequest.SessionData.UserRoleIndex+' Authorization Configuration: '+JSON.stringify(tmpRoleAuthorizer));
+			//console.log(pRequestHash + ' >>> '+pRequest.DAL.getRoleName(pRequest.SessionData.UserRoleIndex)+'   -   '+pRequest.SessionData.UserRoleIndex+' Authorization Configuration: '+JSON.stringify(tmpRoleAuthorizer));
 
 
 			if ((typeof(tmpRoleAuthorizer) === 'object') && tmpRoleAuthorizer.hasOwnProperty(pRequestHash))
 			{
 				// Authorizing Endpoint
-				console.log(' >>> Authorizing Endpoint: '+JSON.stringify(tmpRoleAuthorizer));
+				//console.log(' >>> Authorizing Endpoint: '+JSON.stringify(tmpRoleAuthorizer));
 				// If there is an authorizer collection in the DAL and it has this request hash as a property in it, execute the authorizer(s)
 				if (typeof(tmpRoleAuthorizer[pRequestHash]) === 'string')
 				{
