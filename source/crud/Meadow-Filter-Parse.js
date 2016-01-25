@@ -28,6 +28,7 @@
        * LK - Like (Like)
        * IN - Is NULL
        * NN - Is NOT NULL
+ FBVOR - Filter By Value (left-side OR connected)
  FBL - Filter By List (value list, separated by commas)
        FBL~Category~EQ~Books,Movies
  FSF - Filter Sort Field
@@ -39,7 +40,7 @@
 */
 
 // Get the comparison operator for use in a query stanza
-var getFilterComparisonOperator(pFilterOperator)
+var getFilterComparisonOperator = function(pFilterOperator)
 {
 	var tmpOperator = '=';
 	switch(pFilterOperator)
@@ -73,9 +74,9 @@ var getFilterComparisonOperator(pFilterOperator)
 			break;
 	}
 	return tmpOperator;
-}
+};
 
-var addFilterStanzaToQuery(pFilterStanza, pQuery)
+var addFilterStanzaToQuery = function(pFilterStanza, pQuery)
 {
 	if (!pFilterStanza.Instruction)
 	{
@@ -84,22 +85,32 @@ var addFilterStanzaToQuery(pFilterStanza, pQuery)
 
 	switch(pFilterStanza.Instruction)
 	{
-		case 'FBV': // Filter by Value (AND)
-			pQuery.addFilter(pFilterStanza.Field, pFilterStanza.Value, getFilterComparisonOperator(pFilterStanza.Operator));
+		case 'FBV':   // Filter by Value (left-side AND)
+			pQuery.addFilter(pFilterStanza.Field, pFilterStanza.Value, getFilterComparisonOperator(pFilterStanza.Operator), 'AND');
 			break;
 
-		case 'FBL': // Filter by List (AND)
+		case 'FBVOR': // Filter by Value (left-side OR)
+			pQuery.addFilter(pFilterStanza.Field, pFilterStanza.Value, getFilterComparisonOperator(pFilterStanza.Operator), 'OR');
+			break;
+
+		case 'FBL':   // Filter by List (left-side AND)
 			// Just split the value by comma for now.  May want to revisit better characters or techniques later.
-			pQuery.addFilter(pFilterStanza.Field, pFilterStanza.Value.split(','), getFilterComparisonOperator(pFilterStanza.Operator));
+			pQuery.addFilter(pFilterStanza.Field, pFilterStanza.Value.split(','), getFilterComparisonOperator(pFilterStanza.Operator), 'AND');
 			break;
 
-		case 'FSF':
+		case 'FBLOR': // Filter by List (left-side OR)
+			// Just split the value by comma for now.  May want to revisit better characters or techniques later.
+			pQuery.addFilter(pFilterStanza.Field, pFilterStanza.Value.split(','), getFilterComparisonOperator(pFilterStanza.Operator, 'OR'));
+			break;
+
+		case 'FSF':   // Filter Sort Field
 			var tmpSortDirection = (pFilterStanza.Operator === 'DESC') ? 'Descending' : 'Ascending';
 			pQuery.addSort({Column:pFilterStanza.Field, Direction:tmpSortDirection});
 			break;
 
+
 		default:
-			console.log('Unparsable filter stanza.');
+			//console.log('Unparsable filter stanza.');
 			return false;
 			break;
 	}
@@ -129,7 +140,7 @@ var doParseFilter = function(pFilterString, pQuery)
 		{
 			case 0:  // INSTRUCTION
 				addFilterStanzaToQuery(tmpFilterStanza, pQuery);
-				console.log(i+' Instruction: '+tmpFilterTerms[i]);
+				//console.log(i+' Instruction: '+tmpFilterTerms[i]);
 				tmpFilterStanza = (
 				{
 					Instruction: tmpFilterTerms[i],

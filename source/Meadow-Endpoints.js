@@ -49,6 +49,7 @@ var MeadowEndpoints = function()
 
 			Reads: require('./crud/Meadow-Endpoint-Reads.js'),
 			ReadsBy: require('./crud/Meadow-Endpoint-ReadsBy.js'),
+
 			ReadSelectList: require('./crud/Meadow-Endpoint-ReadSelectList'),
 
 			Update: require('./crud/Meadow-Endpoint-Update.js'),
@@ -241,14 +242,19 @@ var MeadowEndpoints = function()
 			pRestServer.get('/1.0/'+tmpEndpointName+'s', _EndpointAuthenticators.Reads, wireState, _Endpoints.Reads);
 			pRestServer.get('/1.0/'+tmpEndpointName+'s/By/:ByField/:ByValue', _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadsBy);
 			pRestServer.get('/1.0/'+tmpEndpointName+'s/By/:ByField/:ByValue/:Begin/:Cap', _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadsBy);
+			pRestServer.get('/1.0/'+tmpEndpointName+'s/FilteredTo/:Filter', _EndpointAuthenticators.Reads, wireState, _Endpoints.Reads);
+			pRestServer.get('/1.0/'+tmpEndpointName+'s/FilteredTo/:Filter/:Begin/:Cap', _EndpointAuthenticators.Reads, wireState, _Endpoints.Reads);
 			pRestServer.get('/1.0/'+tmpEndpointName+'Select', _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadSelectList);
 			pRestServer.get('/1.0/'+tmpEndpointName+'Select/:Begin/:Cap', _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadSelectList);
+			pRestServer.get('/1.0/'+tmpEndpointName+'Select/FilteredTo/:Filter', _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadSelectList);
+			pRestServer.get('/1.0/'+tmpEndpointName+'Select/FilteredTo/:Filter/:Begin/:Cap', _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadSelectList);
 			pRestServer.get('/1.0/'+tmpEndpointName+'s/:Begin/:Cap', _EndpointAuthenticators.Reads, wireState, _Endpoints.Reads);
 			pRestServer.put('/1.0/'+tmpEndpointName, _CommonServices.bodyParser(), _EndpointAuthenticators.Update, wireState, _Endpoints.Update);
 			pRestServer.del('/1.0/'+tmpEndpointName, _CommonServices.bodyParser(), _EndpointAuthenticators.Delete, wireState, _Endpoints.Delete);
 			pRestServer.del('/1.0/'+tmpEndpointName+'/:IDRecord', _EndpointAuthenticators.Delete, wireState, _Endpoints.Delete);
 			pRestServer.get('/1.0/'+tmpEndpointName+'s/Count', _EndpointAuthenticators.Count, wireState, _Endpoints.Count);
 			pRestServer.get('/1.0/'+tmpEndpointName+'s/Count/By/:ByField/:ByValue', _EndpointAuthenticators.Count, wireState, _Endpoints.CountBy);
+			pRestServer.get('/1.0/'+tmpEndpointName+'s/Count/FilteredTo/:Filter', _EndpointAuthenticators.Count, wireState, _Endpoints.Count);
 		};
 
 		
