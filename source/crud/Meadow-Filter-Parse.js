@@ -151,17 +151,17 @@ var doParseFilter = function(pFilterString, pQuery)
 				break;
 
 			case 1:  // FIELD
-				console.log(i+' Field:       '+tmpFilterTerms[i]);
+				//console.log(i+' Field:       '+tmpFilterTerms[i]);
 				tmpFilterStanza.Field = tmpFilterTerms[i];
 				break;
 
 			case 2:  // OPERATOR
-				console.log(i+' Operator:    '+tmpFilterTerms[i]);
+				//console.log(i+' Operator:    '+tmpFilterTerms[i]);
 				tmpFilterStanza.Operator = tmpFilterTerms[i];
 				break;
 
 			case 3:  // VALUE
-				console.log(i+' Value:       '+tmpFilterTerms[i]);
+				//console.log(i+' Value:       '+tmpFilterTerms[i]);
 				tmpFilterStanza.Value = tmpFilterTerms[i];
 				break;
 		}
