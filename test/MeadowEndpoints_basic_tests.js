@@ -444,6 +444,24 @@ suite
 				);
 				test
 				(
+					'read: define a custom route and get a record with it',
+					function(fDone)
+					{
+						_Orator.webServer.get('/CustomHotRodRoute/:IDRecord', _MeadowEndpoints.endpointAuthenticators.Read, _MeadowEndpoints.wireState, _MeadowEndpoints.endpoints.Read)
+						libSuperTest('http://localhost:9080/')
+						.get('CustomHotRodRoute/2')
+						.end(
+							function (pError, pResponse)
+							{
+								var tmpResult = JSON.parse(pResponse.text);
+								Expect(tmpResult.Type).to.equal('Girl');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
 					'read: get a specific record but be denied by security',
 					function(fDone)
 					{

@@ -390,6 +390,30 @@ var MeadowEndpoints = function()
 			});
 
 		/**
+		 * Endpoints
+		 *
+		 * @property endpoints
+		 * @type object
+		 */
+		Object.defineProperty(tmpNewMeadowEndpointObject, 'endpoints',
+			{
+				get: function() { return _Endpoints; },
+				enumerable: true
+			});
+
+		/**
+		 * EndpointAuthenticators
+		 *
+		 * @property endpointAuthenticators
+		 * @type object
+		 */
+		Object.defineProperty(tmpNewMeadowEndpointObject, 'endpointAuthenticators',
+			{
+				get: function() { return _EndpointAuthenticators; },
+				enumerable: true
+			});
+
+		/**
 		 * Behavior Modifications
 		 *
 		 * @property behaviorModifications
