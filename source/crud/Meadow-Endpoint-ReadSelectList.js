@@ -27,11 +27,10 @@ var doAPIReadSelectListEndpoint = function(pRequest, pResponse, fNext)
 
 	libAsync.waterfall(
 		[
-			// 1. Get the records
+			// 1a. Get the records
 			function (fStageComplete)
 			{
-				var tmpQuery = pRequest.DAL.query;
-
+				pRequest.Query = pRequest.DAL.query;
 				// TODO: Limit the query to the columns we need for the templated expression
 
 				var tmpCap = false;
@@ -51,17 +50,24 @@ var doAPIReadSelectListEndpoint = function(pRequest, pResponse, fNext)
 					//maximum number of records to return by default on Read queries. Override via "MeadowDefaultMaxCap" fable setting.
 					tmpCap = pRequest.DEFAULT_MAX_CAP;
 				}
-				tmpQuery.setCap(tmpCap).setBegin(tmpBegin);
+				pRequest.Query.setCap(tmpCap).setBegin(tmpBegin);
 				if (typeof(pRequest.params.Filter) === 'string')
 				{
 					// If a filter has been passed in, parse it and add the values to the query.
-					meadowFilterParser(pRequest.params.Filter, tmpQuery);
+					meadowFilterParser(pRequest.params.Filter, pRequest.Query);
 				}
 
-				// TODO: Set an upper limit for what can be returned in the select list
-
-				// Do the record read
-				pRequest.DAL.doReads(tmpQuery, fStageComplete);
+				fStageComplete(false);
+			},
+			// 1b. INJECT: Query configuration
+			function (fStageComplete)
+			{
+				pRequest.BehaviorModifications.runBehavior('Reads-QueryConfiguration', pRequest, fStageComplete);
+			},
+			// 1c. Do the record read
+			function (fStageComplete)
+			{
+				pRequest.DAL.doReads(pRequest.Query, fStageComplete);
 			},
 			// 2. Post processing of the records
 			function (pQuery, pRecords, fStageComplete)
