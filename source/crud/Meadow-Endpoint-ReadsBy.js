@@ -45,6 +45,11 @@ var doAPIReadsByEndpoint = function(pRequest, pResponse, fNext)
 				{
 					tmpCap = parseInt(pRequest.params.Cap);
 				}
+				else
+				{
+					//maximum number of records to return by default on Read queries. Override via "MeadowDefaultMaxCap" fable setting.
+					tmpCap = pRequest.DEFAULT_MAX_CAP;
+				}
 				pRequest.Query.setCap(tmpCap).setBegin(tmpBegin);
 
 				fStageComplete(false);

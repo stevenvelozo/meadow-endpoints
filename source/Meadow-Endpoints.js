@@ -165,6 +165,10 @@ var MeadowEndpoints = function()
 			pRequest.DAL = _Meadow;
 			pRequest.BehaviorModifications = _BehaviorModifications;
 			pRequest.Authorizers = _Authorizers;
+
+			//maximum number of records to return by default on Read queries. Override via "MeadowDefaultMaxCap" fable setting.
+			pRequest.DEFAULT_MAX_CAP = (_Fable.settings['MeadowDefaultMaxCap']) || 250;
+
 			fNext();
 		};
 
