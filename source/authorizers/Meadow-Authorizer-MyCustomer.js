@@ -23,8 +23,8 @@ var doAuthorize = function(pRequest, fNext)
 	}
 	else
 	{
-		// This will fail records that don't have a CustomerID.  Do we want that?
-		pRequest.MeadowAuthorization = false;		
+		// This will pass records that don't have a CustomerID.  Do we want that?
+		pRequest.MeadowAuthorization = true;		
 	}
 
 	return fNext();
