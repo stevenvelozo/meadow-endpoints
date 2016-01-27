@@ -9,6 +9,12 @@
 */
 var doAuthorize = function(pRequest, fNext)
 {
+	if (pRequest.EndpointHash === 'Count' ||
+		pRequest.EndpointHash === 'CountBy')
+	{
+		pRequest.MeadowAuthorization = true;		
+		return fNext();
+	}
 	if (typeof(pRequest.Record) !== 'object')
 	{
 		// If there is no record, fail.
