@@ -345,7 +345,8 @@ suite
 						tmpAuthorizers.authorize('Mine', tmpMockFullRequest,
 							function()
 							{
-								Expect(tmpMockFullRequest.MeadowAuthorization).to.equal(false);
+								//If record does not have CustomerID, then it should succeed
+								Expect(tmpMockFullRequest.MeadowAuthorization).to.equal(true);
 							});
 						tmpAuthorizers.authorize('MyCustomer', tmpMockFullRequest,
 							function()

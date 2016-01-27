@@ -65,9 +65,6 @@ var MeadowAuthorizers = function()
 				pRequest.MeadowAuthorization = true;
 			}
 
-			// Attach authorizer hash in case the invoked authorizer needs the endpoint context
-			pRequest.AuthorizerHash = pAuthorizerHash;
-
 			// Run an injected authorizer (if it exists)
 			if (_AuthorizerFunctions.hasOwnProperty(pAuthorizerHash))
 			{
