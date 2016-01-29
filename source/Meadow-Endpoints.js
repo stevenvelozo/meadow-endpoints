@@ -372,6 +372,8 @@ var MeadowEndpoints = function()
 
 			connectRoutes: connectRoutes,
 
+			parseFilter: require(__dirname+'/crud/Meadow-Filter-Parse.js'),
+
 			// Expose the DAL
 			DAL: _Meadow,
 
