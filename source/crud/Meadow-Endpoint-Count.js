@@ -42,6 +42,11 @@ var doAPICountEndpoint = function(pRequest, pResponse, fNext)
 			{
 				pRequest.Authorizers.authorizeRequest('Count', pRequest, fStageComplete);
 			},
+			// 3. INJECT: Query configuration
+			function (fStageComplete)
+			{
+				pRequest.BehaviorModifications.runBehavior('Reads-QueryConfiguration', pRequest, fStageComplete);
+			},
 			// 4: Check if authorization or post processing denied security access to the record
 			function (fStageComplete)
 			{

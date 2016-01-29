@@ -121,6 +121,9 @@ var MeadowAuthorizers = function()
 				pRequest.MeadowAuthorization = true;
 			}
 
+			// Attach authorizer hash in case the invoked authorizer needs the endpoint context
+			pRequest.EndpointHash = pRequestHash;
+
 
 			// See if there is an authorizer collection for the role of the user
 			var tmpRoleAuthorizer = pRequest.DAL.schemaFull.authorizer[pRequest.DAL.getRoleName(pRequest.SessionData.UserRoleIndex)];

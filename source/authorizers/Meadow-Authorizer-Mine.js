@@ -5,10 +5,16 @@
 */
 
 /**
-* Meadow Authorizer - My Records
+* Meadow Authorizer - Records from My Customer
 */
 var doAuthorize = function(pRequest, fNext)
 {
+	if (pRequest.EndpointHash === 'Count' ||
+		pRequest.EndpointHash === 'CountBy')
+	{
+		pRequest.MeadowAuthorization = true;		
+		return fNext();
+	}
 	if (typeof(pRequest.Record) !== 'object')
 	{
 		// If there is no record, fail.
@@ -16,14 +22,15 @@ var doAuthorize = function(pRequest, fNext)
 		return fNext();
 	}
 
-	if (pRequest.Record.hasOwnProperty('CreatingIDUser') && (pRequest.Record.CreatingIDUser === pRequest.SessionData.UserID))
+	if (pRequest.Record.hasOwnProperty('IDCustomer') && (pRequest.Record.IDCustomer === pRequest.SessionData.CustomerID))
 	{
-		// If the creating user matches
+		// If the customer matches
 		pRequest.MeadowAuthorization = (true && pRequest.MeadowAuthorization);
 	}
 	else
 	{
-		pRequest.MeadowAuthorization = false;		
+		// This will pass records that don't have a CustomerID.  Do we want that?
+		pRequest.MeadowAuthorization = true;		
 	}
 
 	return fNext();

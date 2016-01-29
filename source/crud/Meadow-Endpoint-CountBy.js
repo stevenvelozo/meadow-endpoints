@@ -49,11 +49,15 @@ var doAPICountByEndpoint = function(pRequest, pResponse, fNext)
 
 				return fStageComplete(false);
 			},
-			// 2. INJECT: Query configuration
-			// 3: Check if there is an authorizer set for this endpoint and user role combination, and authorize based on that
+			// 2: Check if there is an authorizer set for this endpoint and user role combination, and authorize based on that
 			function (fStageComplete)
 			{
 				pRequest.Authorizers.authorizeRequest('CountBy', pRequest, fStageComplete);
+			},
+			// 3. INJECT: Query configuration
+			function (fStageComplete)
+			{
+				pRequest.BehaviorModifications.runBehavior('Reads-QueryConfiguration', pRequest, fStageComplete);
 			},
 			// 4: Check if authorization denies security access to the record
 			function (fStageComplete)
