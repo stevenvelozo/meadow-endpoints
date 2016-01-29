@@ -1217,6 +1217,24 @@ suite
 		);
 		suite
 		(
+			'Filter parser',
+			function()
+			{
+				test
+				(
+					'Filter parse',
+					function(fDone)
+					{
+						var tmpQuery = _MeadowEndpoints.DAL.query;
+						_MeadowEndpoints.parseFilter('FBV~UUIDAnimal~EQ~1000000', tmpQuery);
+						Expect(tmpQuery.parameters.filter[0].Column).to.equal('UUIDAnimal');
+						fDone();
+					}
+				);
+			}
+		);
+		suite
+		(
 			'Changing route requirement',
 			function()
 			{
