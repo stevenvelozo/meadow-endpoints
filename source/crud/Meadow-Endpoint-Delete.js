@@ -66,6 +66,23 @@ var doAPIDeleteEndpoint = function(pRequest, pResponse, fNext)
 			},
 			function(fStageComplete)
 			{
+				// Load the record so we can do security checks on it
+				pRequest.DAL.doRead(tmpQuery,
+					function(pError, pQuery, pRecord)
+					{
+						if (!pRecord)
+						{
+							tmpRecordCount = {Count:0};
+							return fStageComplete("NO_RECORD_FOUND");
+						}
+
+						pRequest.Record = pRecord;
+
+						return fStageComplete();
+					});
+			},
+			function(fStageComplete)
+			{
 				pRequest.Authorizers.authorizeRequest('Delete', pRequest, fStageComplete);
 			},
 			function(fStageComplete)
@@ -97,7 +114,8 @@ var doAPIDeleteEndpoint = function(pRequest, pResponse, fNext)
 			}
 		], function(pError)
 		{
-			if (pError)
+			if (pError &&
+				pError !== "NO_RECORD_FOUND")
 			{
 				return pRequest.CommonServices.sendCodedError('Error deleting a record.', pError, pRequest, pResponse, fNext);
 			}

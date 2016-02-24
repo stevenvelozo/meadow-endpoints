@@ -22,14 +22,22 @@ var doAuthorize = function(pRequest, fNext)
 		return fNext();
 	}
 
-	if (pRequest.Record.hasOwnProperty('IDCustomer') && (pRequest.Record.IDCustomer === pRequest.SessionData.CustomerID))
+	if (pRequest.Record.hasOwnProperty('CreatingIDUser'))
 	{
-		// If the customer matches
-		pRequest.MeadowAuthorization = (true && pRequest.MeadowAuthorization);
+		if (pRequest.Record.CreatingIDUser === pRequest.SessionData.UserID)
+		{
+			// If the UserID matches
+			pRequest.MeadowAuthorization = (true && pRequest.MeadowAuthorization);
+		}
+		else
+		{
+			// DENY If the user IDs don't match
+			pRequest.MeadowAuthorization = false;
+		}
 	}
 	else
 	{
-		// This will pass records that don't have a CustomerID.  Do we want that?
+		// This will pass records that don't have a CreatingIDUser.  Do we want that?
 		pRequest.MeadowAuthorization = true;		
 	}
 
