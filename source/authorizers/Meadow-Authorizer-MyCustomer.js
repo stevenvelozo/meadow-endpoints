@@ -22,10 +22,18 @@ var doAuthorize = function(pRequest, fNext)
 		return fNext();
 	}
 
-	if (pRequest.Record.hasOwnProperty('IDCustomer') && (pRequest.Record.IDCustomer === pRequest.SessionData.CustomerID))
+	if (pRequest.Record.hasOwnProperty('IDCustomer'))
 	{
-		// If the customer matches
-		pRequest.MeadowAuthorization = (true && pRequest.MeadowAuthorization);
+		if (pRequest.Record.IDCustomer === pRequest.SessionData.CustomerID)
+		{
+			// If the customer matches
+			pRequest.MeadowAuthorization = (true && pRequest.MeadowAuthorization);
+		}
+		else
+		{
+			// Deny if Customer ID's don't match
+			pRequest.MeadowAuthorization = false;
+		}
 	}
 	else
 	{

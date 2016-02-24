@@ -345,14 +345,14 @@ suite
 						tmpAuthorizers.authorize('Mine', tmpMockFullRequest,
 							function()
 							{
-								//If record does not have CustomerID, then it should succeed
-								Expect(tmpMockFullRequest.MeadowAuthorization).to.equal(true);
+								//If record does not have matching CreatingIDUser, then it should fail
+								Expect(tmpMockFullRequest.MeadowAuthorization).to.equal(false);
 							});
 						tmpAuthorizers.authorize('MyCustomer', tmpMockFullRequest,
 							function()
 							{
-								//If record does not have CustomerID, then it should succeed
-								Expect(tmpMockFullRequest.MeadowAuthorization).to.equal(true);
+								//If record does not have matching CustomerID, then it should fail
+								Expect(tmpMockFullRequest.MeadowAuthorization).to.equal(false);
 							});
 					}
 				);
@@ -1924,7 +1924,7 @@ suite
 					function(fDone)
 					{
 						// Delete animal 4 ("Corgi")
-						var tmpRecord = {IDAnimal:4};
+						var tmpRecord = {IDAnimal:1};
 						_MeadowEndpoints.invokeEndpoint('Delete', tmpRecord, {SessionData: _MockSessionValidUser},
 							function(pError, pResponse)
 							{
