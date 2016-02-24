@@ -55,6 +55,12 @@ var doAPIUpdateEndpoint = function(pRequest, pResponse, fNext)
 				pRequest.DAL.doRead(tmpQuery,
 					function(pError, pQuery, pRecord)
 					{
+						if (!pError && !pRecord)
+						{
+							//short-circuit: Can't update a record that doesn't exist!
+							pError = 'Record not found.';
+						}
+
 						return fStageComplete(pError, pRecord);
 					});
 			},

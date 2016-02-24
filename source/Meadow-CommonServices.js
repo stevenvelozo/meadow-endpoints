@@ -41,6 +41,10 @@ var MeadowCommonServices = function()
 				if (pError.Code)
 					tmpErrorCode = pError.Code;
 			}
+			else if (typeof(pError) === 'string')
+			{
+				tmpErrorMessage += ' ' + pError;
+			}
 
 			_Log.warn('API Error: '+tmpErrorMessage, {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:'APIError'});
 			pResponse.send({Error:tmpErrorMessage, ErrorCode: tmpErrorCode});
