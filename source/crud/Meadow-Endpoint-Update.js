@@ -26,8 +26,6 @@ var doAPIUpdateEndpoint = function(pRequest, pResponse, fNext)
 		return;
 	}
 
-	// INJECT: Pre endpoint operation
-
 	libAsync.waterfall(
 		[
 			function(fStageComplete)
@@ -48,7 +46,35 @@ var doAPIUpdateEndpoint = function(pRequest, pResponse, fNext)
 			},
 			function(fStageComplete)
 			{
-				pRequest.Authorizers.authorizeRequest('Create', pRequest, fStageComplete);
+				var tmpQuery = pRequest.DAL.query;
+
+				// This is not overloadable.
+				tmpQuery.addFilter(pRequest.DAL.defaultIdentifier, pRequest.Record[pRequest.DAL.defaultIdentifier]);
+
+				// Load the record so we can do security checks on it
+				pRequest.DAL.doRead(tmpQuery,
+					function(pError, pQuery, pRecord)
+					{
+						if (!pError && !pRecord)
+						{
+							//short-circuit: Can't update a record that doesn't exist!
+							pError = 'Record not found.';
+						}
+
+						return fStageComplete(pError, pRecord);
+					});
+			},
+			function(pOriginalRecord, fStageComplete)
+			{
+				//send the original record to the Authorizer so it can verify ownership/etc
+				pRequest.UpdatingRecord = pRequest.Record;
+				pRequest.Record = pOriginalRecord;
+
+				pRequest.Authorizers.authorizeRequest('Update', pRequest, function(err)
+					{
+						pRequest.Record = pRequest.UpdatingRecord;
+						return fStageComplete(err);
+					});
 			},
 			function(fStageComplete)
 			{
@@ -69,8 +95,6 @@ var doAPIUpdateEndpoint = function(pRequest, pResponse, fNext)
 			{
 				//3. Prepare update query
 				var tmpQuery = pRequest.DAL.query;
-
-				// INJECT: Query configuration and population
 
 				tmpQuery.addRecord(pRequest.Record);
 
