@@ -494,7 +494,7 @@ suite
 							function (pError, pResponse)
 							{
 								var tmpResult = JSON.parse(pResponse.text);
-								Expect(tmpResult.Error).to.equal('Error retreiving a record.');
+								Expect(tmpResult.Error).to.equal('Error retreiving a record. Record not found');
 								fDone();
 							}
 						);
@@ -1905,8 +1905,8 @@ suite
 					'invoke update: update a record',
 					function(fDone)
 					{
-						// Change animal 4 ("Spot") to a Corgi
-						var tmpRecord = {IDAnimal:4, Type:'Corgi'};
+						// Change animal 1
+						var tmpRecord = {IDAnimal:1, Type:'Corgi'};
 						_MeadowEndpoints.invokeEndpoint('Update', tmpRecord, {SessionData: _MockSessionValidUser},
 							function(pError, pResponse)
 							{
@@ -1923,7 +1923,7 @@ suite
 					'invoke delete: delete a record',
 					function(fDone)
 					{
-						// Delete animal 4 ("Corgi")
+						// Delete animal 1
 						var tmpRecord = {IDAnimal:1};
 						_MeadowEndpoints.invokeEndpoint('Delete', tmpRecord, {SessionData: _MockSessionValidUser},
 							function(pError, pResponse)
