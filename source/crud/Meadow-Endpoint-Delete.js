@@ -105,12 +105,14 @@ var doAPIDeleteEndpoint = function(pRequest, pResponse, fNext)
 					{
 						// It returns the number of rows deleted
 						tmpRecordCount = {Count:pCount};
-
-						// INJECT: After the delete count is grabbed, let the user alter the response content
-
 						
 						return fStageComplete(pError);
 					});
+			},
+			function(fStageComplete)
+			{
+				// INJECT: After the delete count is grabbed, let the user alter the response content
+				return pRequest.BehaviorModifications.runBehavior('Delete-PostOperation', pRequest, fStageComplete);
 			}
 		], function(pError)
 		{
