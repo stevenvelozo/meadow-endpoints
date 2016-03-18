@@ -31,10 +31,12 @@ var tmpFableSettings = 	(
 			Password: "",
 			Database: "FableTest",
 			ConnectionPoolLimit: 20
-		}
+		},
+	ConfigFile: __dirname + "/../MeadowTest-Settings.json"
 });
 
 var libFable = require('fable').new(tmpFableSettings);
+tmpFableSettings = libFable.settings;
 
 var _MockSessionValidUser = (
 	{
