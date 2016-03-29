@@ -18,8 +18,8 @@ echo ""
 echo "## Creating Fable and Meadow databases and users..."
 time mysql-ctl cli < test/scripts/InitializeDatabase-C9.sql
 echo ""
-echo "## Switching to node 5.8..."
-nvm use 5.8
-nvm alias default 5.8
+echo "## Remember to Switch to node 5.x by running these commands..."
+echo "nvm use 5"
+echo "nvm alias default 5"
 echo ""
 echo "## And we're done!  Have a great day."
