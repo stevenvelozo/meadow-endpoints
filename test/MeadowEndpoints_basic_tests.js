@@ -1583,13 +1583,26 @@ suite
 					{
 						// Delete animal 4 ("Corgi")
 						var tmpRecord = {IDAnimal:4};
+
+						// Override the query configuration
+						_MeadowEndpoints.behaviorModifications.setBehavior('Delete-PreOperation',
+							function(pRequest, fComplete)
+							{
+								// Create a custom property on the record.
+								Expect(pRequest.Record.IDAnimal).to.equal(tmpRecord.IDAnimal);
+								return fComplete(false);
+							});
+						
 						_MeadowEndpoints.invokeEndpoint('Delete', tmpRecord, {SessionData: _MockSessionValidUser},
 							function(pError, pResponse)
 							{
+								//clear out the behavior mapping to not affect other tests
+								_MeadowEndpoints.behaviorModifications.setBehavior('Delete-PreOperation', null);
+
 								// Expect response to be the count of deleted records.
 								var tmpResult = pResponse.body; //JSON.parse(pResponse.text);
 								Expect(tmpResult.Count).to.equal(1);
-								fDone();
+								return fDone();
 							}
 						);
 					}

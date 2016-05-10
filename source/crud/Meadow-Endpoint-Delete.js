@@ -87,6 +87,11 @@ var doAPIDeleteEndpoint = function(pRequest, pResponse, fNext)
 			},
 			function(fStageComplete)
 			{
+				// INJECT: Once we've check the authorizer and are ready to Delete, invoke an injected behavior before we execute the actuall delete operation
+				return pRequest.BehaviorModifications.runBehavior('Delete-PreOperation', pRequest, fStageComplete);
+			},
+			function(fStageComplete)
+			{
 				// INJECT: Record modification before delete
 
 				if (pRequest.MeadowAuthorization)
