@@ -56,7 +56,8 @@ var MeadowBehaviorModifications = function()
 		var runBehavior = function(pBehaviorHash, pRequest, fComplete)
 		{
 			// Run an injected behavior (if it exists)
-			if (_BehaviorFunctions.hasOwnProperty(pBehaviorHash))
+			if (_BehaviorFunctions.hasOwnProperty(pBehaviorHash) &&
+				_BehaviorFunctions[pBehaviorHash])
 			{
 				//Array of functions. Aborts on first error.
 				if (Array.isArray(_BehaviorFunctions[pBehaviorHash]))
