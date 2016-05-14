@@ -1355,6 +1355,8 @@ suite
 			'Direct invocation',
 			function()
 			{
+				var tmpCreatedRecordGUID;
+
 				test
 				(
 					'invoke create: create a record',
@@ -1368,6 +1370,8 @@ suite
 								// Expect response to be the record we just created.
 								Expect(pResponse.body.Name)
 									.to.equal(tmpRecord.Name);
+
+								tmpCreatedRecordGUID = pResponse.body.GUIDAnimal;
 
 								fDone();
 							}
@@ -1402,6 +1406,21 @@ suite
 							{
 								var tmpResult = JSON.parse(pResponse.text);
 								Expect(tmpResult.Type).to.equal('Girl');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'invoke read: get a specific record by GUID',
+					function(fDone)
+					{
+						_MeadowEndpoints.invokeEndpoint('Read', {GUIDRecord: tmpCreatedRecordGUID}, {SessionData: _MockSessionValidUser},
+							function (pError, pResponse)
+							{
+								var tmpResult = JSON.parse(pResponse.text);
+								Expect(tmpResult.Type).to.equal('Mammoth');
 								fDone();
 							}
 						);

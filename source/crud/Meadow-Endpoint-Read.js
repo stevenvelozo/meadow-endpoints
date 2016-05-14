@@ -33,10 +33,19 @@ var doAPIReadEndpoint = function(pRequest, pResponse, fNext)
 			// 2. Set the query up with the record ID
 			function (fStageComplete)
 			{
-				var tmpIDRecord =  pRequest.params.IDRecord;
-				// We use a custon name for this (RequestDefaultIdentifier) in case there is a query with a dot in the default identifier.
-				pRequest.Query.addFilter(pRequest.DAL.defaultIdentifier, tmpIDRecord, '=', 'AND', 'RequestDefaultIdentifier');
-				fStageComplete(false);
+				if (!pRequest.params.IDRecord &&
+					pRequest.params.GUIDRecord)
+				{
+					// We use a custon name for this (RequestDefaultIdentifier) in case there is a query with a dot in the default identifier.
+					pRequest.Query.addFilter(pRequest.DAL.defaultGUIdentifier, pRequest.params.GUIDRecord, '=', 'AND', 'RequestDefaultIdentifier');
+				}
+				else
+				{
+					var tmpIDRecord =  pRequest.params.IDRecord;
+					// We use a custon name for this (RequestDefaultIdentifier) in case there is a query with a dot in the default identifier.
+					pRequest.Query.addFilter(pRequest.DAL.defaultIdentifier, tmpIDRecord, '=', 'AND', 'RequestDefaultIdentifier');
+				}
+				return fStageComplete(false);
 			},
 			// 3. INJECT: Query configuration
 			function (fStageComplete)
