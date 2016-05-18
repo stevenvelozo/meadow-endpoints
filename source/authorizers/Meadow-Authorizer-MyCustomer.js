@@ -25,7 +25,7 @@ var doAuthorize = function(pRequest, fNext)
 	if (pRequest.Record.hasOwnProperty('IDCustomer'))
 	{
 		if (pRequest.Record.IDCustomer === 0 ||
-			pRequest.Record.IDCustomer === pRequest.SessionData.CustomerID)
+			pRequest.Record.IDCustomer === pRequest.UserSession.CustomerID)
 		{
 			// If the customer matches
 			pRequest.MeadowAuthorization = (true && pRequest.MeadowAuthorization);

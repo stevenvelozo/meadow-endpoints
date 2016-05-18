@@ -24,7 +24,7 @@ var doAuthorize = function(pRequest, fNext)
 
 	if (pRequest.Record.hasOwnProperty('CreatingIDUser'))
 	{
-		if (pRequest.Record.CreatingIDUser === pRequest.SessionData.UserID)
+		if (pRequest.Record.CreatingIDUser === pRequest.UserSession.UserID)
 		{
 			// If the UserID matches
 			pRequest.MeadowAuthorization = (true && pRequest.MeadowAuthorization);

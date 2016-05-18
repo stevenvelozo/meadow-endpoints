@@ -12,7 +12,7 @@ var libAsync = require('async');
 */
 var doAPIReadEndpoint = function(pRequest, pResponse, fNext)
 {
-	// This state is the requirement for the UserRoleIndex value in the SessionData object... processed by default as >=
+	// This state is the requirement for the UserRoleIndex value in the UserSession object... processed by default as >=
 	// The default here is that any authenticated user can use this endpoint.
 	pRequest.EndpointAuthorizationRequirement = pRequest.EndpointAuthorizationLevels.Read;
 
@@ -62,7 +62,7 @@ var doAPIReadEndpoint = function(pRequest, pResponse, fNext)
 			{
 				if (!pRecord)
 				{
-					pRequest.CommonServices.log.info('Record not found', {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Read'});
+					pRequest.CommonServices.log.info('Record not found', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Read'});
 					return fStageComplete('Record not found');
 				}
 				pRequest.Record = pRecord;
@@ -99,7 +99,7 @@ var doAPIReadEndpoint = function(pRequest, pResponse, fNext)
 				return pRequest.CommonServices.sendCodedError('Error retreiving a record.', pError, pRequest, pResponse, fNext);
 			}
 
-			pRequest.CommonServices.log.info('Read a record with ID '+pRequest.params.IDRecord+'.', {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Read'});
+			pRequest.CommonServices.log.info('Read a record with ID '+pRequest.params.IDRecord+'.', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Read'});
 			pResponse.send(pRequest.Record);
 			return fNext();
 		}

@@ -320,15 +320,15 @@ var MeadowEndpoints = function()
 				function(fStageComplete)
 				{
 					//allow consumer to specify user session data
-					if (pOptions.SessionData)
+					if (pOptions.UserSession)
 					{
-						pRequest.SessionData = pOptions.SessionData;
+						pRequest.UserSession = pOptions.UserSession;
 					}
 					else
 					{
 						//else fill in default user session data
 						pRequest.EndpointInvoked = true; //bypass session auth check
-						pRequest.SessionData = { UserID: 0, UserRoleIndex: 0 };
+						pRequest.UserSession = { UserID: 0, UserRoleIndex: 0 };
 					}
 					
 					pRequest.EndpointAuthenticated = true;

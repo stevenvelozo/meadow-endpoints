@@ -36,8 +36,8 @@ var MeadowBehaviorModifications = function()
 		* var someBehavior = function(pRequest, fComplete)
 		* {
 		*      // Do some stuff with pRequest...
-		*      if (pRequest.SessionData.UserRoleIndex < 5)
-		*          pRequest.Query.addFilter('Customer', pRequest.SessionData.IDCustomer);
+		*      if (pRequest.UserSession.UserRoleIndex < 5)
+		*          pRequest.Query.addFilter('Customer', pRequest.UserSession.IDCustomer);
 		*      return fComplete(false);
 		* }
 		*

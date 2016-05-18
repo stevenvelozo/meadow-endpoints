@@ -13,7 +13,7 @@ var meadowFilterParser = require('./Meadow-Filter-Parse.js');
 */
 var doAPIReadSelectListEndpoint = function(pRequest, pResponse, fNext)
 {
-	// This state is the requirement for the UserRoleIndex value in the SessionData object... processed by default as >=
+	// This state is the requirement for the UserRoleIndex value in the UserSession object... processed by default as >=
 	// The default here is that any authenticated user can use this endpoint.
 	pRequest.EndpointAuthorizationRequirement = pRequest.EndpointAuthorizationLevels.Reads;
 	
@@ -129,7 +129,7 @@ var doAPIReadSelectListEndpoint = function(pRequest, pResponse, fNext)
 				return pRequest.CommonServices.sendCodedError('Error retreiving a recordset.', pError, pRequest, pResponse, fNext);
 			}
 
-			pRequest.CommonServices.log.info('Read a recordset select list with '+pResultRecords.length+' results.', {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-ReadSelectList'});
+			pRequest.CommonServices.log.info('Read a recordset select list with '+pResultRecords.length+' results.', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-ReadSelectList'});
 			pResponse.send(pResultRecords);
 			return fNext();
 		}

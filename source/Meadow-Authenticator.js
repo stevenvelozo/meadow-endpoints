@@ -5,7 +5,7 @@
  */
 var checkAuthentication = function(pRequest, pResponse, fNext)
 {
-	if (!pRequest.SessionData.LoggedIn)
+	if (!pRequest.UserSession.LoggedIn)
 	{
 		pRequest.EndpointAuthenticated = false;
 	}

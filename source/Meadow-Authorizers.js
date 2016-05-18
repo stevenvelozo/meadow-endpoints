@@ -31,7 +31,7 @@ var MeadowAuthorizers = function()
 		* var someAuthorizer = function(pRequest, fComplete)
 		* {
 		*      // Do some stuff with pRequest...
-		*      if (pRequest.SessionData.UserRoleIndex < 5)
+		*      if (pRequest.UserSession.UserRoleIndex < 5)
 		*          pRequest.MeadowAuthorization = pRequest.MeadowAuthorization && false;
 		*      
 		*      return fComplete(false);
@@ -126,7 +126,7 @@ var MeadowAuthorizers = function()
 
 
 			// See if there is an authorizer collection for the role of the user
-			var tmpRoleAuthorizer = pRequest.DAL.schemaFull.authorizer[pRequest.DAL.getRoleName(pRequest.SessionData.UserRoleIndex)];
+			var tmpRoleAuthorizer = pRequest.DAL.schemaFull.authorizer[pRequest.DAL.getRoleName(pRequest.UserSession.UserRoleIndex)];
 			if (!tmpRoleAuthorizer)
 			{
 				// Fallback to default definition, if present
@@ -134,7 +134,7 @@ var MeadowAuthorizers = function()
 			}
 
 			// Authorizing Endpoint
-			//console.log(pRequestHash + ' >>> '+pRequest.DAL.getRoleName(pRequest.SessionData.UserRoleIndex)+'   -   '+pRequest.SessionData.UserRoleIndex+' Authorization Configuration: '+JSON.stringify(tmpRoleAuthorizer));
+			//console.log(pRequestHash + ' >>> '+pRequest.DAL.getRoleName(pRequest.UserSession.UserRoleIndex)+'   -   '+pRequest.UserSession.UserRoleIndex+' Authorization Configuration: '+JSON.stringify(tmpRoleAuthorizer));
 
 
 			if ((typeof(tmpRoleAuthorizer) === 'object') && tmpRoleAuthorizer.hasOwnProperty(pRequestHash))

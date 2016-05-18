@@ -46,7 +46,7 @@ var MeadowCommonServices = function()
 				tmpErrorMessage += ' ' + pError;
 			}
 
-			_Log.warn('API Error: '+tmpErrorMessage, {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:'APIError'});
+			_Log.warn('API Error: '+tmpErrorMessage, {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:'APIError'});
 			pResponse.send({Error:tmpErrorMessage, ErrorCode: tmpErrorCode});
 
 			return fNext();
@@ -60,7 +60,7 @@ var MeadowCommonServices = function()
 		 */
 		var sendError = function(pMessage, pRequest, pResponse, fNext)
 		{
-			_Log.warn('API Error: '+pMessage, {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:'APIError'});
+			_Log.warn('API Error: '+pMessage, {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:'APIError'});
 			pResponse.send({Error:pMessage});
 
 			return fNext();
@@ -89,18 +89,18 @@ var MeadowCommonServices = function()
 			}
 
 			// Check that the user has a valid ID.
-			var tmpIDUser = pRequest.SessionData.UserID;
+			var tmpIDUser = pRequest.UserSession.UserID;
 			if (tmpIDUser < 1)
 			{
-				_Log.warn('Invalid session when attempting to get a secured resource - IDUser is not valid.', {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:'APISecurity'});
+				_Log.warn('Invalid session when attempting to get a secured resource - IDUser is not valid.', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:'APISecurity'});
 				sendNotAuthorized('You must be authenticated to access this resource.', pRequest, pResponse, fNext);
 				return false;
 			}
 
 			// Check that the authentication level is valid.
-			if (pRequest.SessionData.UserRoleIndex < pRequest.EndpointAuthorizationRequirement)
+			if (pRequest.UserSession.UserRoleIndex < pRequest.EndpointAuthorizationRequirement)
 			{
-				_Log.warn('Invalid permission level when attempting to get a secured resource.', {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:'APISecurity', RequiredUserLevel:pRequest.EndpointAuthorizationRequirement, ActualUserLevel:pRequest.SessionData.UserRoleIndex});
+				_Log.warn('Invalid permission level when attempting to get a secured resource.', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:'APISecurity', RequiredUserLevel:pRequest.EndpointAuthorizationRequirement, ActualUserLevel:pRequest.UserSession.UserRoleIndex});
 				// TODO: Send the proper http status code
 				sendNotAuthorized('You must be appropriately authenticated to access this resource.', pRequest, pResponse, fNext);
 				return false;				
@@ -118,7 +118,7 @@ var MeadowCommonServices = function()
 		var sendNotAuthorized = function(pMessage, pRequest, pResponse, fNext)
 		{
 			// TODO: Use the proper http code
-			_Log.trace('API Unauthorized Attempt: '+pMessage, {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:'APIUnauthorized'});
+			_Log.trace('API Unauthorized Attempt: '+pMessage, {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:'APIUnauthorized'});
 			pResponse.send({Error:pMessage});
 
 			return fNext();
