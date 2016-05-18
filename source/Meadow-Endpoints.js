@@ -322,7 +322,8 @@ var MeadowEndpoints = function()
 					//allow consumer to specify user session data
 					if (pOptions.UserSession)
 					{
-						pRequest.UserSession = pOptions.UserSession;
+						//make a copy of the UserSession
+						pRequest.UserSession = JSON.parse(JSON.stringify(pOptions.UserSession));
 					}
 					else
 					{
