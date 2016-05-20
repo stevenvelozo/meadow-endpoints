@@ -11,7 +11,7 @@
 */
 var doAPIValidateEndpoint = function(pRequest, pResponse, fNext)
 {
-	// This state is the requirement for the UserRoleIndex value in the SessionData object... processed by default as >=
+	// This state is the requirement for the UserRoleIndex value in the UserSession object... processed by default as >=
 	// The default here is that any authenticated user can use this endpoint.
 	pRequest.EndpointAuthorizationRequirement = pRequest.EndpointAuthorizationLevels.New;
 	
@@ -35,7 +35,7 @@ var doAPIValidateEndpoint = function(pRequest, pResponse, fNext)
 
 	// INJECT: After the record is validated, let the API user alter the resultant
 
-	pRequest.CommonServices.log.info('Delivered validation for '+pRequest.DAL.scope+': '+tmpValid, {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Validate'});
+	pRequest.CommonServices.log.info('Delivered validation for '+pRequest.DAL.scope+': '+tmpValid, {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Validate'});
 	pResponse.send(tmpValid);
 	return fNext();
 };

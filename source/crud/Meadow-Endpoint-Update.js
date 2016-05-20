@@ -14,7 +14,7 @@ var libAsync = require('async');
 
 var doAPIUpdateEndpoint = function(pRequest, pResponse, fNext)
 {
-	// This state is the requirement for the UserRoleIndex value in the SessionData object... processed by default as >=
+	// This state is the requirement for the UserRoleIndex value in the UserSession object... processed by default as >=
 	// The default here is that any authenticated user can use this endpoint.
 	pRequest.EndpointAuthorizationRequirement = pRequest.EndpointAuthorizationLevels.Update;
 	
@@ -103,7 +103,7 @@ var doAPIUpdateEndpoint = function(pRequest, pResponse, fNext)
 			function(pPreparedQuery, fStageComplete)
 			{
 				//4. Do the update operation
-				pRequest.DAL.setIDUser(pRequest.SessionData.UserID).doUpdate(pPreparedQuery,
+				pRequest.DAL.setIDUser(pRequest.UserSession.UserID).doUpdate(pPreparedQuery,
 					function(pError, pQuery, pReadQuery, pRecord)
 					{
 						if (!pRecord)
@@ -113,7 +113,7 @@ var doAPIUpdateEndpoint = function(pRequest, pResponse, fNext)
 
 						pRequest.Record = pRecord;
 
-						pRequest.CommonServices.log.info('Updated a record with ID '+pRecord[pRequest.DAL.defaultIdentifier]+'.', {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Update'});
+						pRequest.CommonServices.log.info('Updated a record with ID '+pRecord[pRequest.DAL.defaultIdentifier]+'.', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Update'});
 
 						return fStageComplete(null);
 					});

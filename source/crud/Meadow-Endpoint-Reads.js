@@ -13,7 +13,7 @@ var meadowFilterParser = require('./Meadow-Filter-Parse.js');
 */
 var doAPIReadsEndpoint = function(pRequest, pResponse, fNext)
 {
-	// This state is the requirement for the UserRoleIndex value in the SessionData object... processed by default as >=
+	// This state is the requirement for the UserRoleIndex value in the UserSession object... processed by default as >=
 	// The default here is that any authenticated user can use this endpoint.
 	pRequest.EndpointAuthorizationRequirement = pRequest.EndpointAuthorizationLevels.Reads;
 	
@@ -71,7 +71,7 @@ var doAPIReadsEndpoint = function(pRequest, pResponse, fNext)
 			{
 				if (!pRecords)
 				{
-					pRequest.CommonServices.log.info('Records not found', {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Reads'});
+					pRequest.CommonServices.log.info('Records not found', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Reads'});
 					return fStageComplete('Records not found');
 				}
 				pRequest.Records = pRecords;
@@ -108,7 +108,7 @@ var doAPIReadsEndpoint = function(pRequest, pResponse, fNext)
 				return pRequest.CommonServices.sendCodedError('Error retreiving records by value.', pError, pRequest, pResponse, fNext);
 			}
 
-			pRequest.CommonServices.log.info('Read a list of records.', {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Reads'});
+			pRequest.CommonServices.log.info('Read a list of records.', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Reads'});
 			pResponse.send(pRequest.Records);
 			return fNext();
 		}

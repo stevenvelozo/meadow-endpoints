@@ -14,7 +14,7 @@ var meadowFilterParser = require('./Meadow-Filter-Parse.js');
 */
 var doAPICountEndpoint = function(pRequest, pResponse, fNext)
 {
-	// This state is the requirement for the UserRoleIndex value in the SessionData object... processed by default as >=
+	// This state is the requirement for the UserRoleIndex value in the UserSession object... processed by default as >=
 	// The default here is that any authenticated user can use this endpoint.
 	pRequest.EndpointAuthorizationRequirement = pRequest.EndpointAuthorizationLevels.Count;
 	
@@ -79,7 +79,7 @@ var doAPICountEndpoint = function(pRequest, pResponse, fNext)
 				return pRequest.CommonServices.sendCodedError('Error retreiving a count.', pError, pRequest, pResponse, fNext);
 			}
 
-			pRequest.CommonServices.log.info('Delivered recordset count of '+pRequest.Result+'.', {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Count'});
+			pRequest.CommonServices.log.info('Delivered recordset count of '+pRequest.Result+'.', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Count'});
 			pResponse.send(pRequest.Result);
 			return fNext();
 		}

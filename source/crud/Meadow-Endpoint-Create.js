@@ -14,7 +14,7 @@ var libAsync = require('async');
 
 var doAPICreateEndpoint = function(pRequest, pResponse, fNext)
 {
-	// This state is the requirement for the UserRoleIndex value in the SessionData object... processed by default as >=
+	// This state is the requirement for the UserRoleIndex value in the UserSession object... processed by default as >=
 	// The default here is that any authenticated user can use this endpoint.
 	pRequest.EndpointAuthorizationRequirement = pRequest.EndpointAuthorizationLevels.Create;
 	
@@ -75,7 +75,7 @@ var doAPICreateEndpoint = function(pRequest, pResponse, fNext)
 			function(pPreparedQuery, fStageComplete)
 			{
 				//4. Do the create operation
-				pRequest.DAL.setIDUser(pRequest.SessionData.UserID).doCreate(pPreparedQuery,
+				pRequest.DAL.setIDUser(pRequest.UserSession.UserID).doCreate(pPreparedQuery,
 					function(pError, pQuery, pReadQuery, pRecord)
 					{
 						if (!pRecord)
@@ -85,7 +85,7 @@ var doAPICreateEndpoint = function(pRequest, pResponse, fNext)
 
 						pRequest.Record = pRecord;
 
-						pRequest.CommonServices.log.info('Created a record with ID '+pRecord[pRequest.DAL.defaultIdentifier]+'.', {SessionID:pRequest.SessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Create'});
+						pRequest.CommonServices.log.info('Created a record with ID '+pRecord[pRequest.DAL.defaultIdentifier]+'.', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Create'});
 
 						return fStageComplete(null);
 					});

@@ -49,7 +49,7 @@ var _MockSessionValidUser = (
 	});
 var ValidAuthentication = function(pRequest, pResponse, fNext)
 {
-	pRequest.SessionData = _MockSessionValidUser;
+	pRequest.UserSession = _MockSessionValidUser;
 	fNext();
 }
 
@@ -297,7 +297,7 @@ suite
 							});
 						var tmpMockFullRequest = 
 						{
-							SessionData:
+							UserSession:
 							{
 								CustomerID: 10,
 								UserID: 1
@@ -319,7 +319,7 @@ suite
 						var tmpAuthorizers = require('../source/Meadow-Authorizers.js').new(libFable);
 						var tmpMockFullRequest = 
 						{
-							SessionData:
+							UserSession:
 							{
 								CustomerID: 10,
 								UserID: 1
@@ -341,8 +341,8 @@ suite
 							{
 								Expect(tmpMockFullRequest.MeadowAuthorization).to.equal(true);
 							});
-						tmpMockFullRequest.SessionData.CustomerID = 100;
-						tmpMockFullRequest.SessionData.UserID = 100;
+						tmpMockFullRequest.UserSession.CustomerID = 100;
+						tmpMockFullRequest.UserSession.UserID = 100;
 						// Now they should both fail
 						tmpAuthorizers.authorize('Mine', tmpMockFullRequest,
 							function()
@@ -1355,6 +1355,8 @@ suite
 			'Direct invocation',
 			function()
 			{
+				var tmpCreatedRecordGUID;
+
 				test
 				(
 					'invoke create: create a record',
@@ -1368,6 +1370,8 @@ suite
 								// Expect response to be the record we just created.
 								Expect(pResponse.body.Name)
 									.to.equal(tmpRecord.Name);
+
+								tmpCreatedRecordGUID = pResponse.body.GUIDAnimal;
 
 								fDone();
 							}
@@ -1397,11 +1401,26 @@ suite
 					'invoke read: get a specific record',
 					function(fDone)
 					{
-						_MeadowEndpoints.invokeEndpoint('Read', {IDRecord: 2}, {SessionData: _MockSessionValidUser},
+						_MeadowEndpoints.invokeEndpoint('Read', {IDRecord: 2}, {UserSession: _MockSessionValidUser},
 							function (pError, pResponse)
 							{
 								var tmpResult = JSON.parse(pResponse.text);
 								Expect(tmpResult.Type).to.equal('Girl');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'invoke read: get a specific record by GUID',
+					function(fDone)
+					{
+						_MeadowEndpoints.invokeEndpoint('Read', {GUIDRecord: tmpCreatedRecordGUID}, {UserSession: _MockSessionValidUser},
+							function (pError, pResponse)
+							{
+								var tmpResult = JSON.parse(pResponse.text);
+								Expect(tmpResult.Type).to.equal('Mammoth');
 								fDone();
 							}
 						);
@@ -1428,7 +1447,7 @@ suite
 					'invoke readselect: get all records',
 					function(fDone)
 					{
-						_MeadowEndpoints.invokeEndpoint('ReadSelectList', {}, {SessionData: _MockSessionValidUser},
+						_MeadowEndpoints.invokeEndpoint('ReadSelectList', {}, {UserSession: _MockSessionValidUser},
 							function (pError, pResponse)
 							{
 								console.log(pResponse.body)
@@ -1446,7 +1465,7 @@ suite
 					'invoke readsby: get all records by Type',
 					function(fDone)
 					{
-						_MeadowEndpoints.invokeEndpoint('ReadsBy', {ByField: 'Type', ByValue: 'Mammoth'}, {SessionData: _MockSessionValidUser},
+						_MeadowEndpoints.invokeEndpoint('ReadsBy', {ByField: 'Type', ByValue: 'Mammoth'}, {UserSession: _MockSessionValidUser},
 							function (pError, pResponse)
 							{
 								//console.log(pResponse.body);
@@ -1464,7 +1483,7 @@ suite
 					'invoke readsby: get all records by Type IN LIST',
 					function(fDone)
 					{
-						_MeadowEndpoints.invokeEndpoint('ReadsBy', {ByField: 'Type', ByValue: ['Mammoth', 'Dog']}, {SessionData: _MockSessionValidUser},
+						_MeadowEndpoints.invokeEndpoint('ReadsBy', {ByField: 'Type', ByValue: ['Mammoth', 'Dog']}, {UserSession: _MockSessionValidUser},
 							function (pError, pResponse)
 							{
 								//console.log(pResponse.body);
@@ -1482,7 +1501,7 @@ suite
 					'invoke countby: get cout of records by Type',
 					function(fDone)
 					{
-						_MeadowEndpoints.invokeEndpoint('CountBy', {ByField: 'Type', ByValue: 'Mammoth'}, {SessionData: _MockSessionValidUser},
+						_MeadowEndpoints.invokeEndpoint('CountBy', {ByField: 'Type', ByValue: 'Mammoth'}, {UserSession: _MockSessionValidUser},
 							function (pError, pResponse)
 							{
 								var tmpResults = pResponse.body; //JSON.parse(pResponse.text);
@@ -1497,7 +1516,7 @@ suite
 					'invoke readsby: get paged records by Type',
 					function(fDone)
 					{
-						_MeadowEndpoints.invokeEndpoint('ReadsBy', {ByField: 'Type', ByValue: 'Mammoth', Begin: 1, Cap: 1}, {SessionData: _MockSessionValidUser},
+						_MeadowEndpoints.invokeEndpoint('ReadsBy', {ByField: 'Type', ByValue: 'Mammoth', Begin: 1, Cap: 1}, {UserSession: _MockSessionValidUser},
 							function (pError, pResponse)
 							{
 								var tmpResults = pResponse.body;
@@ -1513,7 +1532,7 @@ suite
 					'invoke readselect: get a page of records',
 					function(fDone)
 					{
-						_MeadowEndpoints.invokeEndpoint('ReadSelectList', {Begin: 2, Cap: 2}, {SessionData: _MockSessionValidUser},
+						_MeadowEndpoints.invokeEndpoint('ReadSelectList', {Begin: 2, Cap: 2}, {UserSession: _MockSessionValidUser},
 							function (pError, pResponse)
 							{
 								var tmpResults = pResponse.Records; //JSON.parse(pResponse.text);
@@ -1529,7 +1548,7 @@ suite
 					'invoke readselect: get an empty page of records',
 					function(fDone)
 					{
-						_MeadowEndpoints.invokeEndpoint('ReadSelectList', {Begin: 200, Cap: 200}, {SessionData: _MockSessionValidUser},
+						_MeadowEndpoints.invokeEndpoint('ReadSelectList', {Begin: 200, Cap: 200}, {UserSession: _MockSessionValidUser},
 							function (pError, pResponse)
 							{
 								var tmpResults = pResponse.Records; //JSON.parse(pResponse.text);
@@ -1544,7 +1563,7 @@ suite
 					'invoke reads: get a page of records',
 					function(fDone)
 					{
-						_MeadowEndpoints.invokeEndpoint('Reads', {Begin: 2, Cap: 2}, {SessionData: _MockSessionValidUser},
+						_MeadowEndpoints.invokeEndpoint('Reads', {Begin: 2, Cap: 2}, {UserSession: _MockSessionValidUser},
 							function (pError, pResponse)
 							{
 								var tmpResults = pResponse.Records; //JSON.parse(pResponse.text);
@@ -1563,7 +1582,7 @@ suite
 					{
 						// Change animal 4 ("Spot") to a Corgi
 						var tmpRecord = {IDAnimal:4, Type:'Corgi'};
-						_MeadowEndpoints.invokeEndpoint('Update', tmpRecord, {SessionData: _MockSessionValidUser},
+						_MeadowEndpoints.invokeEndpoint('Update', tmpRecord, {UserSession: _MockSessionValidUser},
 							function(pError, pResponse)
 							{
 								// Expect response to be the record we just created.
@@ -1593,7 +1612,7 @@ suite
 								return fComplete(false);
 							});
 						
-						_MeadowEndpoints.invokeEndpoint('Delete', tmpRecord, {SessionData: _MockSessionValidUser},
+						_MeadowEndpoints.invokeEndpoint('Delete', tmpRecord, {UserSession: _MockSessionValidUser},
 							function(pError, pResponse)
 							{
 								//clear out the behavior mapping to not affect other tests
@@ -1614,7 +1633,7 @@ suite
 					{
 						// Delete animal 3 ("Red")
 						var tmpRecord = {IDAnimal:{MyStuff:4}};
-						_MeadowEndpoints.invokeEndpoint('Delete', tmpRecord, {SessionData: _MockSessionValidUser},
+						_MeadowEndpoints.invokeEndpoint('Delete', tmpRecord, {UserSession: _MockSessionValidUser},
 							function(pError, pResponse)
 							{
 								// Expect response to be the count of deleted records.
@@ -1630,7 +1649,7 @@ suite
 					'count: get the count of records',
 					function(fDone)
 					{
-						_MeadowEndpoints.invokeEndpoint('Count', {}, {SessionData: _MockSessionValidUser},
+						_MeadowEndpoints.invokeEndpoint('Count', {}, {UserSession: _MockSessionValidUser},
 							function (pError, pResponse)
 							{
 								var tmpResults = pResponse.body; //JSON.parse(pResponse.text);
@@ -1662,7 +1681,7 @@ suite
 					'new: get a new empty record',
 					function(fDone)
 					{
-						_MeadowEndpoints.invokeEndpoint('New', {}, {SessionData: _MockSessionValidUser},
+						_MeadowEndpoints.invokeEndpoint('New', {}, {UserSession: _MockSessionValidUser},
 							function (pError, pResponse)
 							{
 								var tmpResults = pResponse.body; //JSON.parse(pResponse.text);
@@ -1681,7 +1700,7 @@ suite
 					function(fDone)
 					{
 						var tmpRecord = {IDAnimal:4, Type:'Corgi'};
-						_MeadowEndpoints.invokeEndpoint('Validate', tmpRecord, {SessionData: _MockSessionValidUser},
+						_MeadowEndpoints.invokeEndpoint('Validate', tmpRecord, {UserSession: _MockSessionValidUser},
 							function(pError, pResponse)
 							{
 								// Expect response to be the record we just created.
@@ -1701,7 +1720,7 @@ suite
 					function(fDone)
 					{
 						var tmpRecord = {IDAnimal:4, Type:'Corgi', Name:'Doofer', CreatingIDUser:10};
-						_MeadowEndpoints.invokeEndpoint('Validate', tmpRecord, {SessionData: _MockSessionValidUser},
+						_MeadowEndpoints.invokeEndpoint('Validate', tmpRecord, {UserSession: _MockSessionValidUser},
 							function(pError, pResponse)
 							{
 								// Expect response to be the record we just created.
@@ -1719,7 +1738,7 @@ suite
 					function(fDone)
 					{
 						var tmpRecord = 'IAMBAD';
-						_MeadowEndpoints.invokeEndpoint('Validate', tmpRecord, {SessionData: _MockSessionValidUser},
+						_MeadowEndpoints.invokeEndpoint('Validate', tmpRecord, {UserSession: _MockSessionValidUser},
 							function(pError, pResponse)
 							{
 								// Expect response to be the record we just created.
@@ -1747,7 +1766,7 @@ suite
 						_MockSessionValidUser.LoggedIn = true;
 						_MockSessionValidUser.UserRoleIndex = 5; //set it to an undefined role, so the DefaultAPISecurity definitions of 'Deny' get used.
 
-						_MeadowEndpoints.invokeEndpoint('Read', {IDRecord: 2}, {SessionData: _MockSessionValidUser},
+						_MeadowEndpoints.invokeEndpoint('Read', {IDRecord: 2}, {UserSession: _MockSessionValidUser},
 							function (pError, pResponse)
 							{
 								Expect(pResponse.body.ErrorCode).to.equal(405);
@@ -1763,7 +1782,7 @@ suite
 					function(fDone)
 					{
 						var tmpRecord = {Name:'BatBrains', Type:'Mammoth'};
-						_MeadowEndpoints.invokeEndpoint('Create', tmpRecord, {SessionData: _MockSessionValidUser},
+						_MeadowEndpoints.invokeEndpoint('Create', tmpRecord, {UserSession: _MockSessionValidUser},
 							function(pError, pResponse)
 							{
 								Expect(pResponse.body.ErrorCode).to.equal(405);
@@ -1780,7 +1799,7 @@ suite
 					function(fDone)
 					{
 						var tmpRecord = ' ';
-						_MeadowEndpoints.invokeEndpoint('Create', tmpRecord, {SessionData: _MockSessionValidUser},
+						_MeadowEndpoints.invokeEndpoint('Create', tmpRecord, {UserSession: _MockSessionValidUser},
 							function(pError, pResponse)
 							{
 								// Expect response to be the record we just created.
@@ -1796,7 +1815,7 @@ suite
 					'invoke readselect: get all records',
 					function(fDone)
 					{
-						_MeadowEndpoints.invokeEndpoint('ReadSelectList', {}, {SessionData: _MockSessionValidUser},
+						_MeadowEndpoints.invokeEndpoint('ReadSelectList', {}, {UserSession: _MockSessionValidUser},
 							function (pError, pResponse)
 							{
 								Expect(pResponse.body.ErrorCode).to.equal(405);
@@ -1812,7 +1831,7 @@ suite
 					'invoke readsby: get all records by Type',
 					function(fDone)
 					{
-						_MeadowEndpoints.invokeEndpoint('ReadsBy', {ByField: 'Type', ByValue: 'Mammoth'}, {SessionData: _MockSessionValidUser},
+						_MeadowEndpoints.invokeEndpoint('ReadsBy', {ByField: 'Type', ByValue: 'Mammoth'}, {UserSession: _MockSessionValidUser},
 							function (pError, pResponse)
 							{
 								Expect(pResponse.body.ErrorCode).to.equal(405);
@@ -1827,7 +1846,7 @@ suite
 					'invoke readsby: get all records by Type IN LIST',
 					function(fDone)
 					{
-						_MeadowEndpoints.invokeEndpoint('ReadsBy', {ByField: 'Type', ByValue: ['Mammoth', 'Dog']}, {SessionData: _MockSessionValidUser},
+						_MeadowEndpoints.invokeEndpoint('ReadsBy', {ByField: 'Type', ByValue: ['Mammoth', 'Dog']}, {UserSession: _MockSessionValidUser},
 							function (pError, pResponse)
 							{
 								Expect(pResponse.body.ErrorCode).to.equal(405);
@@ -1842,7 +1861,7 @@ suite
 					'invoke countby: get cout of records by Type',
 					function(fDone)
 					{
-						_MeadowEndpoints.invokeEndpoint('CountBy', {ByField: 'Type', ByValue: 'Mammoth'}, {SessionData: _MockSessionValidUser},
+						_MeadowEndpoints.invokeEndpoint('CountBy', {ByField: 'Type', ByValue: 'Mammoth'}, {UserSession: _MockSessionValidUser},
 							function (pError, pResponse)
 							{
 								Expect(pResponse.body.ErrorCode).to.equal(405);
@@ -1857,7 +1876,7 @@ suite
 					'invoke countby: get cout of records by Type',
 					function(fDone)
 					{
-						_MeadowEndpoints.invokeEndpoint('Count', {}, {SessionData: _MockSessionValidUser},
+						_MeadowEndpoints.invokeEndpoint('Count', {}, {UserSession: _MockSessionValidUser},
 							function (pError, pResponse)
 							{
 								Expect(pResponse.body.ErrorCode).to.equal(405);
@@ -1872,7 +1891,7 @@ suite
 					'invoke readselect: get a page of records',
 					function(fDone)
 					{
-						_MeadowEndpoints.invokeEndpoint('ReadSelectList', {Begin: 2, Cap: 2}, {SessionData: _MockSessionValidUser},
+						_MeadowEndpoints.invokeEndpoint('ReadSelectList', {Begin: 2, Cap: 2}, {UserSession: _MockSessionValidUser},
 							function (pError, pResponse)
 							{
 								Expect(pResponse.body.ErrorCode).to.equal(405);
@@ -1887,7 +1906,7 @@ suite
 					'invoke readselect: get an empty page of records',
 					function(fDone)
 					{
-						_MeadowEndpoints.invokeEndpoint('ReadSelectList', {Begin: 200, Cap: 200}, {SessionData: _MockSessionValidUser},
+						_MeadowEndpoints.invokeEndpoint('ReadSelectList', {Begin: 200, Cap: 200}, {UserSession: _MockSessionValidUser},
 							function (pError, pResponse)
 							{
 								// Because no records were returned, it should show as Authorized
@@ -1904,7 +1923,7 @@ suite
 					'invoke reads: get a page of records',
 					function(fDone)
 					{
-						_MeadowEndpoints.invokeEndpoint('Reads', {Begin: 2, Cap: 2}, {SessionData: _MockSessionValidUser},
+						_MeadowEndpoints.invokeEndpoint('Reads', {Begin: 2, Cap: 2}, {UserSession: _MockSessionValidUser},
 							function (pError, pResponse)
 							{
 								Expect(pResponse.body.ErrorCode).to.equal(405);
@@ -1922,7 +1941,7 @@ suite
 					{
 						// Change animal 1
 						var tmpRecord = {IDAnimal:1, Type:'Corgi'};
-						_MeadowEndpoints.invokeEndpoint('Update', tmpRecord, {SessionData: _MockSessionValidUser},
+						_MeadowEndpoints.invokeEndpoint('Update', tmpRecord, {UserSession: _MockSessionValidUser},
 							function(pError, pResponse)
 							{
 								Expect(pResponse.body.ErrorCode).to.equal(405);
@@ -1940,7 +1959,7 @@ suite
 					{
 						// Delete animal 1
 						var tmpRecord = {IDAnimal:1};
-						_MeadowEndpoints.invokeEndpoint('Delete', tmpRecord, {SessionData: _MockSessionValidUser},
+						_MeadowEndpoints.invokeEndpoint('Delete', tmpRecord, {UserSession: _MockSessionValidUser},
 							function(pError, pResponse)
 							{
 								Expect(pResponse.body.ErrorCode).to.equal(405);
