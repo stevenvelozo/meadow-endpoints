@@ -57,19 +57,34 @@ var doAPIReadsByEndpoint = function(pRequest, pResponse, fNext)
 			// 2. Set the query up with the By Value/Field combo
 			function (fStageComplete)
 			{
-				var tmpByField =  pRequest.params.ByField;
-				var tmpByValue =  pRequest.formattedParams.ByValue;
-				// TODO: Validate theat the ByField exists in the current database
-
-				if (tmpByValue.constructor === Array)
+				function addField(pByField, pByValue)
 				{
-					pRequest.Query.addFilter(tmpByField, tmpByValue, 'IN', 'AND', 'RequestByField');
+					// TODO: Validate theat the ByField exists in the current database
+					if (pByValue.constructor === Array)
+					{
+						pRequest.Query.addFilter(pByField, pByValue, 'IN', 'AND', 'RequestByField');
+					}
+					else
+					{
+						// We use a custon name for this (RequestDefaultIdentifier) in case there is a query with a dot in the default identifier.
+						pRequest.Query.addFilter(pByField, pByValue, '=', 'AND', 'RequestByField');
+					}
+				}
+
+				var tmpFilters = pRequest.params.Filters;
+				if (tmpFilters && 
+					tmpFilters.constructor === Array)
+				{
+					tmpFilters.forEach(function(filter)
+					{
+						addField(filter.ByField, filter.ByValue);
+					});
 				}
 				else
 				{
-					// We use a custon name for this (RequestDefaultIdentifier) in case there is a query with a dot in the default identifier.
-					pRequest.Query.addFilter(tmpByField, tmpByValue, '=', 'AND', 'RequestByField');
+					addField(pRequest.params.ByField, pRequest.formattedParams.ByValue);
 				}
+				
 				fStageComplete(false);
 			},
 			// 3. INJECT: Query configuration

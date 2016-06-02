@@ -1498,6 +1498,27 @@ suite
 				);
 				test
 				(
+					'invoke readsby: get all records by Type AND Name',
+					function(fDone)
+					{
+						_MeadowEndpoints.invokeEndpoint('ReadsBy', {Filters: [
+							{ByField: 'Type', ByValue: 'Mammoth'},
+							{ByField: 'Name', ByValue: 'BatBrains'}
+							]}, {UserSession: _MockSessionValidUser},
+							function (pError, pResponse)
+							{
+								//console.log(pResponse.body);
+
+								var tmpResults = pResponse.body; //JSON.parse(pResponse.text);
+								Expect(tmpResults.length).to.equal(2);
+								Expect(tmpResults[0].Type).to.equal('Mammoth');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
 					'invoke countby: get cout of records by Type',
 					function(fDone)
 					{
