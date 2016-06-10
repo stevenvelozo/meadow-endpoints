@@ -91,10 +91,16 @@ var doAPIUpdateEndpoint = function(pRequest, pResponse, fNext)
 				// It looks like this record was not authorized.  Send an error.
 				return fStageComplete({Code:405,Message:'UNAUTHORIZED ACCESS IS NOT ALLOWED'});
 			},
+			// 3a. INJECT: Query configuration
+			function (fStageComplete)
+			{
+				pRequest.Query = pRequest.DAL.query;
+				pRequest.BehaviorModifications.runBehavior('Update-QueryConfiguration', pRequest, fStageComplete);
+			},
 			function(fStageComplete)
 			{
-				//3. Prepare update query
-				var tmpQuery = pRequest.DAL.query;
+				//3b. Prepare update query
+				var tmpQuery = pRequest.Query;
 
 				tmpQuery.addRecord(pRequest.Record);
 
