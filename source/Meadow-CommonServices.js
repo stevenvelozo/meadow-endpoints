@@ -37,6 +37,7 @@ var MeadowCommonServices = function()
 			var tmpErrorCode = 1;
 			var tmpScope = null;
 			var tmpParams = null;
+			var tmpSessionID = null;
 
 			if (typeof(pError) === 'object')
 			{
@@ -56,8 +57,12 @@ var MeadowCommonServices = function()
 			{
 				tmpParams = pRequest.params;
 			}
+			if (pRequest.UserSession)
+			{
+				tmpSessionID = pRequest.UserSession.SessionID;
+			}
 
-			_Log.warn('API Error: '+tmpErrorMessage, {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Scope: tmpScope, Parameters: tmpParams, Action:'APIError'}, pRequest);
+			_Log.warn('API Error: '+tmpErrorMessage, {SessionID: tmpSessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Scope: tmpScope, Parameters: tmpParams, Action:'APIError'}, pRequest);
 			pResponse.send({Error:tmpErrorMessage, ErrorCode: tmpErrorCode});
 
 			return fNext();
@@ -71,7 +76,13 @@ var MeadowCommonServices = function()
 		 */
 		var sendError = function(pMessage, pRequest, pResponse, fNext)
 		{
-			_Log.warn('API Error: '+pMessage, {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:'APIError'}, pRequest);
+			var tmpSessionID = null;
+			if (pRequest.UserSession)
+			{
+				tmpSessionID = pRequest.UserSession.SessionID;
+			}
+
+			_Log.warn('API Error: '+pMessage, {SessionID: tmpSessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:'APIError'}, pRequest);
 			pResponse.send({Error:pMessage});
 
 			return fNext();

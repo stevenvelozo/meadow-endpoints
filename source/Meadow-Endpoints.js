@@ -332,6 +332,9 @@ var MeadowEndpoints = function()
 						pRequest.UserSession = { UserID: 0, UserRoleIndex: 0 };
 					}
 					
+					//copy whatever is in here
+					pRequest.Satchel = pOptions.Satchel;
+					//internal invoke mark as authenticated (because this is not called via webservice)
 					pRequest.EndpointAuthenticated = true;
 					
 					return fStageComplete();
