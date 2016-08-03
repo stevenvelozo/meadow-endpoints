@@ -28,6 +28,7 @@
        * LK - Like (Like)
        * IN - Is NULL
        * NN - Is NOT NULL
+       * INN - IN list
  FBVOR - Filter By Value (left-side OR connected)
  FBL - Filter By List (value list, separated by commas)
        FBL~Category~EQ~Books,Movies
@@ -71,6 +72,9 @@ var getFilterComparisonOperator = function(pFilterOperator)
 			break;
 		case 'NN':
 			tmpOperator = 'IS NOT NULL';
+			break;
+		case 'INN':
+			tmpOperator = 'IN';
 			break;
 	}
 	return tmpOperator;
