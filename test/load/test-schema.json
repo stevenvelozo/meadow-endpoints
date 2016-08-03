@@ -1,0 +1,119 @@
+{
+	"Scope": "TestRequest",
+
+	"DefaultIdentifier": "IDTestRequest",
+
+	"Schema": [
+		{ "Column": "IDTestRequest",        "Type":"AutoIdentity" },
+		{ "Column": "GUIDTestRequest",      "Type":"AutoGUID" },
+		{ "Column": "CreateDate",      "Type":"CreateDate" },
+		{ "Column": "CreatingIDUser",  "Type":"CreateIDUser" },
+		{ "Column": "UpdateDate",      "Type":"UpdateDate" },
+		{ "Column": "UpdatingIDUser",  "Type":"UpdateIDUser" },
+		{ "Column": "Deleted",         "Type":"Deleted" },
+		{ "Column": "DeletingIDUser",  "Type":"DeleteIDUser" },
+		{ "Column": "DeleteDate",      "Type":"DeleteDate" },
+		{ "Column": "Name",  "Type":"String" },
+		{ "Column": "UserID",  "Type":"String" }
+	],
+
+	"DefaultObject": {
+		"IDTestRequest": null,
+		"GUIDTestRequest": "",
+
+		"CreateDate": false,
+		"CreatingIDUser": 0,
+		"UpdateDate": false,
+		"UpdatingIDUser": 0,
+		"Deleted": 0,
+		"DeleteDate": false,
+		"DeletingIDUser": 0,
+
+		"Name": "Unknown",
+		"UserID": "Unclassified"
+	},
+
+	"JsonSchema": {
+		"title": "TestRequest",
+		"description": "A row created by a meadow-endpoints request",
+		"type": "object",
+		"properties": {
+			"IDTestRequest": {
+				"description": "The unique identifier for a request",
+				"type": "integer"
+			},
+			"Name": {
+				"description": "Some content",
+				"type": "string"
+			},
+			"UserID": {
+				"description": "The User ID (provided as part of the data, not auto interleaved)",
+				"type": "string"
+			}
+		},
+		"required": ["IDTestRequest"]
+	},
+
+	"Authorization": {
+        "__DefaultAPISecurity": {
+            "Create": "Deny",
+            "Read": "Deny",
+            "Reads": "Deny",
+            "ReadsBy": "Deny",
+            "ReadMax": "Deny",
+            "ReadSelectList": "Deny",
+            "Update": "Deny",
+            "Delete": "Deny",
+            "Count": "Deny",
+            "CountBy": "Deny",
+            "Schema": "Deny",
+            "Validate": "Deny",
+            "New": "Deny"
+        },
+        "Unauthenticated": {
+            "Create": "Allow",
+            "Read": "Allow",
+            "Reads": "Allow",
+            "ReadsBy": "Allow",
+            "ReadMax": "Allow",
+            "ReadSelectList": "Allow",
+            "Update": "Allow",
+            "Delete": "Allow",
+            "Count": "Allow",
+            "CountBy": "Allow",
+            "Schema": "Allow",
+            "Validate": "Allow",
+            "New": "Allow"
+        },
+        "User": {
+            "Create": "Allow",
+            "Read": "Allow",
+            "Reads": "Allow",
+            "ReadsBy": "Allow",
+            "ReadMax": "Allow",
+            "ReadSelectList": "Allow",
+            "Update": "Allow",
+            "Delete": "Allow",
+            "Count": "Allow",
+            "CountBy": "Allow",
+            "Schema": "Allow",
+            "Validate": "Allow",
+            "New": "Allow"
+        },
+        "Manager": {
+            "Create": "Allow",
+            "Read": "Allow",
+            "Reads": "Allow",
+            "ReadsBy": "Allow",
+            "ReadMax": "Allow",
+            "ReadSelectList": "Allow",
+            "Update": "Allow",
+            "Delete": "Allow",
+            "Count": "Allow",
+            "CountBy": "Allow",
+            "Schema": "Allow",
+            "Validate": "Allow",
+            "New": "Allow"
+        }
+    }
+}
