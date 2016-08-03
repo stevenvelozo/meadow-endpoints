@@ -18,15 +18,11 @@ var doAPICreateEndpoint = function(pRequest, pResponse, fNext)
 	// The default here is that any authenticated user can use this endpoint.
 	pRequest.EndpointAuthorizationRequirement = pRequest.EndpointAuthorizationLevels.Create;
 	
-	// INJECT: Pre authorization (for instance to change the authorization level)
-
 	if (pRequest.CommonServices.authorizeEndpoint(pRequest, pResponse, fNext) === false)
 	{
 		// If this endpoint fails, it's sent an error automatically.
 		return;
 	}
-
-	// INJECT: Pre endpoint operation
 
 	libAsync.waterfall(
 		[
@@ -48,7 +44,6 @@ var doAPICreateEndpoint = function(pRequest, pResponse, fNext)
 			},
 			function(fStageComplete)
 			{
-				//2. INJECT: Record modification before insert
 				pRequest.BehaviorModifications.runBehavior('Create-PreOperation', pRequest, fStageComplete);
 			},
 			function (fStageComplete)
@@ -66,8 +61,7 @@ var doAPICreateEndpoint = function(pRequest, pResponse, fNext)
 				//3. Prepare create query
 				var tmpQuery = pRequest.DAL.query;
 
-				// INJECT: Query configuration and population
-
+				tmpQuery.setIDUser(pRequest.UserSession.UserID)
 				tmpQuery.addRecord(pRequest.Record);
 
 				return fStageComplete(null, tmpQuery);
@@ -75,7 +69,7 @@ var doAPICreateEndpoint = function(pRequest, pResponse, fNext)
 			function(pPreparedQuery, fStageComplete)
 			{
 				//4. Do the create operation
-				pRequest.DAL.setIDUser(pRequest.UserSession.UserID).doCreate(pPreparedQuery,
+				pRequest.DAL.doCreate(pPreparedQuery,
 					function(pError, pQuery, pReadQuery, pRecord)
 					{
 						if (!pRecord)
@@ -92,7 +86,6 @@ var doAPICreateEndpoint = function(pRequest, pResponse, fNext)
 			},
 			function(fStageComplete)
 			{
-				// INJECT: Post insert record modifications
 				return pRequest.BehaviorModifications.runBehavior('Create-PostOperation', pRequest, fStageComplete);
 			},
 			function(fStageComplete)

@@ -96,6 +96,7 @@ var doAPIUpdateEndpoint = function(pRequest, pResponse, fNext)
 				//3. Prepare update query
 				var tmpQuery = pRequest.DAL.query;
 
+				tmpQuery.setIDUser(pRequest.UserSession.UserID)
 				tmpQuery.addRecord(pRequest.Record);
 
 				return fStageComplete(null, tmpQuery);
@@ -103,7 +104,7 @@ var doAPIUpdateEndpoint = function(pRequest, pResponse, fNext)
 			function(pPreparedQuery, fStageComplete)
 			{
 				//4. Do the update operation
-				pRequest.DAL.setIDUser(pRequest.UserSession.UserID).doUpdate(pPreparedQuery,
+				pRequest.DAL.doUpdate(pPreparedQuery,
 					function(pError, pQuery, pReadQuery, pRecord)
 					{
 						if (!pRecord)
