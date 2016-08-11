@@ -65,6 +65,10 @@ var MeadowAuthorizers = function()
 				pRequest.MeadowAuthorization = true;
 			}
 
+			if (pRequest.Satchel &&
+				pRequest.Satchel.AuthorizeOverride)
+				return fComplete(false);
+
 			// Run an injected authorizer (if it exists)
 			if (_AuthorizerFunctions.hasOwnProperty(pAuthorizerHash))
 			{
