@@ -91,6 +91,9 @@ _MeadowEndpoints.connectRoutes(_Orator.webServer);
 
 var libChancePrototype = require('chance');
 var libChance = new libChancePrototype();
+
+var _IDTestRequest_Max = 0;
+// Magically create a record, and stuff the user ID in (to track the magic Meadow does)
 _Orator.webServer.get
 (
     '/Magic/:Index',
@@ -105,10 +108,44 @@ _Orator.webServer.get
 			function(pError, pEndpointResponse)
 			{
 				// Expect response to be the record we just created.
+				// Set the testrequest max to be this, which isn't always accurate but is safe.
+				_IDTestRequest_Max = pEndpointResponse.body.IDTestRequest;
                 pResponse.send(pEndpointResponse.body);
 				return fNext();
 			}
 	    );
+    }
+);
+
+// Magically return a record, based on the current max id.  If the max ID is 0, return an empty javascript object.
+_Orator.webServer.get
+(
+    '/Magic',
+    function(pRequest, pResponse, fNext)
+    {
+    	if (_IDTestRequest_Max < 0)
+    	{
+    		// If there have been no records created return an empty object
+                pResponse.send({});
+				return fNext();
+    	}
+    	else
+    	{
+    		// IDRequestMax is not set
+    		var tmpIDTestRequest = libChance.integer({min: 0, max: _IDTestRequest_Max});
+	        _MeadowEndpoints.invokeEndpoint('Read', 
+	            {
+	                IDTestRequest: tmpIDTestRequest
+	            },
+	            pRequest,
+				function(pError, pEndpointResponse)
+				{
+					// Expect response to be the record we just created.
+	                pResponse.send(pEndpointResponse.body);
+					return fNext();
+				}
+	    	);
+    	}
     }
 );
 
