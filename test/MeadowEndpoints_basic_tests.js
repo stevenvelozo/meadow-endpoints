@@ -1975,6 +1975,27 @@ suite
 				);
 				test
 				(
+					'invoke update: update a record, override security to authorize the request',
+					function(fDone)
+					{
+						// Change animal 1
+						var tmpRecord = {IDAnimal:1, Type:'Corgi'};
+						_MeadowEndpoints.invokeEndpoint('Update', tmpRecord, {UserSession: _MockSessionValidUser, Satchel: {AuthorizeOverride: true}},
+							function(pError, pResponse)
+							{
+								// Expect response to be the record we just updated.
+								var tmpResult = pResponse.Record; //JSON.parse(pResponse.text);
+								Expect(tmpResult.Type).to.equal('Corgi');
+								Expect(tmpResult.CreatingIDUser).to.equal(1);
+								Expect(tmpResult.UpdatingIDUser).to.equal(_MockSessionValidUser.UserID);
+
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
 					'invoke delete: delete a record',
 					function(fDone)
 					{
