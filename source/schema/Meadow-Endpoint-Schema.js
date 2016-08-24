@@ -29,7 +29,7 @@ var doAPISchemaEndpoint = function(pRequest, pResponse, fNext)
 
 	// INJECT: After the schema is grabbed, let the user alter it
 
-	pRequest.CommonServices.log.info('Delivered a JSON schema for '+pRequest.DAL.scope, {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Schema'});
+	pRequest.CommonServices.log.info('Delivered a JSON schema for '+pRequest.DAL.scope, {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Schema'}, pRequest);
 	pResponse.send(tmpSchema);
 	return fNext();
 };

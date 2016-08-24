@@ -35,7 +35,7 @@ var doAPIValidateEndpoint = function(pRequest, pResponse, fNext)
 
 	// INJECT: After the record is validated, let the API user alter the resultant
 
-	pRequest.CommonServices.log.info('Delivered validation for '+pRequest.DAL.scope+': '+tmpValid, {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Validate'});
+	pRequest.CommonServices.log.info('Delivered validation for '+pRequest.DAL.scope+': '+tmpValid, {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Validate'}, pRequest);
 	pResponse.send(tmpValid);
 	return fNext();
 };

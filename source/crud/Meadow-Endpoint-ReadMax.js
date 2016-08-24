@@ -55,7 +55,7 @@ var doAPIReadEndpoint = function(pRequest, pResponse, fNext)
 			{
 				if (!pRecord)
 				{
-					pRequest.CommonServices.log.info('Record not found', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-ReadMax'});
+					pRequest.CommonServices.log.info('Record not found', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-ReadMax'}, pRequest);
 					return pResponse.send({});
 				}
 				pRequest.Record = pRecord;
@@ -76,7 +76,7 @@ var doAPIReadEndpoint = function(pRequest, pResponse, fNext)
 				return pRequest.CommonServices.sendError('Error retreiving a record.', pRequest, pResponse, fNext);
 			}
 
-			pRequest.CommonServices.log.info('Read top record of '+pRequest.params.IDRecord+'.', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-ReadMax'});
+			pRequest.CommonServices.log.info('Read top record of '+pRequest.params.IDRecord+'.', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-ReadMax'}, pRequest);
 			pResponse.send(pRequest.Record);
 			return fNext();
 		}

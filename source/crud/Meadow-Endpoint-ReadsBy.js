@@ -102,7 +102,7 @@ var doAPIReadsByEndpoint = function(pRequest, pResponse, fNext)
 			{
 				if (!pRecords)
 				{
-					pRequest.CommonServices.log.info('Records not found', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-ReadsBy'});
+					pRequest.CommonServices.log.info('Records not found', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-ReadsBy'}, pRequest);
 					return pResponse.send([]);
 				}
 				pRequest.Records = pRecords;
@@ -139,7 +139,7 @@ var doAPIReadsByEndpoint = function(pRequest, pResponse, fNext)
 				return pRequest.CommonServices.sendCodedError('Error retreiving records by value.', pError, pRequest, pResponse, fNext);
 			}
 
-			pRequest.CommonServices.log.info('Read a list of records by '+pRequest.params.ByField+' = '+pRequest.params.ByValue+'.', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-ReadsBy'});
+			pRequest.CommonServices.log.info('Read a list of records by '+pRequest.params.ByField+' = '+pRequest.params.ByValue+'.', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-ReadsBy'}, pRequest);
 			pResponse.send(pRequest.Records);
 			return fNext();
 		}

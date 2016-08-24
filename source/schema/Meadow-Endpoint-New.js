@@ -29,7 +29,7 @@ var doAPINewEndpoint = function(pRequest, pResponse, fNext)
 
 	// INJECT: After the empty object is grabbed, let the user alter it
 
-	pRequest.CommonServices.log.info('Delivered new '+pRequest.DAL.scope, {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-New'});
+	pRequest.CommonServices.log.info('Delivered new '+pRequest.DAL.scope, {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-New'}, pRequest);
 	pResponse.send(tmpEmptyObject);
 	return fNext();
 };
