@@ -132,6 +132,52 @@ var MeadowEndpoints = function()
 			New: 1
 		});
 
+
+		// The default behaviors available.
+		// Turning these off before wiring the endpoints up will result in their counterpart endpoints not being available.
+		var _EnabledBehaviors = (
+		{
+			Create: true,
+			// PUT  [/1.0/SomeEndpoint]
+
+			Read: true,
+			// GET  [/1.0/SomeEndpoint/:IDRecord]
+			// GET  [/1.0/SomeEndpoint/Max/:ColumnName]
+
+			Reads: true,
+			// GET  [/1.0/SomeEndpoints]
+			// GET  [/1.0/SomeEndpoints/:Begin/:Cap]
+			// GET  [/1.0/SomeEndpoints/By/:ByField/:ByValue]
+			// GET  [/1.0/SomeEndpoints/By/:ByField/:ByValue/:Begin/:Cap]
+			// GET  [/1.0/SomeEndpoints/FilteredTo/:Filter]
+			// GET  [/1.0/SomeEndpoints/FilteredTo/:Filter/:Begin/:Cap]
+			// GET  [/1.0/SomeEndpointSelect]
+			// GET  [/1.0/SomeEndpointSelect/:Begin/:Cap]
+			// GET  [/1.0/SomeEndpointSelect/FilteredTo/:Filter]
+			// GET  [/1.0/SomeEndpointSelect/FilteredTo/:Filter/:Begin/:Cap]
+
+			Update: true,
+			// POST [/1.0/SomeEndpoint]
+
+			Delete: true,
+			// DEL  [/1.0/SomeEndpoint]
+			// DEL  [/1.0/SomeEndpoint/:IDRecord]
+
+			Count: true,
+			// GET  [/1.0/SomeEndpoints/Count]
+			// GET  [/1.0/SomeEndpoints/Count/By/:ByField/:ByValue]
+			// GET  [/1.0/SomeEndpoints/Count/FilteredTo/:Filter]
+
+			Schema: true,
+			// GET  [/1.0/SomeEndpoint/Schema]
+
+			Validate: true,
+			// POST [/1.0/SomeEndpoint/Schema/Validate]
+
+			New: true
+			// GET  [/1.0/SomeEndpoint/Schema/New]
+		});
+		
 		/**
 		* Customize an endpoint Authorization Level
 		*
@@ -207,7 +253,7 @@ var MeadowEndpoints = function()
 
 			//libRestRouteParse
 			return fNext();
-		}
+		};
 
 
 		/**
@@ -233,32 +279,59 @@ var MeadowEndpoints = function()
 
 			// These special schema services must come in the route table before the READ because they
 			// technically block out the routes for the IDRecord 'Schema' (e.g. /1.0/EntityName/Schema)
-			pRestServer.get('/1.0/'+tmpEndpointName+'/Schema', _EndpointAuthenticators.Schema, wireState, _Endpoints.Schema);
-			pRestServer.get('/1.0/'+tmpEndpointName+'/Schema/New', _EndpointAuthenticators.New, wireState, _Endpoints.New);
-			pRestServer.post('/1.0/'+tmpEndpointName+'/Schema/Validate', _CommonServices.bodyParser(), _EndpointAuthenticators.Validate, wireState, _Endpoints.Validate);
-
+			if (_EnabledBehaviors.Schema)
+			{
+				pRestServer.get('/1.0/'+tmpEndpointName+'/Schema', _EndpointAuthenticators.Schema, wireState, _Endpoints.Schema);
+			}
+			if (_EnabledBehaviors.New)
+			{
+				pRestServer.get('/1.0/'+tmpEndpointName+'/Schema/New', _EndpointAuthenticators.New, wireState, _Endpoints.New);
+			}
+			if (_EnabledBehaviors.Validate)
+			{
+				pRestServer.post('/1.0/'+tmpEndpointName+'/Schema/Validate', _CommonServices.bodyParser(), _EndpointAuthenticators.Validate, wireState, _Endpoints.Validate);
+			}
+	
 			// Custom single record endpoints
 
 			// Standard CRUD and Count endpoints
-			pRestServer.post('/1.0/'+tmpEndpointName, _CommonServices.bodyParser(), _EndpointAuthenticators.Create, wireState, _Endpoints.Create);
-			pRestServer.get('/1.0/'+tmpEndpointName+'/Max/:ColumnName', _EndpointAuthenticators.Read, wireState, _Endpoints.ReadMax);
-			pRestServer.get('/1.0/'+tmpEndpointName+'/:IDRecord', _EndpointAuthenticators.Read, wireState, _Endpoints.Read);
-			pRestServer.get('/1.0/'+tmpEndpointName+'s', _EndpointAuthenticators.Reads, wireState, _Endpoints.Reads);
-			pRestServer.get('/1.0/'+tmpEndpointName+'s/By/:ByField/:ByValue', _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadsBy);
-			pRestServer.get('/1.0/'+tmpEndpointName+'s/By/:ByField/:ByValue/:Begin/:Cap', _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadsBy);
-			pRestServer.get('/1.0/'+tmpEndpointName+'s/FilteredTo/:Filter', _EndpointAuthenticators.Reads, wireState, _Endpoints.Reads);
-			pRestServer.get('/1.0/'+tmpEndpointName+'s/FilteredTo/:Filter/:Begin/:Cap', _EndpointAuthenticators.Reads, wireState, _Endpoints.Reads);
-			pRestServer.get('/1.0/'+tmpEndpointName+'Select', _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadSelectList);
-			pRestServer.get('/1.0/'+tmpEndpointName+'Select/:Begin/:Cap', _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadSelectList);
-			pRestServer.get('/1.0/'+tmpEndpointName+'Select/FilteredTo/:Filter', _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadSelectList);
-			pRestServer.get('/1.0/'+tmpEndpointName+'Select/FilteredTo/:Filter/:Begin/:Cap', _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadSelectList);
-			pRestServer.get('/1.0/'+tmpEndpointName+'s/:Begin/:Cap', _EndpointAuthenticators.Reads, wireState, _Endpoints.Reads);
-			pRestServer.put('/1.0/'+tmpEndpointName, _CommonServices.bodyParser(), _EndpointAuthenticators.Update, wireState, _Endpoints.Update);
-			pRestServer.del('/1.0/'+tmpEndpointName, _CommonServices.bodyParser(), _EndpointAuthenticators.Delete, wireState, _Endpoints.Delete);
-			pRestServer.del('/1.0/'+tmpEndpointName+'/:IDRecord', _EndpointAuthenticators.Delete, wireState, _Endpoints.Delete);
-			pRestServer.get('/1.0/'+tmpEndpointName+'s/Count', _EndpointAuthenticators.Count, wireState, _Endpoints.Count);
-			pRestServer.get('/1.0/'+tmpEndpointName+'s/Count/By/:ByField/:ByValue', _EndpointAuthenticators.Count, wireState, _Endpoints.CountBy);
-			pRestServer.get('/1.0/'+tmpEndpointName+'s/Count/FilteredTo/:Filter', _EndpointAuthenticators.Count, wireState, _Endpoints.Count);
+			if (_EnabledBehaviors.Create)
+			{
+				pRestServer.post('/1.0/'+tmpEndpointName, _CommonServices.bodyParser(), _EndpointAuthenticators.Create, wireState, _Endpoints.Create);
+			}
+			if (_EnabledBehaviors.Read)
+			{
+				pRestServer.get('/1.0/'+tmpEndpointName+'/Max/:ColumnName', _EndpointAuthenticators.Read, wireState, _Endpoints.ReadMax);
+				pRestServer.get('/1.0/'+tmpEndpointName+'/:IDRecord', _EndpointAuthenticators.Read, wireState, _Endpoints.Read);
+			}
+			if (_EnabledBehaviors.Reads)
+			{
+				pRestServer.get('/1.0/'+tmpEndpointName+'s', _EndpointAuthenticators.Reads, wireState, _Endpoints.Reads);
+				pRestServer.get('/1.0/'+tmpEndpointName+'s/By/:ByField/:ByValue', _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadsBy);
+				pRestServer.get('/1.0/'+tmpEndpointName+'s/By/:ByField/:ByValue/:Begin/:Cap', _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadsBy);
+				pRestServer.get('/1.0/'+tmpEndpointName+'s/FilteredTo/:Filter', _EndpointAuthenticators.Reads, wireState, _Endpoints.Reads);
+				pRestServer.get('/1.0/'+tmpEndpointName+'s/FilteredTo/:Filter/:Begin/:Cap', _EndpointAuthenticators.Reads, wireState, _Endpoints.Reads);
+				pRestServer.get('/1.0/'+tmpEndpointName+'Select', _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadSelectList);
+				pRestServer.get('/1.0/'+tmpEndpointName+'Select/:Begin/:Cap', _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadSelectList);
+				pRestServer.get('/1.0/'+tmpEndpointName+'Select/FilteredTo/:Filter', _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadSelectList);
+				pRestServer.get('/1.0/'+tmpEndpointName+'Select/FilteredTo/:Filter/:Begin/:Cap', _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadSelectList);
+				pRestServer.get('/1.0/'+tmpEndpointName+'s/:Begin/:Cap', _EndpointAuthenticators.Reads, wireState, _Endpoints.Reads);
+			}
+			if (_EnabledBehaviors.Update)
+			{
+					pRestServer.put('/1.0/'+tmpEndpointName, _CommonServices.bodyParser(), _EndpointAuthenticators.Update, wireState, _Endpoints.Update);
+			}
+			if (_EnabledBehaviors.Delete)
+			{
+					pRestServer.del('/1.0/'+tmpEndpointName, _CommonServices.bodyParser(), _EndpointAuthenticators.Delete, wireState, _Endpoints.Delete);
+					pRestServer.del('/1.0/'+tmpEndpointName+'/:IDRecord', _EndpointAuthenticators.Delete, wireState, _Endpoints.Delete);
+			}
+			if (_EnabledBehaviors.Count)
+			{
+					pRestServer.get('/1.0/'+tmpEndpointName+'s/Count', _EndpointAuthenticators.Count, wireState, _Endpoints.Count);
+					pRestServer.get('/1.0/'+tmpEndpointName+'s/Count/By/:ByField/:ByValue', _EndpointAuthenticators.Count, wireState, _Endpoints.CountBy);
+					pRestServer.get('/1.0/'+tmpEndpointName+'s/Count/FilteredTo/:Filter', _EndpointAuthenticators.Count, wireState, _Endpoints.Count);
+			}
 		};
 
 		
@@ -291,7 +364,7 @@ var MeadowEndpoints = function()
 			});
 
 			return fCallback();
-		}
+		};
 
 		/**
 		* Invoke a meadow endpoint programmatically
@@ -304,7 +377,7 @@ var MeadowEndpoints = function()
 
 			if (!_Endpoints[pMethod])
 			{
-				_CommonServices.log.error('Endpoint \'' + pMethod + '\' does not exist!')
+				_CommonServices.log.error('Endpoint \'' + pMethod + '\' does not exist!');
 				return tmpCallback('Endpoint \'' + pMethod + '\' does not exist!'); //might be better as an exception
 			}
 
@@ -360,7 +433,7 @@ var MeadowEndpoints = function()
 			{
 				return tmpCallback(err, pResponse);
 			});
-		}
+		};
 
 
 		/**
@@ -420,6 +493,18 @@ var MeadowEndpoints = function()
 		Object.defineProperty(tmpNewMeadowEndpointObject, 'endpointAuthenticators',
 			{
 				get: function() { return _EndpointAuthenticators; },
+				enumerable: true
+			});
+
+		/**
+		 * EnabledBehaviors
+		 *
+		 * @property enabledBehaviors
+		 * @type object
+		 */
+		Object.defineProperty(tmpNewMeadowEndpointObject, 'enabledBehaviors',
+			{
+				get: function() { return _EnabledBehaviors; },
 				enumerable: true
 			});
 
