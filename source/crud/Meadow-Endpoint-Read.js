@@ -62,7 +62,7 @@ var doAPIReadEndpoint = function(pRequest, pResponse, fNext)
 			{
 				if (!pRecord)
 				{
-					pRequest.CommonServices.log.info('Record not found', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Read'});
+					pRequest.CommonServices.log.info('Record not found', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Read'}, pRequest);
 					return fStageComplete('Record not found');
 				}
 				pRequest.Record = pRecord;
@@ -99,7 +99,7 @@ var doAPIReadEndpoint = function(pRequest, pResponse, fNext)
 				return pRequest.CommonServices.sendCodedError('Error retreiving a record.', pError, pRequest, pResponse, fNext);
 			}
 
-			pRequest.CommonServices.log.info('Read a record with ID '+pRequest.params.IDRecord+'.', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Read'});
+			pRequest.CommonServices.log.info('Read a record with ID '+pRequest.params.IDRecord+'.', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Read'}, pRequest);
 			pResponse.send(pRequest.Record);
 			return fNext();
 		}

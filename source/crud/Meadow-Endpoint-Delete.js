@@ -127,7 +127,7 @@ var doAPIDeleteEndpoint = function(pRequest, pResponse, fNext)
 				return pRequest.CommonServices.sendCodedError('Error deleting a record.', pError, pRequest, pResponse, fNext);
 			}
 
-			pRequest.CommonServices.log.info('Deleted '+tmpRecordCount.Count+' records with ID '+tmpIDRecord+'.', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Delete'});
+			pRequest.CommonServices.log.info('Deleted '+tmpRecordCount.Count+' records with ID '+tmpIDRecord+'.', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Delete'}, pRequest);
 			pResponse.send(tmpRecordCount);
 
 			return fNext();

@@ -79,7 +79,7 @@ var doAPICountEndpoint = function(pRequest, pResponse, fNext)
 				return pRequest.CommonServices.sendCodedError('Error retreiving a count.', pError, pRequest, pResponse, fNext);
 			}
 
-			pRequest.CommonServices.log.info('Delivered recordset count of '+pRequest.Result+'.', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Count'});
+			pRequest.CommonServices.log.info('Delivered recordset count of '+pRequest.Result+'.', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Count'}, pRequest);
 			pResponse.send(pRequest.Result);
 			return fNext();
 		}

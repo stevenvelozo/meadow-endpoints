@@ -71,7 +71,7 @@ var doAPIReadsEndpoint = function(pRequest, pResponse, fNext)
 			{
 				if (!pRecords)
 				{
-					pRequest.CommonServices.log.info('Records not found', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Reads'});
+					pRequest.CommonServices.log.info('Records not found', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Reads'}, pRequest);
 					return fStageComplete('Records not found');
 				}
 				pRequest.Records = pRecords;
@@ -108,7 +108,7 @@ var doAPIReadsEndpoint = function(pRequest, pResponse, fNext)
 				return pRequest.CommonServices.sendCodedError('Error retreiving records by value.', pError, pRequest, pResponse, fNext);
 			}
 
-			pRequest.CommonServices.log.info('Read a list of records.', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Reads'});
+			pRequest.CommonServices.log.info('Read a list of records.', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Reads'}, pRequest);
 			pResponse.send(pRequest.Records);
 			return fNext();
 		}
