@@ -21,11 +21,6 @@ var MeadowCommonServices = function()
 
 		var libRestify = require('restify');
 
-
-		var tmpErrorMessage = 'Error creating a record.';
-				if (typeof(pError) === 'object')
-					tmpErrorMessage = pError.Message;
-
 		/**
 		 * Send an Error Code and Error Message to the client, and log it as an error in the log files.
 		 *
