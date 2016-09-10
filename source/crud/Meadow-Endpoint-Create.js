@@ -74,7 +74,7 @@ var doAPICreateEndpoint = function(pRequest, pResponse, fNext)
 					{
 						if (!pRecord)
 						{
-							return fStageComplete('Error creating a record.');
+							return fStageComplete('Error in DAL create: '+pError);
 						}
 
 						pRequest.Record = pRecord;
