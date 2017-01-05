@@ -20,6 +20,8 @@ var tmpFableSettings = 	(
 	Product: 'MockOratorAlternate',
 	ProductVersion: '0.0.0',
 
+	"UnauthorizedRequestDelay": 1000,
+
 	APIServerPort: 9080,
 
 	MySQL:
