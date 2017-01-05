@@ -20,6 +20,7 @@ var MeadowCommonServices = function()
 		var _Log = _Meadow.fable.log;
 
 		var libRestify = require('restify');
+		var libSleep = require('sleep-async')();
 
 		/**
 		 * Send an Error Code and Error Message to the client, and log it as an error in the log files.
@@ -94,7 +95,7 @@ var MeadowCommonServices = function()
 			if (!pRequest.EndpointAuthenticated)
 			{
 				pRequest.CommonServices.log.warn('Unauthenticated user attempting to get a secured resource.', {RequestID:pRequest.RequestUUID}, pRequest);
-				pRequest.CommonServices.sendError('You must be authenticated to access this resource.', pRequest, pResponse, fNext);
+				sendNotAuthorized('You must be authenticated to access this resource.', pRequest, pResponse, fNext);
 				return false;
 			}
 
@@ -136,9 +137,14 @@ var MeadowCommonServices = function()
 		{
 			// TODO: Use the proper http code
 			_Log.trace('API Unauthorized Attempt: '+pMessage, {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:'APIUnauthorized'}, pRequest);
-			pResponse.send({Error:pMessage});
 
-			return fNext();
+			//cause a delay to mitigate DoS type attacks against endpoints
+			libSleep.sleep((_Meadow.fable.settings.UnauthorizedRequestDelay ? _Meadow.fable.settings.UnauthorizedRequestDelay : 15000), function()
+			{
+				pResponse.send({Error:pMessage});
+
+				return fNext();
+			});
 		};
 
 
