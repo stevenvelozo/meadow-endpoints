@@ -43,6 +43,7 @@ var MeadowEndpoints = function()
 		var _Endpoints = (
 		{
 			Create: require('./crud/Meadow-Endpoint-Create.js'),
+			Creates: require('./crud/Meadow-Endpoint-BulkCreate.js'),
 
 			Read: require('./crud/Meadow-Endpoint-Read.js'),
 			ReadMax: require('./crud/Meadow-Endpoint-ReadMax.js'),
@@ -53,6 +54,7 @@ var MeadowEndpoints = function()
 			ReadSelectList: require('./crud/Meadow-Endpoint-ReadSelectList'),
 
 			Update: require('./crud/Meadow-Endpoint-Update.js'),
+			Updates: require('./crud/Meadow-Endpoint-BulkUpdate.js'),
 
 			Delete: require('./crud/Meadow-Endpoint-Delete.js'),
 
@@ -298,6 +300,7 @@ var MeadowEndpoints = function()
 			if (_EnabledBehaviors.Create)
 			{
 				pRestServer.post('/1.0/'+tmpEndpointName, _CommonServices.bodyParser(), _EndpointAuthenticators.Create, wireState, _Endpoints.Create);
+				pRestServer.post('/1.0/'+tmpEndpointName+'s', _CommonServices.bodyParser(), _EndpointAuthenticators.Create, wireState, _Endpoints.Creates);
 			}
 			if (_EnabledBehaviors.Read)
 			{
@@ -320,6 +323,7 @@ var MeadowEndpoints = function()
 			if (_EnabledBehaviors.Update)
 			{
 					pRestServer.put('/1.0/'+tmpEndpointName, _CommonServices.bodyParser(), _EndpointAuthenticators.Update, wireState, _Endpoints.Update);
+					pRestServer.put('/1.0/'+tmpEndpointName+'s', _CommonServices.bodyParser(), _EndpointAuthenticators.Update, wireState, _Endpoints.Updates);
 			}
 			if (_EnabledBehaviors.Delete)
 			{

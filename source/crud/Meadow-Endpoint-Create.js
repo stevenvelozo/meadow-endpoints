@@ -61,7 +61,7 @@ var doAPICreateEndpoint = function(pRequest, pResponse, fNext)
 				//3. Prepare create query
 				var tmpQuery = pRequest.DAL.query;
 
-				tmpQuery.setIDUser(pRequest.UserSession.UserID)
+				tmpQuery.setIDUser(pRequest.UserSession.UserID);
 				tmpQuery.addRecord(pRequest.Record);
 
 				return fStageComplete(null, tmpQuery);
