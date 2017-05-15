@@ -24,6 +24,8 @@ var doUpdate = function(pRecordToModify, pRequest, pResponse, fCallback)
 		[
 			function(fStageComplete)
 			{
+				pRequest.Record = pRecordToModify;
+
 				var tmpQuery = pRequest.DAL.query;
 
 				// This is not overloadable.

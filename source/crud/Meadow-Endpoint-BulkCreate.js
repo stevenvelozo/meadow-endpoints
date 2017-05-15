@@ -19,6 +19,8 @@ var doCreate = function(pRecord, pRequest, pResponse, fCallback)
 		[
 			function(fStageComplete)
 			{
+				// Do this for compatibility with injected behaviors
+				pRequest.Record = pRecord;
 				pRequest.BehaviorModifications.runBehavior('Create-PreOperation', pRequest, fStageComplete);
 			},
 			function(fStageComplete)
