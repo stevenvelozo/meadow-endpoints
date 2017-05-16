@@ -46,7 +46,7 @@ var doCreate = function(pRecord, pRequest, pResponse, fCallback)
 
 						pRequest.CreatedRecords.push(pNewRecord);
 
-						pRequest.CommonServices.log.info('Created a record with ID '+pNewRecord[pRequest.DAL.defaultIdentifier]+'.', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-CreateBulk'}, pRequest);
+						//pRequest.CommonServices.log.info('Created a record with ID '+pNewRecord[pRequest.DAL.defaultIdentifier]+'.', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-CreateBulk'}, pRequest);
 
 						return fStageComplete(null);
 					});

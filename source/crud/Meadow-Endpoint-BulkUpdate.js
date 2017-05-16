@@ -101,7 +101,7 @@ var doUpdate = function(pRecordToModify, pRequest, pResponse, fCallback)
 
 						pRequest.UpdatedRecords.push(pRecord);
 
-						pRequest.CommonServices.log.info('Updated a record with ID '+pRecord[pRequest.DAL.defaultIdentifier]+'.', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-UpdateBulk'}, pRequest);
+						//pRequest.CommonServices.log.info('Updated a record with ID '+pRecord[pRequest.DAL.defaultIdentifier]+'.', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-UpdateBulk'}, pRequest);
 
 						return fStageComplete(null);
 					});
