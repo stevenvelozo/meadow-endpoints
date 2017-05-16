@@ -90,7 +90,7 @@ var doAPIBulkCreateEndpoint = function(pRequest, pResponse, fNext)
 					return pRequest.CommonServices.sendError('Bulk record create failure - a valid array of records is required.', pRequest, pResponse, fNext);
 				}
 
-				pRequest.Records = pRequest.body;
+				pRequest.BulkRecords = pRequest.body;
 
 				return fStageComplete(null);
 			},
@@ -113,7 +113,7 @@ var doAPIBulkCreateEndpoint = function(pRequest, pResponse, fNext)
 			{
 				pRequest.CreatedRecords = [];
 				
-				libAsync.eachSeries(pRequest.Records,
+				libAsync.eachSeries(pRequest.BulkRecords,
 					function (pRecord, fCallback)
 					{
 						doCreate(pRecord, pRequest, pResponse, fCallback);

@@ -148,7 +148,7 @@ var doAPIUpdateEndpoint = function(pRequest, pResponse, fNext)
 					return pRequest.CommonServices.sendError('Record update failure - a valid record is required.', pRequest, pResponse, fNext);
 				}
 
-				pRequest.Records = pRequest.body;
+				pRequest.BulkRecords = pRequest.body;
 
 				return fStageComplete(null);
 			},
@@ -156,7 +156,7 @@ var doAPIUpdateEndpoint = function(pRequest, pResponse, fNext)
 			{
 				pRequest.UpdatedRecords = [];
 				
-				libAsync.eachSeries(pRequest.Records,
+				libAsync.eachSeries(pRequest.BulkRecords,
 					function (pRecord, fCallback)
 					{
 						doUpdate(pRecord, pRequest, pResponse, fCallback);
