@@ -33,10 +33,16 @@ var doCreate = function(pRecord, pRequest, pResponse, fCallback)
 
 				return fStageComplete(null, tmpQuery);
 			},
-			function(pPreparedQuery, fStageComplete)
+			// 3. INJECT: Query configuration
+			function (tmpQuery, fStageComplete)
+			{
+				pRequest.Query = tmpQuery;
+				pRequest.BehaviorModifications.runBehavior('Create-QueryConfiguration', pRequest, fStageComplete);
+			},
+			function(fStageComplete)
 			{
 				//4. Do the create operation
-				pRequest.DAL.doCreate(pPreparedQuery,
+				pRequest.DAL.doCreate(pRequest.Query,
 					function(pError, pQuery, pReadQuery, pNewRecord)
 					{
 						if (!pNewRecord)
