@@ -3,3 +3,5 @@
 -- MIT License
 
 CREATE DATABASE IF NOT EXISTS FableTest;
+
+DELETE FROM FableTest WHERE 1=1;
