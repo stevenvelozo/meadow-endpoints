@@ -67,6 +67,9 @@ var getFilterComparisonOperator = function(pFilterOperator)
 		case 'LK':
 			tmpOperator = 'LIKE';
 			break;
+		case 'NLK':
+			tmpOperator = 'NOT LIKE';
+			break;
 		case 'IN':
 			tmpOperator = 'IS NULL';
 			break;
