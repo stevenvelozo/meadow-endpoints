@@ -49,6 +49,8 @@ var doCreate = function(pRecord, pRequest, pResponse, fCallback)
 						{
 							return fStageComplete('Error in DAL create: '+pError);
 						}
+						
+						pRequest.Record = pNewRecord;
 
 						pRequest.CreatedRecords.push(pNewRecord);
 

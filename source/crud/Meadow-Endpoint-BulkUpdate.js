@@ -70,7 +70,10 @@ var doUpdate = function(pRecordToModify, pRequest, pResponse, fCallback)
 				}
 
 				// It looks like this record was not authorized.  Send an error.
-				return fStageComplete({Code:405,Message:'UNAUTHORIZED ACCESS IS NOT ALLOWED'});
+				var tmpError = {Code:405,Message:'UNAUTHORIZED ACCESS IS NOT ALLOWED'};
+				tmpError.Scope = pRequest.DAL.scope;
+				tmpError[pRequest.DAL.defaultIdentifier] = pRequest.Record[pRequest.DAL.defaultIdentifier];
+				return fStageComplete(tmpError);
 			},
 			// 3a. INJECT: Query configuration
 			function (fStageComplete)
