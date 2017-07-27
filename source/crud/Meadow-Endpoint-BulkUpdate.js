@@ -101,6 +101,8 @@ var doUpdate = function(pRecordToModify, pRequest, pResponse, fCallback)
 						{
 							return fStageComplete('Error updating a record.');
 						}
+						
+						pRequest.Record = pRecord;
 
 						pRequest.UpdatedRecords.push(pRecord);
 
