@@ -79,6 +79,12 @@ var getFilterComparisonOperator = function(pFilterOperator)
 		case 'INN':
 			tmpOperator = 'IN';
 			break;
+		case 'FOP':
+			tmpOperator = '(';
+			break;
+		case 'FCP':
+			tmpOperator = ')';
+			break;
 	}
 	return tmpOperator;
 };
