@@ -121,6 +121,14 @@ var addFilterStanzaToQuery = function(pFilterStanza, pQuery)
 			pQuery.addSort({Column:pFilterStanza.Field, Direction:tmpSortDirection});
 			break;
 
+		case 'FOP':   // Filter Open Paren
+			pQuery.addFilter('', '', '(');
+			break;
+
+		case 'FCP':   // Filter Close Paren
+			pQuery.addFilter('', '', ')');
+			break;
+
 
 		default:
 			//console.log('Unparsable filter stanza.');
