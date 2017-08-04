@@ -67,6 +67,9 @@ var getFilterComparisonOperator = function(pFilterOperator)
 		case 'LK':
 			tmpOperator = 'LIKE';
 			break;
+		case 'NLK':
+			tmpOperator = 'NOT LIKE';
+			break;
 		case 'IN':
 			tmpOperator = 'IS NULL';
 			break;
@@ -75,6 +78,12 @@ var getFilterComparisonOperator = function(pFilterOperator)
 			break;
 		case 'INN':
 			tmpOperator = 'IN';
+			break;
+		case 'FOP':
+			tmpOperator = '(';
+			break;
+		case 'FCP':
+			tmpOperator = ')';
 			break;
 	}
 	return tmpOperator;
@@ -110,6 +119,14 @@ var addFilterStanzaToQuery = function(pFilterStanza, pQuery)
 		case 'FSF':   // Filter Sort Field
 			var tmpSortDirection = (pFilterStanza.Operator === 'DESC') ? 'Descending' : 'Ascending';
 			pQuery.addSort({Column:pFilterStanza.Field, Direction:tmpSortDirection});
+			break;
+
+		case 'FOP':   // Filter Open Paren
+			pQuery.addFilter('', '', '(');
+			break;
+
+		case 'FCP':   // Filter Close Paren
+			pQuery.addFilter('', '', ')');
 			break;
 
 

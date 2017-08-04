@@ -67,15 +67,21 @@ var doAPICreateEndpoint = function(pRequest, pResponse, fNext)
 				//3. Prepare create query
 				var tmpQuery = pRequest.DAL.query;
 
-				tmpQuery.setIDUser(pRequest.UserSession.UserID)
+				tmpQuery.setIDUser(pRequest.UserSession.UserID);
 				tmpQuery.addRecord(pRequest.Record);
 
 				return fStageComplete(null, tmpQuery);
 			},
-			function(pPreparedQuery, fStageComplete)
+			// 3. INJECT: Query configuration
+			function (tmpQuery, fStageComplete)
+			{
+				pRequest.Query = tmpQuery;
+				pRequest.BehaviorModifications.runBehavior('Create-QueryConfiguration', pRequest, fStageComplete);
+			},
+			function(fStageComplete)
 			{
 				//4. Do the create operation
-				pRequest.DAL.doCreate(pPreparedQuery,
+				pRequest.DAL.doCreate(pRequest.Query,
 					function(pError, pQuery, pReadQuery, pRecord)
 					{
 						if (!pRecord)

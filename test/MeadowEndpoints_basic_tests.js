@@ -2015,6 +2015,123 @@ suite
 						);
 					}
 				);
+				test
+				(
+					'bulk creates',
+					function(fDone)
+					{
+						var tmpRecords = [
+							{Name:'Billy', Type:'Cat'},
+							{Name:'Jim', Type:'Cat'},
+							{Name:'Janet', Type:'Cat'},
+							{Name:'Sweeps', Type:'Cat'},
+							{Name:'Stakes', Type:'Dog'},
+							{Name:'Sally', Type:'Dog'},
+							{Name:'Bill', Type:'Dog'},
+							{Name:'Chris', Type:'Dog'},
+							{Name:'Haji', Type:'Snake'}
+						];
+						_MockSessionValidUser.UserRoleIndex = 2;
+						libSuperTest('http://localhost:9080/')
+						.post('1.0/FableTests')
+						.send(tmpRecords)
+						.end(
+							function(pError, pResponse)
+							{
+								// Expect response to be the record we just created.
+								var tmpResult = JSON.parse(pResponse.text);
+								//console.log(JSON.stringify(tmpResult,null,4));
+								Expect(tmpResult[0].Name).to.equal('Billy');
+								Expect(tmpResult[5].Type).to.equal('Dog');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'bulk create with a bad record',
+					function(fDone)
+					{
+						var tmpRecords = [
+							{Name:'Astro', Type:'Cartoon'},
+							{Name:'Boy', Type:'Cartoon'},
+							{License:'Whoops', Type:'Cat'},
+							{Name:'Froggy', Type:'Cartoon'}
+						];
+						_MockSessionValidUser.UserRoleIndex = 2;
+						libSuperTest('http://localhost:9080/')
+						.post('1.0/FableTests')
+						.send(tmpRecords)
+						.end(
+							function(pError, pResponse)
+							{
+								// Expect response to be the record we just created.
+								var tmpResult = JSON.parse(pResponse.text);
+								Expect(tmpResult[0].Type).to.equal('Cartoon');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'bulk updates',
+					function(fDone)
+					{
+						var tmpRecords = [
+							{IDAnimal: 11, Type:'Hoss'},
+							{IDAnimal: 12, Type:'Hoss'},
+							{IDAnimal: 14, Type:'Hoss'},
+							{IDAnimal: 15, Type:'Hoss'}
+						];
+						_MockSessionValidUser.UserRoleIndex = 2;
+						libSuperTest('http://localhost:9080/')
+						.put('1.0/FableTests')
+						.send(tmpRecords)
+						.end(
+							function(pError, pResponse)
+							{
+								// Expect response to be the record we just created.
+								var tmpResult = JSON.parse(pResponse.text);
+								//console.log(JSON.stringify(tmpResult,null,4));
+								Expect(tmpResult[0].IDAnimal).to.equal(11);
+								Expect(tmpResult[0].Type).to.equal('Hoss');
+								Expect(tmpResult[1].Type).to.equal('Hoss');
+								Expect(tmpResult[2].Type).to.equal('Hoss');
+								Expect(tmpResult[3].Type).to.equal('Hoss');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'bulk updates with bad record',
+					function(fDone)
+					{
+						var tmpRecords = [
+							{IDAnimal: 11, Type:'Horsse'},
+							{IDAnimal: 12, Type:'Horsse'},
+							{IDAnimal: 14, Genus:'Hosse'},
+							{IDAnimal: 15, Type:'Hosses'}
+						];
+						_MockSessionValidUser.UserRoleIndex = 2;
+						libSuperTest('http://localhost:9080/')
+						.put('1.0/FableTests')
+						.send(tmpRecords)
+						.end(
+							function(pError, pResponse)
+							{
+								// Expect response to be the record we just created.
+								var tmpResult = JSON.parse(pResponse.text);
+								console.log(JSON.stringify(tmpResult,null,4));
+								Expect(tmpResult[3].Type).to.equal('Hosses');
+								fDone();
+							}
+						);
+					}
+				);
 			}
 		);
 	}
