@@ -1,10 +1,6 @@
 {
   "name": "meadow-endpoints",
-<<<<<<< HEAD
-  "version": "1.0.38",
-=======
   "version": "1.0.51",
->>>>>>> stevenvelozo/master
   "description": "Automatic API endpoints for Meadow data.",
   "main": "source/Meadow-Endpoints.js",
   "scripts": {
