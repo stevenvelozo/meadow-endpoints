@@ -35,12 +35,21 @@ var doAPICreateEndpoint = function(pRequest, pResponse, fNext)
 				}
 
 				pRequest.Record = pRequest.body;
+<<<<<<< HEAD
 				//Make sure record gets created with a customerID
 				if (!pRequest.Record.hasOwnProperty('IDCustomer') &&
 					pRequest.DAL.jsonSchema.properties.hasOwnProperty('IDCustomer'))
 				{
 					pRequest.Record.IDCustomer = pRequest.UserSession.CustomerID || 0;
 				}
+=======
+                //Make sure record gets created with a customerID
+                if (!pRequest.Record.hasOwnProperty('IDCustomer') &&
+                    pRequest.DAL.jsonSchema.properties.hasOwnProperty('IDCustomer'))
+                {
+                    pRequest.Record.IDCustomer = pRequest.UserSession.CustomerID || 0;
+                }
+>>>>>>> stevenvelozo/master
 
 				return fStageComplete(null);
 			},
