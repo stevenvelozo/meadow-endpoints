@@ -52,6 +52,7 @@ var MeadowEndpoints = function()
 			ReadsBy: require('./crud/Meadow-Endpoint-ReadsBy.js'),
 
 			ReadSelectList: require('./crud/Meadow-Endpoint-ReadSelectList'),
+			ReadLiteList: require('./crud/Meadow-Endpoint-ReadLiteList'),
 
 			Update: require('./crud/Meadow-Endpoint-Update.js'),
 			Updates: require('./crud/Meadow-Endpoint-BulkUpdate.js'),
@@ -157,6 +158,10 @@ var MeadowEndpoints = function()
 			// GET  [/1.0/SomeEndpointSelect/:Begin/:Cap]
 			// GET  [/1.0/SomeEndpointSelect/FilteredTo/:Filter]
 			// GET  [/1.0/SomeEndpointSelect/FilteredTo/:Filter/:Begin/:Cap]
+			// GET  [/1.0/SomeEndpoint/Lite]
+			// GET  [/1.0/SomeEndpoint/Lite/:Begin/:Cap]
+			// GET  [/1.0/SomeEndpoint/Lite/FilteredTo/:Filter]
+			// GET  [/1.0/SomeEndpoint/Lite/FilteredTo/:Filter/:Begin/:Cap]
 
 			Update: true,
 			// POST [/1.0/SomeEndpoint]
@@ -318,6 +323,10 @@ var MeadowEndpoints = function()
 				pRestServer.get('/1.0/'+tmpEndpointName+'Select/:Begin/:Cap', _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadSelectList);
 				pRestServer.get('/1.0/'+tmpEndpointName+'Select/FilteredTo/:Filter', _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadSelectList);
 				pRestServer.get('/1.0/'+tmpEndpointName+'Select/FilteredTo/:Filter/:Begin/:Cap', _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadSelectList);
+				pRestServer.get('/1.0/'+tmpEndpointName+'s/Lite', _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadLiteList);
+				pRestServer.get('/1.0/'+tmpEndpointName+'s/Lite/:Begin/:Cap', _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadLiteList);
+				pRestServer.get('/1.0/'+tmpEndpointName+'s/Lite/FilteredTo/:Filter', _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadLiteList);
+				pRestServer.get('/1.0/'+tmpEndpointName+'s/Lite/FilteredTo/:Filter/:Begin/:Cap', _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadLiteList);
 				pRestServer.get('/1.0/'+tmpEndpointName+'s/:Begin/:Cap', _EndpointAuthenticators.Reads, wireState, _Endpoints.Reads);
 			}
 			if (_EnabledBehaviors.Update)

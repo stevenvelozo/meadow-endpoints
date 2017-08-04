@@ -2131,6 +2131,24 @@ suite
 						);
 					}
 				);
+				test
+				(
+					'invoke readlite: get all records',
+					function(fDone)
+					{
+						_MeadowEndpoints.invokeEndpoint('ReadLiteList', {}, {UserSession: _MockSessionValidUser},
+							function (pError, pResponse)
+							{
+								console.log(pResponse.body)
+								Expect(pResponse.body)
+									.to.be.an('array');
+								//var tmpResults = JSON.parse(pResponse.text);
+								//Expect(tmpResults.Error).to.contain('authenticated');
+								fDone();
+							}
+						);
+					}
+				);
 			}
 		);
 	}

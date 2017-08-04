@@ -21,6 +21,14 @@ var doCreate = function(pRecord, pRequest, pResponse, fCallback)
 			{
 				// Do this for compatibility with injected behaviors
 				pRequest.Record = pRecord;
+
+                //Make sure record gets created with a customerID
+                if (!pRequest.Record.hasOwnProperty('IDCustomer') &&
+                    pRequest.DAL.jsonSchema.properties.hasOwnProperty('IDCustomer'))
+                {
+                    pRequest.Record.IDCustomer = pRequest.UserSession.CustomerID || 0;
+                }
+
 				pRequest.BehaviorModifications.runBehavior('Create-PreOperation', pRequest, fStageComplete);
 			},
 			function(fStageComplete)
