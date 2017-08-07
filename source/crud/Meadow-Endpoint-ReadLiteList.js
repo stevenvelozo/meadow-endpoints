@@ -103,10 +103,24 @@ var doAPIReadLiteEndpoint = function(pRequest, pResponse, fNext)
 			{
 				// Look on the Endpoint Customization object for an underscore template to generate hashes.
 				var tmpLiteList = [];
+				var tmpFieldList = [];
 
 				// Peek at the first record to check for updatedate				
 				var tmpHasUpdateDate = (pRequest.Records.length > 0 && pRequest.Records[0].hasOwnProperty('UpdateDate')) ? true : false;
 				var tmpGUID = (pRequest.DAL.defaultGUIdentifier && pRequest.DAL.defaultGUIdentifier.length > 0) ? pRequest.DAL.defaultGUIdentifier : false;
+				//Include all GUID and ID fields on the record
+				if (pRequest.Records.length > 0)
+				{
+					let tmpRecordFields = Object.keys(pRequest.Records[0]);
+					tmpRecordFields.forEach(function(field)
+					{
+						if (field.indexOf('ID') === 0 ||
+							field.indexOf('GUID') === 0)
+						{
+							tmpFieldList.push(field);
+						}
+					});
+				}
 
 				for (var i = 0; i < pRequest.Records.length; i++)
 				{
@@ -120,6 +134,11 @@ var doAPIReadLiteEndpoint = function(pRequest, pResponse, fNext)
 						tmpLiteRecord[tmpGUID] = pRequest.Records[i][tmpGUID];
 					if (tmpHasUpdateDate)
 						tmpLiteRecord['UpdateDate'] = pRequest.Records[i].UpdateDate;
+
+					tmpFieldList.forEach(function(field)
+					{
+						tmpLiteRecord[field] = pRequest.Records[i][field];
+					});
 
 					tmpLiteList.push(tmpLiteRecord);
 				}
