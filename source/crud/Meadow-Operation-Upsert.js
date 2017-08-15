@@ -67,20 +67,26 @@ var doUpsert = function(pRecordToUpsert, pRequest, pResponse, fCallback)
 	    					else
 	    					{
 	    						// Set the default ID in the passed-in record if it doesn't exist..
-	    						if (!pRequest.body.hasOwnProperty(pRequest.DAL.defaultIdentifier))
+	    						if (!pRecordToUpsert.hasOwnProperty(pRequest.DAL.defaultIdentifier))
 	    						{
-	    							pRequest.body[pRequest.DAL.defaultIdentifier] = pRecord[pRequest.DAL.defaultIdentifier];
+	    							pRecordToUpsert[pRequest.DAL.defaultIdentifier] = pRecord[pRequest.DAL.defaultIdentifier];
 	    						}
 	    						// If the found record does not match the passed ID --- what the heck?!
-	    						if (pRequest.body[pRequest.DAL.defaultIdentifier] != pRecord[pRequest.DAL.defaultIdentifier])
+	    						if (pRecordToUpsert[pRequest.DAL.defaultIdentifier] != pRecord[pRequest.DAL.defaultIdentifier])
 	    						{
 	    							return fStageComplete('Default identifier does not match GUID record.');
 	    						}
 	    						// Record found -- do an update.  Use the cached record, though.
-								doUpdate(pRequest.body, pRequest, pResponse, fStageComplete, pRecord);
+								doUpdate(pRecordToUpsert, pRequest, pResponse, fStageComplete, pRecord);
 							}
 	    				});
     			}
+    		},
+    		function(fStageComplete)
+    		{
+    			// Now stuff the record into the upserted array
+    			pRequest.UpsertedRecords.push(pRequest.Record);
+    			fStageComplete(null);
     		}
     	], function(pError)
     	{

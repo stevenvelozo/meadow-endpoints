@@ -13,17 +13,24 @@ var libMySQL = require('mysql2');
 ////////// Code can go here for easy debugging //////////
 var _HarnessBehavior = () =>
 {
-	var tmpRecord = {GUIDAnimal:'0xHAXXXX', Type:'Triceratechnotops'};
+	var tmpRecords = [
+		{GUIDAnimal:'0xHAXXXX', Name:'Jason', Type:'Triceratops'},
+		{Name:'Rover',Type:'Car'},
+		{GUIDAnimal:'0xDavison', Type:'Frog'}
+	];
 	_MockSessionValidUser.UserRoleIndex = 2;
-	libSuperTest('http://localhost:9080/')
-		.put('1.0/FableTest/Upsert')
-		.send(tmpRecord)
-		.end(
-			function(pError, pResponse)
-			{
-				console.log(pResponse.text);
-			}
-		);
+	libSuperTest('http://localhost:8080/')
+	.put('1.0/FableTest/Upserts')
+	.send(tmpRecords)
+	.end(
+		function(pError, pResponse)
+		{
+			// Expect response to be the record we just created.
+			var tmpResult = JSON.parse(pResponse.text);
+			console.log(JSON.stringify(tmpResult,null,4));
+		}
+	);
+
 };
 
 var tmpFableSettings = 	(
@@ -33,7 +40,7 @@ var tmpFableSettings = 	(
 
 	"UnauthorizedRequestDelay": 1000,
 
-	APIServerPort: 9080,
+	APIServerPort: 8080,
 
 	MySQL:
 		{

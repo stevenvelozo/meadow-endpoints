@@ -58,6 +58,7 @@ var MeadowEndpoints = function()
 			Updates: require('./crud/Meadow-Endpoint-BulkUpdate.js'),
 			
 			Upsert: require('./crud/Meadow-Endpoint-Upsert.js'),
+			Upserts: require('./crud/Meadow-Endpoint-BulkUpsert.js'),
 
 			Delete: require('./crud/Meadow-Endpoint-Delete.js'),
 
@@ -337,6 +338,7 @@ var MeadowEndpoints = function()
 					pRestServer.put('/1.0/'+tmpEndpointName, _CommonServices.bodyParser(), _EndpointAuthenticators.Update, wireState, _Endpoints.Update);
 					pRestServer.put('/1.0/'+tmpEndpointName+'s', _CommonServices.bodyParser(), _EndpointAuthenticators.Update, wireState, _Endpoints.Updates);
 					pRestServer.put('/1.0/'+tmpEndpointName+'/Upsert', _CommonServices.bodyParser(), _EndpointAuthenticators.Update, wireState, _Endpoints.Upsert);
+					pRestServer.put('/1.0/'+tmpEndpointName+'/Upserts', _CommonServices.bodyParser(), _EndpointAuthenticators.Update, wireState, _Endpoints.Upserts);
 			}
 			if (_EnabledBehaviors.Delete)
 			{

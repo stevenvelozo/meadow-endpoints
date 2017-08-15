@@ -2124,7 +2124,7 @@ suite
 							{
 								// Expect response to be the record we just created.
 								var tmpResult = JSON.parse(pResponse.text);
-								console.log(JSON.stringify(tmpResult,null,4));
+								//console.log(JSON.stringify(tmpResult,null,4));
 								Expect(tmpResult[3].Type).to.equal('Hosses');
 								fDone();
 							}
@@ -2139,7 +2139,7 @@ suite
 						_MeadowEndpoints.invokeEndpoint('ReadLiteList', {}, {UserSession: _MockSessionValidUser},
 							function (pError, pResponse)
 							{
-								console.log(pResponse.body)
+								//console.log(pResponse.body)
 								Expect(pResponse.body)
 									.to.be.an('array');
 								//var tmpResults = JSON.parse(pResponse.text);
@@ -2163,7 +2163,7 @@ suite
 							function(pError, pResponse)
 							{
 								// Expect response to be the record we just created.
-								console.log(pResponse.text)
+								//console.log(pResponse.text)
 								var tmpResult = JSON.parse(pResponse.text);
 								Expect(tmpResult.Type).to.equal('Tyranosaurus');
 								Expect(tmpResult.CreatingIDUser).to.equal(10);
@@ -2190,6 +2190,37 @@ suite
 								var tmpResult = JSON.parse(pResponse.text);
 								Expect(tmpResult.Type).to.equal('Stegosaurus');
 								Expect(tmpResult.Name).to.equal('Jason');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'bulk upserts',
+					function(fDone)
+					{
+						var tmpRecords = [
+							{GUIDAnimal:'0xHAXXXX', Type:'Triceratops'},
+							{GUIDAnimal:'0xDavison', Name:'Davison', Type:'Dog'},
+							{GUIDAnimal:'0xMartino', Name:'Martin', Type:'Dog'},
+							{Name:'Chino', Type:'Cat'}
+						];
+						_MockSessionValidUser.UserRoleIndex = 2;
+						libSuperTest('http://localhost:9080/')
+						.put('1.0/FableTest/Upserts')
+						.send(tmpRecords)
+						.end(
+							function(pError, pResponse)
+							{
+								// Expect response to be the record we just created.
+								var tmpResult = JSON.parse(pResponse.text);
+								console.log(JSON.stringify(tmpResult,null,4));
+								Expect(tmpResult[0].Name).to.equal('Jason');
+								Expect(tmpResult[0].Type).to.equal('Triceratops');
+								Expect(tmpResult[1].Type).to.equal('Dog');
+								Expect(tmpResult[2].Type).to.equal('Dog');
+								Expect(tmpResult[3].Type).to.equal('Cat');
 								fDone();
 							}
 						);
