@@ -1,5 +1,5 @@
 /**
-* Meadow Endpoint - Create a record function
+* Meadow Operation - Create a record function
 *
 * @license MIT
 *
@@ -75,13 +75,13 @@ var doCreate = function(pRecord, pRequest, pResponse, fCallback)
 		{
 			if (pError)
 			{
-				pRecord.Error = 'Error during creating record:'+pError;
+				pRecord.Error = 'Error creating record:'+pError;
 				// Added for singleton operations
 				pRequest.RecordCreateError = true;
 				pRequest.RecordCreateErrorMessage = pError;
 				// Also push the record to the created record stack with an error message
 				pRequest.CreatedRecords.push(pRecord);
-				pRequest.CommonServices.log.error('Error during creating record:'+pError, {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-'+pRequest.MeadowOperation}, pRequest);
+				pRequest.CommonServices.log.error('Error creating record:'+pError, {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-'+pRequest.MeadowOperation}, pRequest);
 			}
 
 			return fCallback();

@@ -12,6 +12,8 @@
 
 var libAsync = require('async');
 
+var doUpdate = require('./Meadow-Operation-Update.js');
+
 var doAPIUpdateEndpoint = function(pRequest, pResponse, fNext)
 {
 	// This state is the requirement for the UserRoleIndex value in the UserSession object... processed by default as >=
@@ -25,6 +27,10 @@ var doAPIUpdateEndpoint = function(pRequest, pResponse, fNext)
 		// If this endpoint fails, it's sent an error automatically.
 		return;
 	}
+
+	// Configure the request for the generic update operation
+	pRequest.UpdatedRecords = [];
+	pRequest.MeadowOperation = 'Update';
 
 	libAsync.waterfall(
 		[
@@ -46,97 +52,17 @@ var doAPIUpdateEndpoint = function(pRequest, pResponse, fNext)
 			},
 			function(fStageComplete)
 			{
-				var tmpQuery = pRequest.DAL.query;
-
-				// This is not overloadable.
-				tmpQuery.addFilter(pRequest.DAL.defaultIdentifier, pRequest.Record[pRequest.DAL.defaultIdentifier]);
-
-				// Load the record so we can do security checks on it
-				pRequest.DAL.doRead(tmpQuery,
-					function(pError, pQuery, pRecord)
-					{
-						if (!pError && !pRecord)
-						{
-							//short-circuit: Can't update a record that doesn't exist!
-							pError = 'Record not found.';
-						}
-
-						return fStageComplete(pError, pRecord);
-					});
-			},
-			function(pOriginalRecord, fStageComplete)
-			{
-				//send the original record to the Authorizer so it can verify ownership/etc
-				pRequest.UpdatingRecord = pRequest.Record;
-				pRequest.Record = pOriginalRecord;
-
-				pRequest.Authorizers.authorizeRequest('Update', pRequest, function(err)
-					{
-						pRequest.Record = pRequest.UpdatingRecord;
-						return fStageComplete(err);
-					});
-			},
-			function(fStageComplete)
-			{
-				//2. INJECT: Record modification before update
-				pRequest.BehaviorModifications.runBehavior('Update-PreOperation', pRequest, fStageComplete);
-			},
-			function (fStageComplete)
-			{
-				if (pRequest.MeadowAuthorization)
-				{
-					return fStageComplete(false);
-				}
-
-				// It looks like this record was not authorized.  Send an error.
-				// It looks like this record was not authorized.  Send an error.
-				var tmpError = {Code:405,Message:'UNAUTHORIZED ACCESS IS NOT ALLOWED'};
-				tmpError.Scope = pRequest.DAL.scope;
-				tmpError[pRequest.DAL.defaultIdentifier] = pRequest.Record[pRequest.DAL.defaultIdentifier];
-				return fStageComplete(tmpError);
-			},
-			// 3a. INJECT: Query configuration
-			function (fStageComplete)
-			{
-				pRequest.Query = pRequest.DAL.query;
-				pRequest.BehaviorModifications.runBehavior('Update-QueryConfiguration', pRequest, fStageComplete);
-			},
-			function(fStageComplete)
-			{
-				//3b. Prepare update query
-				var tmpQuery = pRequest.Query;
-
-				tmpQuery.setIDUser(pRequest.UserSession.UserID)
-				tmpQuery.addRecord(pRequest.Record);
-
-				return fStageComplete(null, tmpQuery);
-			},
-			function(pPreparedQuery, fStageComplete)
-			{
 				//4. Do the update operation
-				pRequest.DAL.doUpdate(pPreparedQuery,
-					function(pError, pQuery, pReadQuery, pRecord)
-					{
-						if (!pRecord)
-						{
-							return fStageComplete('Error updating a record.');
-						}
-
-						pRequest.Record = pRecord;
-
-						pRequest.CommonServices.log.info('Updated a record with ID '+pRecord[pRequest.DAL.defaultIdentifier]+'.', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Update'}, pRequest);
-
-						return fStageComplete(null);
-					});
-			},
-			function(fStageComplete)
-			{
-				// INJECT: Post modification with record
-				return pRequest.BehaviorModifications.runBehavior('Update-PostOperation', pRequest, fStageComplete);
+				doUpdate(pRequest.body, pRequest, pResponse, fStageComplete);
 			},
 			function(fStageComplete)
 			{
 				//5. Respond with the new record
+
+				// If there was an error, respond with that instead
+				if (pRequest.RecordUpdateError)
+					return fStageComplete(pRequest.RecordUpdateErrorMessage);
+
 				pResponse.send(pRequest.Record);
 				return fStageComplete(null);
 			}
