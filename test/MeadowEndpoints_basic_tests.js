@@ -176,6 +176,7 @@ suite
 							_MeadowEndpoints.setEndpoint('Randomize', function() {});
 
 							_MeadowEndpoints.behaviorModifications.setTemplate('ListQuery', '<%= MyData %>');
+							//_MeadowEndpoints.behaviorModifications.setTemplate('SelectList', '<%= Name %>|<%= Type %>');
 
 							// Wire the endpoints up
 							_MeadowEndpoints.connectRoutes(_Orator.webServer);
@@ -454,7 +455,7 @@ suite
 					'read: define a custom route and get a record with it',
 					function(fDone)
 					{
-						_Orator.webServer.get('/CustomHotRodRoute/:IDRecord', _MeadowEndpoints.endpointAuthenticators.Read, _MeadowEndpoints.wireState, _MeadowEndpoints.endpoints.Read)
+						_Orator.webServer.get('/CustomHotRodRoute/:IDRecord', _MeadowEndpoints.endpointAuthenticators.Read, _MeadowEndpoints.wireState, _MeadowEndpoints.endpoints.Read);
 						libSuperTest('http://localhost:9080/')
 						.get('CustomHotRodRoute/2')
 						.end(
@@ -2201,6 +2202,7 @@ suite
 					'bulk upserts',
 					function(fDone)
 					{
+						_MeadowEndpoints.behaviorModifications.setTemplate('SelectList', '<%= Record.Name %>|<%=Record.Type%>');
 						var tmpRecords = [
 							{GUIDAnimal:'0xHAXXXX', Type:'Triceratops'},
 							{GUIDAnimal:'0xDavison', Name:'Davison', Type:'Dog'},
@@ -2217,11 +2219,10 @@ suite
 								// Expect response to be the record we just created.
 								var tmpResult = JSON.parse(pResponse.text);
 								console.log(JSON.stringify(tmpResult,null,4));
-								Expect(tmpResult[0].Name).to.equal('Jason');
-								Expect(tmpResult[0].Type).to.equal('Triceratops');
-								Expect(tmpResult[1].Type).to.equal('Dog');
-								Expect(tmpResult[2].Type).to.equal('Dog');
-								Expect(tmpResult[3].Type).to.equal('Cat');
+								Expect(tmpResult[0].Value).to.equal('Jason|Triceratops');
+								Expect(tmpResult[1].Value).to.equal('Davison|Dog');
+								Expect(tmpResult[2].Value).to.equal('Martin|Dog');
+								Expect(tmpResult[3].Value).to.equal('Chino|Cat');
 								fDone();
 							}
 						);

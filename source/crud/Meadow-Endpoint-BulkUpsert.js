@@ -13,6 +13,7 @@
 var libAsync = require('async');
 
 var doUpsert = require('./Meadow-Operation-Upsert.js');
+var marshalLiteList = require('./Meadow-Marshal-LiteList.js');
 
 var doAPIUpsertEndpoint = function(pRequest, pResponse, fNext)
 {
@@ -58,7 +59,7 @@ var doAPIUpsertEndpoint = function(pRequest, pResponse, fNext)
 			function(fStageComplete)
 			{
 				//5. Respond with the new records
-				pResponse.send(pRequest.UpsertedRecords);
+				pResponse.send(marshalLiteList(pRequest.UpsertedRecords, pRequest));
 				return fStageComplete(null);
 			}
 		], function(pError)
