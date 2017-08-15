@@ -12,6 +12,8 @@
 
 var libAsync = require('async');
 
+var doCreate = require('./Meadow-Operation-Create.js');
+
 var doAPICreateEndpoint = function(pRequest, pResponse, fNext)
 {
 	// This state is the requirement for the UserRoleIndex value in the UserSession object... processed by default as >=
@@ -23,6 +25,10 @@ var doAPICreateEndpoint = function(pRequest, pResponse, fNext)
 		// If this endpoint fails, it's sent an error automatically.
 		return;
 	}
+	
+	// Configure the request for the generic create operation
+	pRequest.CreatedRecords = [];
+	pRequest.MeadowOperation = 'Create';
 
 	libAsync.waterfall(
 		[
@@ -34,23 +40,11 @@ var doAPICreateEndpoint = function(pRequest, pResponse, fNext)
 					return pRequest.CommonServices.sendError('Record create failure - a valid record is required.', pRequest, pResponse, fNext);
 				}
 
-				pRequest.Record = pRequest.body;
-                //Make sure record gets created with a customerID
-                if (!pRequest.Record.hasOwnProperty('IDCustomer') &&
-                    pRequest.DAL.jsonSchema.properties.hasOwnProperty('IDCustomer'))
-                {
-                    pRequest.Record.IDCustomer = pRequest.UserSession.CustomerID || 0;
-                }
-
 				return fStageComplete(null);
 			},
 			function(fStageComplete)
 			{
 				pRequest.Authorizers.authorizeRequest('Create', pRequest, fStageComplete);
-			},
-			function(fStageComplete)
-			{
-				pRequest.BehaviorModifications.runBehavior('Create-PreOperation', pRequest, fStageComplete);
 			},
 			function (fStageComplete)
 			{
@@ -64,45 +58,17 @@ var doAPICreateEndpoint = function(pRequest, pResponse, fNext)
 			},
 			function(fStageComplete)
 			{
-				//3. Prepare create query
-				var tmpQuery = pRequest.DAL.query;
-
-				tmpQuery.setIDUser(pRequest.UserSession.UserID);
-				tmpQuery.addRecord(pRequest.Record);
-
-				return fStageComplete(null, tmpQuery);
-			},
-			// 3. INJECT: Query configuration
-			function (tmpQuery, fStageComplete)
-			{
-				pRequest.Query = tmpQuery;
-				pRequest.BehaviorModifications.runBehavior('Create-QueryConfiguration', pRequest, fStageComplete);
-			},
-			function(fStageComplete)
-			{
 				//4. Do the create operation
-				pRequest.DAL.doCreate(pRequest.Query,
-					function(pError, pQuery, pReadQuery, pRecord)
-					{
-						if (!pRecord)
-						{
-							return fStageComplete('Error in DAL create: '+pError);
-						}
-
-						pRequest.Record = pRecord;
-
-						pRequest.CommonServices.log.info('Created a record with ID '+pRecord[pRequest.DAL.defaultIdentifier]+'.', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Create'}, pRequest);
-
-						return fStageComplete(null);
-					});
-			},
-			function(fStageComplete)
-			{
-				return pRequest.BehaviorModifications.runBehavior('Create-PostOperation', pRequest, fStageComplete);
+				doCreate(pRequest.body, pRequest, pResponse, fStageComplete);
 			},
 			function(fStageComplete)
 			{
 				//5. Respond with the new record
+
+				// If there was an error, respond with that instead
+				if (pRequest.RecordCreateError)
+					return fStageComplete(pRequest.RecordCreateErrorMessage);
+
 				pResponse.send(pRequest.Record);
 				return fStageComplete(null);
 			}
