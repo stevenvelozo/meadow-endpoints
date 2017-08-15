@@ -17,7 +17,8 @@ var doUpdate = function(pRecordToModify, pRequest, pResponse, fCallback, pOption
 	// pOptionalCachedUpdatingRecord allows the caller to pass in a record, so the initial read doesn't need to happen.
     pRequest.MeadowOperation = (typeof(pRequest.MeadowOperation) === 'string') ? pRequest.MeadowOperation : 'Update';
 
-	if (pRecordToModify[pRequest.DAL.defaultIdentifier] < 1)
+	// If there is not a default identifier or cached record, fail
+	if ((pRecordToModify[pRequest.DAL.defaultIdentifier] < 1) && (typeof(pOptionalCachedUpdatingRecord) === 'undefined'))
 	{
 		return fCallback('Record update failure - a valid record ID is required in the passed-in record.');
 	}

@@ -66,6 +66,16 @@ var doUpsert = function(pRecordToUpsert, pRequest, pResponse, fCallback)
 	    					}
 	    					else
 	    					{
+	    						// Set the default ID in the passed-in record if it doesn't exist..
+	    						if (!pRequest.body.hasOwnProperty(pRequest.DAL.defaultIdentifier))
+	    						{
+	    							pRequest.body[pRequest.DAL.defaultIdentifier] = pRecord[pRequest.DAL.defaultIdentifier];
+	    						}
+	    						// If the found record does not match the passed ID --- what the heck?!
+	    						if (pRequest.body[pRequest.DAL.defaultIdentifier] != pRecord[pRequest.DAL.defaultIdentifier])
+	    						{
+	    							return fStageComplete('Default identifier does not match GUID record.');
+	    						}
 	    						// Record found -- do an update.  Use the cached record, though.
 								doUpdate(pRequest.body, pRequest, pResponse, fStageComplete, pRecord);
 							}
@@ -79,7 +89,7 @@ var doUpsert = function(pRecordToUpsert, pRequest, pResponse, fCallback)
     			pRecordToUpsert.Error = 'Error upserting record:'+pError;
 				pRequest.RecordUpsertError = true;
 				pRequest.RecordUpsertErrorMessage = pError;
-    			pRequest.UpsertdRecords.push(pRecordToUpsert);
+    			pRequest.UpsertedRecords.push(pRecordToUpsert);
     			pRequest.CommonServices.log.error('Error upserting record:'+pError, {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-'+pRequest.MeadowOperation}, pRequest);
     		}
     

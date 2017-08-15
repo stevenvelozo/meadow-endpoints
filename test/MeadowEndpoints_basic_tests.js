@@ -20,7 +20,7 @@ var tmpFableSettings = 	(
 	Product: 'MockOratorAlternate',
 	ProductVersion: '0.0.0',
 
-	"UnauthorizedRequestDelay": 1000,
+	"UnauthorizedRequestDelay": 1,
 
 	APIServerPort: 9080,
 
@@ -2144,6 +2144,52 @@ suite
 									.to.be.an('array');
 								//var tmpResults = JSON.parse(pResponse.text);
 								//Expect(tmpResults.Error).to.contain('authenticated');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'upsert: create a record',
+					function(fDone)
+					{
+						var tmpRecord = {GUIDAnimal:'0xHAXXXX', Name:'Jason', Type:'Tyranosaurus'};
+						_MockSessionValidUser.UserRoleIndex = 2;
+						libSuperTest('http://localhost:9080/')
+						.put('1.0/FableTest/Upsert')
+						.send(tmpRecord)
+						.end(
+							function(pError, pResponse)
+							{
+								// Expect response to be the record we just created.
+								console.log(pResponse.text)
+								var tmpResult = JSON.parse(pResponse.text);
+								Expect(tmpResult.Type).to.equal('Tyranosaurus');
+								Expect(tmpResult.CreatingIDUser).to.equal(10);
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'upsert: Update a record',
+					function(fDone)
+					{
+						var tmpRecord = {GUIDAnimal:'0xHAXXXX', Type:'Stegosaurus'};
+						_MockSessionValidUser.UserRoleIndex = 2;
+						libSuperTest('http://localhost:9080/')
+						.put('1.0/FableTest/Upsert')
+						.send(tmpRecord)
+						.end(
+							function(pError, pResponse)
+							{
+								// Expect response to be the record we just created.
+								console.log(pResponse.text)
+								var tmpResult = JSON.parse(pResponse.text);
+								Expect(tmpResult.Type).to.equal('Stegosaurus');
+								Expect(tmpResult.Name).to.equal('Jason');
 								fDone();
 							}
 						);

@@ -28,7 +28,9 @@ var doAPIUpsertEndpoint = function(pRequest, pResponse, fNext)
 		return;
 	}
 
-	// Configure the request for the generic update operation
+	// Configure the request for the generic create & update operations
+	pRequest.CreatedRecords = [];
+	pRequest.UpdatedRecords = [];
 	pRequest.UpsertedRecords = [];
 	pRequest.MeadowOperation = 'Upsert';
 

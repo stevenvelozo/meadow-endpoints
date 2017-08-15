@@ -56,6 +56,8 @@ var MeadowEndpoints = function()
 
 			Update: require('./crud/Meadow-Endpoint-Update.js'),
 			Updates: require('./crud/Meadow-Endpoint-BulkUpdate.js'),
+			
+			Upsert: require('./crud/Meadow-Endpoint-Upsert.js'),
 
 			Delete: require('./crud/Meadow-Endpoint-Delete.js'),
 
@@ -141,7 +143,7 @@ var MeadowEndpoints = function()
 		var _EnabledBehaviors = (
 		{
 			Create: true,
-			// PUT  [/1.0/SomeEndpoint]
+			// POST  [/1.0/SomeEndpoint]
 
 			Read: true,
 			// GET  [/1.0/SomeEndpoint/:IDRecord]
@@ -164,7 +166,8 @@ var MeadowEndpoints = function()
 			// GET  [/1.0/SomeEndpoint/Lite/FilteredTo/:Filter/:Begin/:Cap]
 
 			Update: true,
-			// POST [/1.0/SomeEndpoint]
+			// PUT [/1.0/SomeEndpoint]
+			// PUT  [/1.0/SomeEndpoint/Upsert]
 
 			Delete: true,
 			// DEL  [/1.0/SomeEndpoint]
@@ -333,6 +336,7 @@ var MeadowEndpoints = function()
 			{
 					pRestServer.put('/1.0/'+tmpEndpointName, _CommonServices.bodyParser(), _EndpointAuthenticators.Update, wireState, _Endpoints.Update);
 					pRestServer.put('/1.0/'+tmpEndpointName+'s', _CommonServices.bodyParser(), _EndpointAuthenticators.Update, wireState, _Endpoints.Updates);
+					pRestServer.put('/1.0/'+tmpEndpointName+'/Upsert', _CommonServices.bodyParser(), _EndpointAuthenticators.Update, wireState, _Endpoints.Upsert);
 			}
 			if (_EnabledBehaviors.Delete)
 			{
