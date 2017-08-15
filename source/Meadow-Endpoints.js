@@ -51,8 +51,8 @@ var MeadowEndpoints = function()
 			Reads: require('./crud/Meadow-Endpoint-Reads.js'),
 			ReadsBy: require('./crud/Meadow-Endpoint-ReadsBy.js'),
 
-			ReadSelectList: require('./crud/Meadow-Endpoint-ReadSelectList'),
-			ReadLiteList: require('./crud/Meadow-Endpoint-ReadLiteList'),
+			ReadSelectList: require('./crud/Meadow-Endpoint-ReadSelectList.js'),
+			ReadLiteList: require('./crud/Meadow-Endpoint-ReadLiteList.js'),
 
 			Update: require('./crud/Meadow-Endpoint-Update.js'),
 			Updates: require('./crud/Meadow-Endpoint-BulkUpdate.js'),

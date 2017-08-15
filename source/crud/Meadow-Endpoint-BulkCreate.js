@@ -12,77 +12,7 @@
 
 var libAsync = require('async');
 
-// TODO: This should be shared with the CREATE endpoint as well.
-var doCreate = function(pRecord, pRequest, pResponse, fCallback)
-{
-	libAsync.waterfall(
-		[
-			function(fStageComplete)
-			{
-				// Do this for compatibility with injected behaviors
-				pRequest.Record = pRecord;
-
-                //Make sure record gets created with a customerID
-                if (!pRequest.Record.hasOwnProperty('IDCustomer') &&
-                    pRequest.DAL.jsonSchema.properties.hasOwnProperty('IDCustomer'))
-                {
-                    pRequest.Record.IDCustomer = pRequest.UserSession.CustomerID || 0;
-                }
-
-				pRequest.BehaviorModifications.runBehavior('Create-PreOperation', pRequest, fStageComplete);
-			},
-			function(fStageComplete)
-			{
-				//3. Prepare create query
-				var tmpQuery = pRequest.DAL.query;
-
-				tmpQuery.setIDUser(pRequest.UserSession.UserID);
-				tmpQuery.addRecord(pRecord);
-
-				return fStageComplete(null, tmpQuery);
-			},
-			// 3. INJECT: Query configuration
-			function (tmpQuery, fStageComplete)
-			{
-				pRequest.Query = tmpQuery;
-				pRequest.BehaviorModifications.runBehavior('Create-QueryConfiguration', pRequest, fStageComplete);
-			},
-			function(fStageComplete)
-			{
-				//4. Do the create operation
-				pRequest.DAL.doCreate(pRequest.Query,
-					function(pError, pQuery, pReadQuery, pNewRecord)
-					{
-						if (!pNewRecord)
-						{
-							return fStageComplete('Error in DAL create: '+pError);
-						}
-						
-						pRequest.Record = pNewRecord;
-
-						pRequest.CreatedRecords.push(pNewRecord);
-
-						//pRequest.CommonServices.log.info('Created a record with ID '+pNewRecord[pRequest.DAL.defaultIdentifier]+'.', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-CreateBulk'}, pRequest);
-
-						return fStageComplete(null);
-					});
-			},
-			function(fStageComplete)
-			{
-				return pRequest.BehaviorModifications.runBehavior('Create-PostOperation', pRequest, fStageComplete);
-			}
-		], function(pError)
-		{
-			if (pError)
-			{
-				pRecord.Error = 'Error during bulk creating single record:'+pError;
-				pRequest.CreatedRecords.push(pRecord);
-				pRequest.CommonServices.log.error('Error during bulk creating single record:'+pError, {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-CreateBulk'}, pRequest);
-			}
-
-			return fCallback();
-		});
-};
+var doCreate = require('./Meadow-Operation-Create.js');
 
 var doAPIBulkCreateEndpoint = function(pRequest, pResponse, fNext)
 {
@@ -95,6 +25,10 @@ var doAPIBulkCreateEndpoint = function(pRequest, pResponse, fNext)
 		// If this endpoint fails, it's sent an error automatically.
 		return;
 	}
+
+	// Configure the request for the generic create operation
+	pRequest.CreatedRecords = [];
+	pRequest.MeadowOperation = 'CreateBulk';
 
 	libAsync.waterfall(
 		[
@@ -127,8 +61,6 @@ var doAPIBulkCreateEndpoint = function(pRequest, pResponse, fNext)
 			},
 			function(fStageComplete)
 			{
-				pRequest.CreatedRecords = [];
-				
 				libAsync.eachSeries(pRequest.BulkRecords,
 					function (pRecord, fCallback)
 					{
