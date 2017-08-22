@@ -33,6 +33,20 @@ var doCreate = function(pRecord, pRequest, pResponse, fCallback)
 			},
 			function(fStageComplete)
 			{
+				pRequest.Authorizers.authorizeRequest('Create', pRequest, fStageComplete);
+			},
+			function (fStageComplete)
+			{
+				if (pRequest.MeadowAuthorization)
+				{
+					return fStageComplete(false);
+				}
+
+				// It looks like this record was not authorized.  Send an error.
+				return fStageComplete({Code:405,Message:'UNAUTHORIZED ACCESS IS NOT ALLOWED'});
+			},
+			function(fStageComplete)
+			{
 				//3. Prepare create query
 				var tmpQuery = pRequest.DAL.query;
 

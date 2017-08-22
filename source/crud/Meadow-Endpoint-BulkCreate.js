@@ -16,16 +16,6 @@ var doCreate = require('./Meadow-Operation-Create.js');
 
 var doAPIBulkCreateEndpoint = function(pRequest, pResponse, fNext)
 {
-	// This state is the requirement for the UserRoleIndex value in the UserSession object... processed by default as >=
-	// The default here is that any authenticated user can use this endpoint.
-	pRequest.EndpointAuthorizationRequirement = pRequest.EndpointAuthorizationLevels.Create;
-	
-	if (pRequest.CommonServices.authorizeEndpoint(pRequest, pResponse, fNext) === false)
-	{
-		// If this endpoint fails, it's sent an error automatically.
-		return;
-	}
-
 	// Configure the request for the generic create operation
 	pRequest.CreatedRecords = [];
 	pRequest.MeadowOperation = 'CreateBulk';
@@ -43,21 +33,6 @@ var doAPIBulkCreateEndpoint = function(pRequest, pResponse, fNext)
 				pRequest.BulkRecords = pRequest.body;
 
 				return fStageComplete(null);
-			},
-			function(fStageComplete)
-			{
-				// Only authorize once.
-				pRequest.Authorizers.authorizeRequest('Create', pRequest, fStageComplete);
-			},
-			function (fStageComplete)
-			{
-				if (pRequest.MeadowAuthorization)
-				{
-					return fStageComplete(false);
-				}
-
-				// It looks like this record was not authorized.  Send an error.
-				return fStageComplete({Code:405,Message:'UNAUTHORIZED ACCESS IS NOT ALLOWED'});
 			},
 			function(fStageComplete)
 			{
