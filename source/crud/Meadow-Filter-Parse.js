@@ -31,10 +31,12 @@
        * INN - IN list
  FBVOR - Filter By Value (left-side OR connected)
  FBL - Filter By List (value list, separated by commas)
-       FBL~Category~EQ~Books,Movies
- FSF - Filter Sort Field
-       FSF~Category~ASC~0
-       FSF~Category~DESC~0
+	   FBL~Category~EQ~Books,Movies
+FBD	-  Filter by Date (exclude time)
+		FBD~UpdateDate~EQ~2015-10-01
+FSF - Filter Sort Field
+	FSF~Category~ASC~0
+	FSF~Category~DESC~0
 
  This means: FBV~Category~EQ~Books~FBV~PublishedYear~GT~2000~FSF~PublishedYear~DESC~0
              Filters down to ALL BOOKS PUBLUSHED AFTER 200 IN DESCENDING ORDER
@@ -114,6 +116,14 @@ var addFilterStanzaToQuery = function(pFilterStanza, pQuery)
 		case 'FBLOR': // Filter by List (left-side OR)
 			// Just split the value by comma for now.  May want to revisit better characters or techniques later.
 			pQuery.addFilter(pFilterStanza.Field, pFilterStanza.Value.split(','), getFilterComparisonOperator(pFilterStanza.Operator, 'OR'));
+			break;
+		
+		case 'FBD': // Filter by Date (exclude time)
+			pQuery.addFilter(`DATE(${pFilterStanza.Field})`, pFilterStanza.Value.split(','), getFilterComparisonOperator(pFilterStanza.Operator), 'AND', pFilterStanza.Field);
+			break;
+		
+		case 'FBDOR': // Filter by Date (exclude time)
+			pQuery.addFilter(`DATE(${pFilterStanza.Field})`, pFilterStanza.Value.split(','), getFilterComparisonOperator(pFilterStanza.Operator), 'OR', pFilterStanza.Field);
 			break;
 
 		case 'FSF':   // Filter Sort Field
