@@ -91,7 +91,7 @@ var MeadowBehaviorModifications = function()
 		{
 			// Store both the cached text as well as the function
 			_Templates[pTemplateHash] = pTemplate;
-			_TemplateFunctions[pTemplateHash] = libUnderscore.template(pTemplate)
+			_TemplateFunctions[pTemplateHash] = libUnderscore.template(pTemplate);
 		};
 
 		/**
@@ -101,7 +101,7 @@ var MeadowBehaviorModifications = function()
 		{
 			if (_Templates.hasOwnProperty(pTemplateHash))
 			{
-				return _Templates[pTemplateHash]
+				return _Templates[pTemplateHash];
 			}
 			else
 			{
@@ -116,7 +116,7 @@ var MeadowBehaviorModifications = function()
 		{
 			if (_TemplateFunctions.hasOwnProperty(pTemplateHash))
 			{
-				return _TemplateFunctions[pTemplateHash]
+				return _TemplateFunctions[pTemplateHash];
 			}
 			else
 			{

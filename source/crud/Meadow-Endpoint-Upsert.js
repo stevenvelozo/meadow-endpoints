@@ -1,5 +1,5 @@
 /**
-* Meadow Endpoint - Update a Record
+* Meadow Endpoint - Upsert (Insert OR Update) a Record
 *
 * @license MIT
 *
@@ -7,14 +7,14 @@
 * @module Meadow
 */
 /**
-* Update a record using the Meadow DAL object
+* Upsert a record using the Meadow DAL object
 */
 
 var libAsync = require('async');
 
-var doUpdate = require('./Meadow-Operation-Update.js');
+var doUpsert = require('./Meadow-Operation-Upsert.js');
 
-var doAPIUpdateEndpoint = function(pRequest, pResponse, fNext)
+var doAPIUpsertEndpoint = function(pRequest, pResponse, fNext)
 {
 	// This state is the requirement for the UserRoleIndex value in the UserSession object... processed by default as >=
 	// The default here is that any authenticated user can use this endpoint.
@@ -28,9 +28,11 @@ var doAPIUpdateEndpoint = function(pRequest, pResponse, fNext)
 		return;
 	}
 
-	// Configure the request for the generic update operation
+	// Configure the request for the generic create & update operations
+	pRequest.CreatedRecords = [];
 	pRequest.UpdatedRecords = [];
-	pRequest.MeadowOperation = 'Update';
+	pRequest.UpsertedRecords = [];
+	pRequest.MeadowOperation = 'Upsert';
 
 	libAsync.waterfall(
 		[
@@ -39,11 +41,7 @@ var doAPIUpdateEndpoint = function(pRequest, pResponse, fNext)
 				//1. Validate request body to ensure it is a valid record
 				if (typeof(pRequest.body) !== 'object')
 				{
-					return pRequest.CommonServices.sendError('Record update failure - a valid record is required.', pRequest, pResponse, fNext);
-				}
-				if (pRequest.body[pRequest.DAL.defaultIdentifier] < 1)
-				{
-					return pRequest.CommonServices.sendError('Record update failure - a valid record ID is required in the passed-in record.', pRequest, pResponse, fNext);
+					return pRequest.CommonServices.sendError('Record upsert failure - a valid record is required.', pRequest, pResponse, fNext);
 				}
 
 				pRequest.Record = pRequest.body;
@@ -52,16 +50,16 @@ var doAPIUpdateEndpoint = function(pRequest, pResponse, fNext)
 			},
 			function(fStageComplete)
 			{
-				//4. Do the update operation
-				doUpdate(pRequest.body, pRequest, pResponse, fStageComplete);
+				//4. Do the upsert operation
+				doUpsert(pRequest.body, pRequest, pResponse, fStageComplete);
 			},
 			function(fStageComplete)
 			{
 				//5. Respond with the new record
 
 				// If there was an error, respond with that instead
-				if (pRequest.RecordUpdateError)
-					return fStageComplete(pRequest.RecordUpdateErrorMessage);
+				if (pRequest.RecordUpsertError)
+					return fStageComplete(pRequest.RecordUpsertErrorMessage);
 
 				pResponse.send(pRequest.Record);
 				return fStageComplete(null);
@@ -70,11 +68,11 @@ var doAPIUpdateEndpoint = function(pRequest, pResponse, fNext)
 		{
 			if (pError)
 			{
-				return pRequest.CommonServices.sendCodedError('Error updating a record.', pError, pRequest, pResponse, fNext);
+				return pRequest.CommonServices.sendCodedError('Error upserting a record.', pError, pRequest, pResponse, fNext);
 			}
 
 			return fNext();
 		});
 };
 
-module.exports = doAPIUpdateEndpoint;
+module.exports = doAPIUpsertEndpoint;

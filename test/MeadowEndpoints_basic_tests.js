@@ -20,7 +20,7 @@ var tmpFableSettings = 	(
 	Product: 'MockOratorAlternate',
 	ProductVersion: '0.0.0',
 
-	"UnauthorizedRequestDelay": 1000,
+	"UnauthorizedRequestDelay": 1,
 
 	APIServerPort: 9080,
 
@@ -47,7 +47,8 @@ var _MockSessionValidUser = (
 		UserRole: 'User',
 		UserRoleIndex: 1,
 		LoggedIn: true,
-		DeviceID: 'TEST-HARNESS'
+		DeviceID: 'TEST-HARNESS',
+		CustomerID: 1
 	});
 var ValidAuthentication = function(pRequest, pResponse, fNext)
 {
@@ -85,7 +86,7 @@ suite
 
 		var getAnimalInsert = function(pName, pType)
 		{
-			return "INSERT INTO `FableTest` (`IDAnimal`, `GUIDAnimal`, `CreateDate`, `CreatingIDUser`, `UpdateDate`, `UpdatingIDUser`, `Deleted`, `DeleteDate`, `DeletingIDUser`, `Name`, `Type`) VALUES (NULL, '00000000-0000-0000-0000-000000000000', NOW(), 1, NOW(), 1, 0, NULL, 0, '"+pName+"', '"+pType+"'); ";
+			return "INSERT INTO `FableTest` (`IDAnimal`, `GUIDAnimal`, `CreateDate`, `CreatingIDUser`, `UpdateDate`, `UpdatingIDUser`, `Deleted`, `DeleteDate`, `DeletingIDUser`, `Name`, `Type`, `IDCustomer`) VALUES (NULL, '00000000-0000-0000-0000-000000000000', NOW(), 1, NOW(), 1, 0, NULL, 0, '"+pName+"', '"+pType+"', 1); ";
 		};
 
 		setup
@@ -123,7 +124,7 @@ suite
 						},
 						function(fCallBack)
 						{
-							_SQLConnectionPool.query("CREATE TABLE IF NOT EXISTS FableTest (IDAnimal INT UNSIGNED NOT NULL AUTO_INCREMENT, GUIDAnimal CHAR(36) NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000', CreateDate DATETIME, CreatingIDUser INT NOT NULL DEFAULT '0', UpdateDate DATETIME, UpdatingIDUser INT NOT NULL DEFAULT '0', Deleted TINYINT NOT NULL DEFAULT '0', DeleteDate DATETIME, DeletingIDUser INT NOT NULL DEFAULT '0', Name CHAR(128) NOT NULL DEFAULT '', Type CHAR(128) NOT NULL DEFAULT '', PRIMARY KEY (IDAnimal) );",
+							_SQLConnectionPool.query("CREATE TABLE IF NOT EXISTS FableTest (IDAnimal INT UNSIGNED NOT NULL AUTO_INCREMENT, GUIDAnimal CHAR(36) NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000', CreateDate DATETIME, CreatingIDUser INT NOT NULL DEFAULT '0', UpdateDate DATETIME, UpdatingIDUser INT NOT NULL DEFAULT '0', Deleted TINYINT NOT NULL DEFAULT '0', DeleteDate DATETIME, DeletingIDUser INT NOT NULL DEFAULT '0', Name CHAR(128) NOT NULL DEFAULT '', Type CHAR(128) NOT NULL DEFAULT '', IDCustomer INT NOT NULL DEFAULT '0', PRIMARY KEY (IDAnimal) );",
 							function(pErrorUpdate, pResponse) { fCallBack(null); });
 						},
 						function(fCallBack)
@@ -175,6 +176,7 @@ suite
 							_MeadowEndpoints.setEndpoint('Randomize', function() {});
 
 							_MeadowEndpoints.behaviorModifications.setTemplate('ListQuery', '<%= MyData %>');
+							//_MeadowEndpoints.behaviorModifications.setTemplate('SelectList', '<%= Name %>|<%= Type %>');
 
 							// Wire the endpoints up
 							_MeadowEndpoints.connectRoutes(_Orator.webServer);
@@ -453,7 +455,7 @@ suite
 					'read: define a custom route and get a record with it',
 					function(fDone)
 					{
-						_Orator.webServer.get('/CustomHotRodRoute/:IDRecord', _MeadowEndpoints.endpointAuthenticators.Read, _MeadowEndpoints.wireState, _MeadowEndpoints.endpoints.Read)
+						_Orator.webServer.get('/CustomHotRodRoute/:IDRecord', _MeadowEndpoints.endpointAuthenticators.Read, _MeadowEndpoints.wireState, _MeadowEndpoints.endpoints.Read);
 						libSuperTest('http://localhost:9080/')
 						.get('CustomHotRodRoute/2')
 						.end(
@@ -2124,7 +2126,7 @@ suite
 							{
 								// Expect response to be the record we just created.
 								var tmpResult = JSON.parse(pResponse.text);
-								console.log(JSON.stringify(tmpResult,null,4));
+								//console.log(JSON.stringify(tmpResult,null,4));
 								Expect(tmpResult[3].Type).to.equal('Hosses');
 								fDone();
 							}
@@ -2139,11 +2141,88 @@ suite
 						_MeadowEndpoints.invokeEndpoint('ReadLiteList', {}, {UserSession: _MockSessionValidUser},
 							function (pError, pResponse)
 							{
-								console.log(pResponse.body)
+								//console.log(pResponse.body)
 								Expect(pResponse.body)
 									.to.be.an('array');
 								//var tmpResults = JSON.parse(pResponse.text);
 								//Expect(tmpResults.Error).to.contain('authenticated');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'upsert: create a record',
+					function(fDone)
+					{
+						var tmpRecord = {GUIDAnimal:'0xHAXXXX', Name:'Jason', Type:'Tyranosaurus'};
+						_MockSessionValidUser.UserRoleIndex = 2;
+						libSuperTest('http://localhost:9080/')
+						.put('1.0/FableTest/Upsert')
+						.send(tmpRecord)
+						.end(
+							function(pError, pResponse)
+							{
+								// Expect response to be the record we just created.
+								//console.log(pResponse.text)
+								var tmpResult = JSON.parse(pResponse.text);
+								Expect(tmpResult.Type).to.equal('Tyranosaurus');
+								Expect(tmpResult.CreatingIDUser).to.equal(10);
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'upsert: Update a record',
+					function(fDone)
+					{
+						var tmpRecord = {GUIDAnimal:'0xHAXXXX', Type:'Stegosaurus'};
+						_MockSessionValidUser.UserRoleIndex = 2;
+						libSuperTest('http://localhost:9080/')
+						.put('1.0/FableTest/Upsert')
+						.send(tmpRecord)
+						.end(
+							function(pError, pResponse)
+							{
+								// Expect response to be the record we just created.
+								console.log(pResponse.text)
+								var tmpResult = JSON.parse(pResponse.text);
+								Expect(tmpResult.Type).to.equal('Stegosaurus');
+								Expect(tmpResult.Name).to.equal('Jason');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'bulk upserts',
+					function(fDone)
+					{
+						_MeadowEndpoints.behaviorModifications.setTemplate('SelectList', '<%= Record.Name %>|<%=Record.Type%>');
+						var tmpRecords = [
+							{GUIDAnimal:'0xHAXXXX', Type:'Triceratops'},
+							{GUIDAnimal:'0xDavison', Name:'Davison', Type:'Dog'},
+							{GUIDAnimal:'0xMartino', Name:'Martin', Type:'Dog'},
+							{Name:'Chino', Type:'Cat'}
+						];
+						_MockSessionValidUser.UserRoleIndex = 2;
+						libSuperTest('http://localhost:9080/')
+						.put('1.0/FableTest/Upserts')
+						.send(tmpRecords)
+						.end(
+							function(pError, pResponse)
+							{
+								// Expect response to be the record we just created.
+								var tmpResult = JSON.parse(pResponse.text);
+								console.log(JSON.stringify(tmpResult,null,4));
+								Expect(tmpResult[0].Value).to.equal('Jason|Triceratops');
+								Expect(tmpResult[1].Value).to.equal('Davison|Dog');
+								Expect(tmpResult[2].Value).to.equal('Martin|Dog');
+								Expect(tmpResult[3].Value).to.equal('Chino|Cat');
 								fDone();
 							}
 						);

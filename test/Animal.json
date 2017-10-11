@@ -14,7 +14,8 @@
 		{ "Column": "DeletingIDUser",  "Type":"DeleteIDUser" },
 		{ "Column": "DeleteDate",      "Type":"DeleteDate" },
 		{ "Column": "Name",  "Type":"String" },
-		{ "Column": "Type",  "Type":"String" }
+		{ "Column": "Type",  "Type":"String" },
+        { "Column": "IDCustomer",  "Type":"Number" }
 	],
 
 	"DefaultObject": {
@@ -30,7 +31,8 @@
 		"DeletingIDUser": 0,
 
 		"Name": "Unknown",
-		"Type": "Unclassified"
+		"Type": "Unclassified",
+        "IDCustomer": 0
 	},
 
 	"JsonSchema": {
@@ -49,6 +51,10 @@
 			"Type": {
 				"description": "The type of the animal",
 				"type": "string"
+			},
+            "IDCustomer": {
+				"description": "The customer ID of the record",
+				"type": "number"
 			}
 		},
 		"required": ["IDAnimal", "Name", "CreatingIDUser"]
