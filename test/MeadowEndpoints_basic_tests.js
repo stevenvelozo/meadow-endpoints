@@ -615,6 +615,28 @@ suite
 				);
 				test
 				(
+					'readselect: get a page of filtered records by date',
+					function(fDone)
+					{
+						var today = new Date();
+						today = today.toISOString().substring(0, 10);
+
+						libSuperTest('http://localhost:9080/')
+						.get(`1.0/FableTestSelect/FilteredTo/FBD~UpdateDate~EQ~${today}/0/1`)
+						.end(
+							function (pError, pResponse)
+							{
+								console.log(pResponse.text)
+								var tmpResults = JSON.parse(pResponse.text);
+								Expect(tmpResults.length).to.equal(1);
+								Expect(tmpResults[0].Value).to.equal('FableTest #1');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
 					'readselect: get all records',
 					function(fDone)
 					{
