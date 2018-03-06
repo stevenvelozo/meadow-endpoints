@@ -527,6 +527,26 @@ suite
 				);
 				test
 				(
+					'readsLiteExtended: get all records',
+					function(fDone)
+					{
+						libSuperTest('http://localhost:9080/')
+						.get('1.0/FableTests/LiteExtended/Type,Name')
+						.end(
+							function (pError, pResponse)
+							{
+								var tmpResults = JSON.parse(pResponse.text);
+								Expect(tmpResults.length).to.equal(6);
+								Expect(tmpResults[0].IDAnimal).to.equal(1);
+								Expect(tmpResults[4].IDAnimal).to.equal(5);
+								Expect(tmpResults[4].Type).to.equal('Frog');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
 					'readsby: get all records by Type',
 					function(fDone)
 					{

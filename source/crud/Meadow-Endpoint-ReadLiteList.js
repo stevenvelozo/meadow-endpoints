@@ -102,8 +102,9 @@ var doAPIReadLiteEndpoint = function(pRequest, pResponse, fNext)
 			// 3. Marshalling of records into the hash list, using underscore templates.
 			function (fStageComplete)
 			{
-
-				fStageComplete(false, marshalLiteList(pRequest.Records, pRequest));
+				// Allow the endpoint to pass in extra columns.
+				// Break it apart by comma separated list
+				fStageComplete(false, marshalLiteList(pRequest.Records, pRequest, (typeof(pRequest.params.ExtraColumns) === 'string') ? pRequest.params.ExtraColumns.split(',') : []));
 			}
 		],
 		// 3. Return the results to the user
