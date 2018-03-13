@@ -61,6 +61,7 @@ var doAPIDeleteEndpoint = function(pRequest, pResponse, fNext)
 
 				// This is not overloadable.`
 				tmpQuery.addFilter(pRequest.DAL.defaultIdentifier, tmpIDRecord);
+				tmpQuery.setIDUser(pRequest.UserSession.UserID);
 
 				return fStageComplete();
 			},
