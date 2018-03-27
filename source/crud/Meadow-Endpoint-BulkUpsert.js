@@ -39,7 +39,7 @@ var doAPIUpsertEndpoint = function(pRequest, pResponse, fNext)
 			function(fStageComplete)
 			{
 				//1. Validate request body to ensure it is a valid record
-				if (typeof(pRequest.body) !== 'object')
+				if (!Array.isArray(pRequest.body))
 				{
 					return pRequest.CommonServices.sendError('Record upsert failure - a valid record is required.', pRequest, pResponse, fNext);
 				}
