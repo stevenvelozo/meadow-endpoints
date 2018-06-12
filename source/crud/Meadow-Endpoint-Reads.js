@@ -53,6 +53,10 @@ var doAPIReadsEndpoint = function(pRequest, pResponse, fNext)
 					// If a filter has been passed in, parse it and add the values to the query.
 					meadowFilterParser(pRequest.params.Filter, pRequest.Query);
 				}
+				else if (pRequest.params.Filter)
+				{
+					pRequest.Query.setFilter(pRequest.params.Filter);
+				}
 
 				fStageComplete(false);
 			},
