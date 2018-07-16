@@ -7,6 +7,9 @@
 * @module Meadow
 */
 
+//Meadow needs to connect some general route handlers, this ensures it is done lazily, and only once.
+var _AttachedRequestHandlers = false;
+
 /**
 * Meadow Data Broker Library
 *
@@ -293,11 +296,15 @@ var MeadowEndpoints = function()
 
 			_Fable.log.trace('Creating endpoint', {Version:tmpEndpointVersion, Name:tmpEndpointName});
 
-			// Connect the common services to the route
-			pRestServer.use(wireCommonServices);
+			if (!_AttachedRequestHandlers)
+			{
+				_AttachedRequestHandlers = true;
+				// Connect the common services to the route
+				pRestServer.use(wireCommonServices);
 
-			// Build formattedParams route parameters
-			pRestServer.use(formatRouteParams);
+				// Build formattedParams route parameters
+				pRestServer.use(formatRouteParams);
+			}
 
 			// These special schema services must come in the route table before the READ because they
 			// technically block out the routes for the IDRecord 'Schema' (e.g. /1.0/EntityName/Schema)
