@@ -1,6 +1,6 @@
 {
   "name": "meadow-endpoints",
-  "version": "1.0.69",
+  "version": "1.0.72",
   "description": "Automatic API endpoints for Meadow data.",
   "main": "source/Meadow-Endpoints.js",
   "scripts": {
@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "async": "1.5.0",
-    "meadow": "~1.0.20",
+    "meadow": "~1.0.25",
     "restify": "4.0.3",
     "mysql2": "1.2.0",
     "sleep-async": "^1.0.1",
