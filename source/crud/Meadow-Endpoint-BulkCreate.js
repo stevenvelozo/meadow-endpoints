@@ -36,6 +36,11 @@ var doAPIBulkCreateEndpoint = function(pRequest, pResponse, fNext)
 			},
 			function(fStageComplete)
 			{
+				pRequest.Response = pResponse;
+				pRequest.BehaviorModifications.runBehavior('Create-PreRequest', pRequest, fStageComplete);
+			},
+			function(fStageComplete)
+			{
 				libAsync.eachSeries(pRequest.BulkRecords,
 					function (pRecord, fCallback)
 					{

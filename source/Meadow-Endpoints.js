@@ -7,6 +7,9 @@
 * @module Meadow
 */
 
+//Meadow needs to connect some general route handlers, this ensures it is done lazily, and only once.
+var _AttachedRequestHandlers = false;
+
 /**
 * Meadow Data Broker Library
 *
@@ -226,6 +229,13 @@ var MeadowEndpoints = function()
 			pRequest.DAL = _Meadow;
 			pRequest.BehaviorModifications = _BehaviorModifications;
 			pRequest.Authorizers = _Authorizers;
+			pRequest.forEachRecord = function(fIterator)
+			{
+				if (pRequest.Record)
+					return fIterator(pRequest.Record)
+				else if (pRequest.Records)
+					return pRequest.Records.forEach(fIterator);
+			}
 
 			//maximum number of records to return by default on Read queries. Override via "MeadowDefaultMaxCap" fable setting.
 			pRequest.DEFAULT_MAX_CAP = (_Fable.settings['MeadowDefaultMaxCap']) || 250;
@@ -286,11 +296,15 @@ var MeadowEndpoints = function()
 
 			_Fable.log.trace('Creating endpoint', {Version:tmpEndpointVersion, Name:tmpEndpointName});
 
-			// Connect the common services to the route
-			pRestServer.use(wireCommonServices);
+			if (!_AttachedRequestHandlers)
+			{
+				_AttachedRequestHandlers = true;
+				// Connect the common services to the route
+				pRestServer.use(wireCommonServices);
 
-			// Build formattedParams route parameters
-			pRestServer.use(formatRouteParams);
+				// Build formattedParams route parameters
+				pRestServer.use(formatRouteParams);
+			}
 
 			// These special schema services must come in the route table before the READ because they
 			// technically block out the routes for the IDRecord 'Schema' (e.g. /1.0/EntityName/Schema)

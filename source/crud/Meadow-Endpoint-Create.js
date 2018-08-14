@@ -40,7 +40,12 @@ var doAPICreateEndpoint = function(pRequest, pResponse, fNext)
 					return pRequest.CommonServices.sendError('Record create failure - a valid record is required.', pRequest, pResponse, fNext);
 				}
 
-				return fStageComplete(null);
+				return fStageComplete();
+			},
+			function(fStageComplete)
+			{
+				pRequest.Response = pResponse;
+				pRequest.BehaviorModifications.runBehavior('Create-PreRequest', pRequest, fStageComplete);
 			},
 			function(fStageComplete)
 			{
@@ -56,11 +61,11 @@ var doAPICreateEndpoint = function(pRequest, pResponse, fNext)
 					return fStageComplete(pRequest.RecordCreateErrorMessage);
 
 				pResponse.send(pRequest.Record);
-				return fStageComplete(null);
+				return fStageComplete();
 			}
 		], function(pError)
 		{
-			if (pError)
+			if (pError && pError!='ABORT') //TODO: should have an abort token/const
 			{
 				return pRequest.CommonServices.sendCodedError('Error creating a record.', pError, pRequest, pResponse, fNext);
 			}
