@@ -1,6 +1,6 @@
 {
   "name": "meadow-endpoints",
-  "version": "1.0.61",
+  "version": "1.0.62",
   "description": "Automatic API endpoints for Meadow data.",
   "main": "source/Meadow-Endpoints.js",
   "scripts": {
@@ -23,21 +23,21 @@
   },
   "homepage": "https://github.com/stevenvelozo/meadow-endpoints",
   "devDependencies": {
-    "chai": "3.5.0",
-    "codeclimate-test-reporter": "0.4.1",
-    "coveralls": "2.13.1",
+    "chai": "4.1.2",
+    "codeclimate-test-reporter": "0.5.0",
+    "coveralls": "3.0.2",
     "fable": "~1.0.1",
     "istanbul": "0.4.5",
-    "mocha": "3.4.1",
-    "supertest": "3.0.0"
+    "mocha": "5.2.0",
+    "supertest": "3.1.0"
   },
   "dependencies": {
-    "async": "1.5.0",
-    "meadow": "~1.0.20",
-    "restify": "4.0.3",
-    "mysql2": "1.2.0",
-    "sleep-async": "^1.0.1",
-    "orator": "~1.0.2",
-    "underscore": "1.8.3"
+    "async": "2.6.1",
+    "meadow": "~1.0.28",
+    "restify": "~4.3.0",
+    "mysql2": "1.6.1",
+    "sleep-async": "^1.0.5",
+    "orator": "~1.1.27",
+    "underscore": "1.9.1"
   }
 }

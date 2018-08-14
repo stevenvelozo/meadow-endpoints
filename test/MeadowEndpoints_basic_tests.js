@@ -40,6 +40,20 @@ var tmpFableSettings = 	(
 var libFable = require('fable').new(tmpFableSettings);
 tmpFableSettings = libFable.settings;
 
+var libMySQL = require('mysql2');
+libFable.MeadowMySQLConnectionPool = libMySQL.createPool
+	(
+		{
+			connectionLimit: libFable.settings.MySQL.ConnectionPoolLimit,
+			host: libFable.settings.MySQL.Server,
+			port: libFable.settings.MySQL.Port,
+			user: libFable.settings.MySQL.User,
+			password: libFable.settings.MySQL.Password,
+			database: libFable.settings.MySQL.Database,
+			namedPlaceholders: true
+		}
+	);
+
 var _MockSessionValidUser = (
 	{
 		SessionID: '0000-VALID',

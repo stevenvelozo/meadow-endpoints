@@ -382,7 +382,7 @@ var MeadowEndpoints = function()
 						this.Record = data;
 					}
 				}
-			}
+			};
 
 			Object.defineProperty(pResponse, 'text',
 			{
