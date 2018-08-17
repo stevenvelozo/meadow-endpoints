@@ -20,7 +20,6 @@ var MeadowCommonServices = function()
 		var _Log = _Meadow.fable.log;
 
 		var libRestify = require('restify');
-		var libSleep = require('sleep-async')();
 
 		/**
 		 * Send an Error Code and Error Message to the client, and log it as an error in the log files.
@@ -139,12 +138,12 @@ var MeadowCommonServices = function()
 			_Log.trace('API Unauthorized Attempt: '+pMessage, {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:'APIUnauthorized'}, pRequest);
 
 			//cause a delay to mitigate DoS type attacks against endpoints
-			libSleep.sleep((_Meadow.fable.settings.UnauthorizedRequestDelay ? _Meadow.fable.settings.UnauthorizedRequestDelay : 15000), function()
+			setTimeout(function()
 			{
 				pResponse.send({Error:pMessage});
 
 				return fNext();
-			});
+			}, (_Meadow.fable.settings.UnauthorizedRequestDelay ? _Meadow.fable.settings.UnauthorizedRequestDelay : 15000));
 		};
 
 
