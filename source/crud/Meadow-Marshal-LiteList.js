@@ -29,7 +29,8 @@ var marshalLiteList = (pRecords, pRequest, pFieldList) =>
 	    (pField) =>
 		{
 			if (pField.indexOf('ID') === 0 ||
-				pField.indexOf('GUID') === 0)
+				pField.indexOf('GUID') === 0 ||
+				pField == 'CreatingIDUser') //we should always include owner info
 			{
 				tmpFieldList.push(pField);
 			}
