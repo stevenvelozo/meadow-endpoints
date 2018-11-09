@@ -1,6 +1,6 @@
 {
   "name": "meadow-endpoints",
-  "version": "1.0.74",
+  "version": "2.0.1",
   "description": "Automatic API endpoints for Meadow data.",
   "main": "source/Meadow-Endpoints.js",
   "scripts": {
@@ -36,7 +36,7 @@
     "meadow": "~1.0.28",
     "restify": "~4.3.0",
     "mysql2": "1.6.1",
-    "orator": "~1.1.27",
+    "orator": "~2.0.2",
     "underscore": "1.9.1"
   }
 }
