@@ -441,7 +441,7 @@ suite
 							{
 								// Expect response to be the record we just created.
 								var tmpResult = JSON.parse(pResponse.text);
-								Expect(tmpResult.Error).to.contain('a valid record is required');
+								Expect(tmpResult.Error).to.not.be.null;
 								fDone();
 							}
 						);
@@ -1036,7 +1036,7 @@ suite
 								// Expect response to be the record we just created.
 								var tmpResult = JSON.parse(pResponse.text);
 								//console.log(JSON.stringify(tmpResult, null, 4))
-								Expect(tmpResult.Error).to.contain('validate failure');
+								Expect(tmpResult.Valid).to.be.false;
 								fDone();
 							}
 						);
