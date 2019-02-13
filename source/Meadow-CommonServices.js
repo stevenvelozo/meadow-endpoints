@@ -159,7 +159,7 @@ var MeadowCommonServices = function()
 			sendNotAuthorized: sendNotAuthorized,
 
 			// Restify body parser passed through, for any POST and PUT requests
-			bodyParser: libRestify.bodyParser,
+			bodyParser: libRestify.plugins.bodyParser,
 
 			new: createNew
 		});
