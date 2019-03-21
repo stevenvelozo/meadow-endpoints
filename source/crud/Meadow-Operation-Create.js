@@ -50,16 +50,7 @@ var doCreate = function(pRecord, pRequest, pResponse, fCallback)
 				//3. Prepare create query
 				var tmpQuery = pRequest.DAL.query;
 
-				if (pRecord._CreatingIDUser && pRequest.UserSession.UserRoleIndex >= 4)
-				{
-					tmpQuery.setIDUser(pRecord._CreatingIDUser);
-					delete pRecord['_CreatingIDUser'];
-				}
-				else
-				{
-					tmpQuery.setIDUser(pRequest.UserSession.UserID);
-				}
-
+				tmpQuery.setIDUser(pRequest.UserSession.UserID);
 				tmpQuery.addRecord(pRecord);
 
 				return fStageComplete(null, tmpQuery);

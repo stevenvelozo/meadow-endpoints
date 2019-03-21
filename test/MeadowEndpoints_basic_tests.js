@@ -29,8 +29,8 @@ var tmpFableSettings = 	(
 			// This is queued up for Travis defaults.
 			Server: "localhost",
 			Port: 3306,
-			User: process.env.DEV_MYSQL_USER || "root",
-			Password: process.env.DEV_MYSQL_PASS || "",
+			User: "root",
+			Password: "",
 			Database: "FableTest",
 			ConnectionPoolLimit: 20
 		},
