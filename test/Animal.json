@@ -77,7 +77,7 @@
             "New": "Deny"
         },
         "Unauthenticated": {
-            "Create": "Allow",
+            "Create": "Deny",
             "Read": "Allow",
             "Reads": "Allow",
             "ReadsBy": "Allow",
@@ -90,6 +90,21 @@
             "Schema": "Allow",
             "Validate": "Allow",
             "New": "Allow"
+        },
+        "Readonly": {
+            "Create": "Deny",
+            "Read": "Allow",
+            "Reads": "Allow",
+            "ReadsBy": "Allow",
+            "ReadMax": "Allow",
+            "ReadSelectList": "Allow",
+            "Update": "Deny",
+            "Delete": "Deny",
+            "Count": "Allow",
+            "CountBy": "Allow",
+            "Schema": "Allow",
+            "Validate": "Allow",
+            "New": "Deny"
         },
         "User": {
             "Create": "Allow",

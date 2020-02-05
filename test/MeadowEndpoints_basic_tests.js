@@ -29,8 +29,8 @@ var tmpFableSettings = 	(
 			// This is queued up for Travis defaults.
 			Server: "localhost",
 			Port: 3306,
-			User: "root",
-			Password: "",
+			User: process.env.DEV_MYSQL_USER || "root",
+			Password: process.env.DEV_MYSQL_PASS || "",
 			Database: "FableTest",
 			ConnectionPoolLimit: 20
 		},
@@ -1054,7 +1054,7 @@ suite
 					'read: get a specific record',
 					function(fDone)
 					{
-						_MockSessionValidUser.UserRoleIndex = 0;
+						_MockSessionValidUser.UserRoleIndex = -1;
 						libSuperTest('http://localhost:9080/')
 						.get('1.0/FableTest/2')
 						.end(
@@ -1305,7 +1305,7 @@ suite
 					'read: get a specific record',
 					function(fDone)
 					{
-						Expect(_MeadowEndpoints.endpointAuthorizationLevels.Read).to.equal(1);
+						Expect(_MeadowEndpoints.endpointAuthorizationLevels.Read).to.equal(0);
 						fDone();
 					}
 				);
@@ -1423,8 +1423,8 @@ suite
 					function(fDone)
 					{
 						var tmpRecord = {Name:'BatBrains', Type:'Mammoth'};
-						_MockSessionValidUser.UserRoleIndex = 1;
-						_MeadowEndpoints.invokeEndpoint('Create', tmpRecord,
+						_MockSessionValidUser.UserRoleIndex = 2;
+						_MeadowEndpoints.invokeEndpoint('Create', tmpRecord, {UserSession: _MockSessionValidUser},
 							function(pError, pResponse)
 							{
 								// Expect response to be the record we just created.

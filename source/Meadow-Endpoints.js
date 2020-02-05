@@ -130,14 +130,14 @@ var MeadowEndpoints = function()
 		var _EndpointAuthorizationLevels = (
 		{
 			Create: 1,
-			Read: 1,
-			Reads: 1,
+			Read: 0,
+			Reads: 0,
 			Update: 1,
 			Delete: 1,
-			Count: 1,
+			Count: 0,
 
-			Schema: 1,
-			Validate: 1,
+			Schema: 0,
+			Validate: 0,
 			New: 1
 		});
 
