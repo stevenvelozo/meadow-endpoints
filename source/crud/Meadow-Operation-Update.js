@@ -131,6 +131,8 @@ var doUpdate = function(pRecordToModify, pRequest, pResponse, fCallback, pOption
     	{
     		if (pError)
     		{
+				if (typeof(pError) === 'object') pError = JSON.stringify(pError);
+				
     			pRecordToModify.Error = 'Error updating record:'+pError;
 				pRequest.RecordUpdateError = true;
 				pRequest.RecordUpdateErrorMessage = pError;
