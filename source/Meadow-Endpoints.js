@@ -59,7 +59,7 @@ var MeadowEndpoints = function()
 
 			Update: require('./crud/Meadow-Endpoint-Update.js'),
 			Updates: require('./crud/Meadow-Endpoint-BulkUpdate.js'),
-			
+
 			Upsert: require('./crud/Meadow-Endpoint-Upsert.js'),
 			Upserts: require('./crud/Meadow-Endpoint-BulkUpsert.js'),
 
@@ -195,7 +195,7 @@ var MeadowEndpoints = function()
 			New: true
 			// GET  [/1.0/SomeEndpoint/Schema/New]
 		});
-		
+
 		/**
 		* Customize an endpoint Authorization Level
 		*
@@ -320,7 +320,7 @@ var MeadowEndpoints = function()
 			{
 				pRestServer.post('/1.0/'+tmpEndpointName+'/Schema/Validate', _CommonServices.bodyParser(), _EndpointAuthenticators.Validate, wireState, _Endpoints.Validate);
 			}
-	
+
 			// Custom single record endpoints
 
 			// Standard CRUD and Count endpoints
@@ -375,7 +375,7 @@ var MeadowEndpoints = function()
 			}
 		};
 
-		
+
 		/**
 		* Emulate a response object
 		*/
@@ -445,12 +445,17 @@ var MeadowEndpoints = function()
 						pRequest.EndpointInvoked = true; //bypass session auth check
 						pRequest.UserSession = { UserID: 0, UserRoleIndex: 0 };
 					}
-					
-					//copy whatever is in here
-					pRequest.Satchel = pOptions.Satchel;
+
+					// The Satchel is a workaround to pass state between query invocation and query decoration
+					// In order to prevent queries from contaminating other queries, we clean up the Satchel
+					// during invocation and decorate it on the fake request object, minimizing the risk of
+					// cross-contamination.
+					//FIXME: We should rework invokeEndpoint to make this state management unnecessary
+					pRequest.Satchel = JSON.parse(JSON.stringify(pOptions.Satchel || {}));
+					delete pOptions.Satchel;
 					//internal invoke mark as authenticated (because this is not called via webservice)
 					pRequest.EndpointAuthenticated = true;
-					
+
 					return fStageComplete();
 				},
 				function(fStageComplete)

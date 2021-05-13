@@ -287,7 +287,7 @@ suite
 					function()
 					{
 						var tmpAuthorizers = require('../source/Meadow-Authorizers.js').new(libFable);
-						tmpAuthorizers.setAuthorizer('AlwaysAuthorize', 
+						tmpAuthorizers.setAuthorizer('AlwaysAuthorize',
 							function(pRequest, fComplete)
 							{
 								pRequest.MeadowAuthorization = true;
@@ -313,7 +313,7 @@ suite
 							{
 								Expect(tmpMockRequest.MeadowAuthorization).to.equal(false);
 							});
-						var tmpMockFullRequest = 
+						var tmpMockFullRequest =
 						{
 							UserSession:
 							{
@@ -326,7 +326,7 @@ suite
 								IDUser: 1
 							}
 						};
-						// Test that 
+						// Test that
 					}
 				);
 				test
@@ -335,7 +335,7 @@ suite
 					function()
 					{
 						var tmpAuthorizers = require('../source/Meadow-Authorizers.js').new(libFable);
-						var tmpMockFullRequest = 
+						var tmpMockFullRequest =
 						{
 							UserSession:
 							{
@@ -494,7 +494,7 @@ suite
 						.get('1.0/FableTest/2')
 						.end(
 							function (pError, pResponse)
-							{					
+							{
 								Expect(pResponse.text).to.contain('UNAUTHORIZED ACCESS IS NOT ALLOWED');
 								// Reset authorization
 								_Meadow.schemaFull.authorizer.Manager.Read = 'Allow';
@@ -1692,7 +1692,7 @@ suite
 								Expect(pRequest.Record.IDAnimal).to.equal(tmpRecord.IDAnimal);
 								return fComplete(false);
 							});
-						
+
 						_MeadowEndpoints.invokeEndpoint('Delete', tmpRecord, {UserSession: _MockSessionValidUser},
 							function(pError, pResponse)
 							{
