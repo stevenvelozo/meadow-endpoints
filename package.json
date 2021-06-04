@@ -26,14 +26,14 @@
     "chai": "4.1.2",
     "codeclimate-test-reporter": "0.5.0",
     "coveralls": "3.0.2",
-    "fable": "~1.0.2",
+    "fable": "^2.0.1",
     "istanbul": "0.4.5",
     "mocha": "5.2.0",
     "supertest": "3.1.0"
   },
   "dependencies": {
     "async": "2.6.1",
-    "meadow": "~1.0.29",
+    "meadow": "~1.0.30",
     "mysql2": "1.6.1",
     "orator": "~2.0.2",
     "underscore": "1.9.1"

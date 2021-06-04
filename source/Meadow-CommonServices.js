@@ -11,7 +11,7 @@ var MeadowCommonServices = function()
 	function createNew(pMeadow)
 	{
 		// If a valid fable object isn't passed in, return a constructor
-		if ((typeof(pMeadow) !== 'object') || (!pMeadow.hasOwnProperty('fable')))
+		if ((typeof(pMeadow) !== 'object') || !('fable' in pMeadow))
 		{
 			return {new: createNew};
 		}
@@ -120,7 +120,7 @@ var MeadowCommonServices = function()
 				_Log.warn('Invalid permission level when attempting to get a secured resource.', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:'APISecurity', RequiredUserLevel:pRequest.EndpointAuthorizationRequirement, 				ActualUserLevel:pRequest.UserSession.UserRoleIndex}, pRequest);
 				// TODO: Send the proper http status code
 				sendNotAuthorized('You must be appropriately authenticated to access this resource.', pRequest, pResponse, fNext);
-				return false;				
+				return false;
 			}
 
 			return true;
@@ -165,7 +165,32 @@ var MeadowCommonServices = function()
 		});
 
 		// Turn the common services object into a first-class Fable object
-		_Meadow.fable.addServices(tmpNewMeadowCommonServices);
+		// addServices removed in fable 2.x
+		if (typeof(_Meadow.fable.addServices) === 'function')
+		{
+			_Meadow.fable.addServices(tmpNewMeadowCommonServices);
+		}
+		else
+		{
+			// bring over addServices implementation from Fable 1.x for backward compatibility
+			Object.defineProperty(tmpNewMeadowCommonServices, 'fable',
+			{
+				get: function() { return _Meadow.fable; },
+				enumerable: false,
+			});
+
+			Object.defineProperty(tmpNewMeadowCommonServices, 'settings',
+			{
+				get: function() { return _Meadow.fable.settings; },
+				enumerable: false,
+			});
+
+			Object.defineProperty(tmpNewMeadowCommonServices, 'log',
+			{
+				get: function() { return _Meadow.fable.log; },
+				enumerable: false,
+			});
+		}
 
 		return tmpNewMeadowCommonServices;
 	}
