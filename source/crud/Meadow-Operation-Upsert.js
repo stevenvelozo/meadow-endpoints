@@ -17,90 +17,90 @@ var doUpdate = require('./Meadow-Operation-Update.js');
 
 var doUpsert = function(pRecordToUpsert, pRequest, pResponse, fCallback)
 {
-    pRequest.MeadowOperation = (typeof(pRequest.MeadowOperation) === 'string') ? pRequest.MeadowOperation : 'Upsert';
+	pRequest.MeadowOperation = (typeof(pRequest.MeadowOperation) === 'string') ? pRequest.MeadowOperation : 'Upsert';
 
-    libAsync.waterfall(
-    	[
-    		function(fStageComplete)
-    		{
-    			// Prepare to gather requirements for upserting
-    			pRequest.Record = pRecordToUpsert;
-    
-    			var tmpQuery = pRequest.DAL.query;
+	libAsync.waterfall(
+		[
+			function(fStageComplete)
+			{
+				// Prepare to gather requirements for upserting
+				pRequest.Record = pRecordToUpsert;
 
-    			// This operation will be create only if there is no GUID or ID in the record bundle
-    			pRequest.UpsertCreateOnly = true;
-    			
-    			// See if there is a default identifier or default GUIdentifier
-    			if ((typeof(pRecordToUpsert[pRequest.DAL.defaultGUIdentifier]) !== 'undefined') && pRecordToUpsert[pRequest.DAL.defaultGUIdentifier].length > 0)
-    			{
-	    			tmpQuery.addFilter(pRequest.DAL.defaultGUIdentifier, pRecordToUpsert[pRequest.DAL.defaultGUIdentifier]);
-	    			pRequest.UpsertCreateOnly = false;
-    			}
-    			if ((typeof(pRecordToUpsert[pRequest.DAL.defaultIdentifier]) !== 'undefined') && (pRecordToUpsert[pRequest.DAL.defaultIdentifier] > 0))
-    			{
-	    			tmpQuery.addFilter(pRequest.DAL.defaultIdentifier, pRecordToUpsert[pRequest.DAL.defaultIdentifier]);
-	    			pRequest.UpsertCreateOnly = false;
-    			}
-    			
-    			if (pRequest.UpsertCreateOnly)
-    			{
-    				// Just create the record
-    				doCreate(pRecordToUpsert, pRequest, pResponse, fStageComplete);
-    			}
-    			else
-    			{
-	    			// Load the record to see if it exists
-	    			pRequest.DAL.doRead(tmpQuery,
-	    				function(pError, pQuery, pRecord)
-	    				{
-	    					if (pError)
-	    					{
-	    						// Return the error, because there was an error.
-	    						return fStageComplete(pError);
-	    					}
-	    					else if (!pError && !pRecord)
-	    					{
-	    						// Record not found -- do a create.
-	    						doCreate(pRecordToUpsert, pRequest, pResponse, fStageComplete);
-	    					}
-	    					else
-	    					{
-	    						// Set the default ID in the passed-in record if it doesn't exist..
-	    						if (!pRecordToUpsert.hasOwnProperty(pRequest.DAL.defaultIdentifier))
-	    						{
-	    							pRecordToUpsert[pRequest.DAL.defaultIdentifier] = pRecord[pRequest.DAL.defaultIdentifier];
-	    						}
-	    						// If the found record does not match the passed ID --- what the heck?!
-	    						if (pRecordToUpsert[pRequest.DAL.defaultIdentifier] != pRecord[pRequest.DAL.defaultIdentifier])
-	    						{
-	    							return fStageComplete('Default identifier does not match GUID record.');
-	    						}
-	    						// Record found -- do an update.  Use the cached record, though.
+				var tmpQuery = pRequest.DAL.query;
+
+				// This operation will be create only if there is no GUID or ID in the record bundle
+				pRequest.UpsertCreateOnly = true;
+
+				// See if there is a default identifier or default GUIdentifier
+				if ((typeof(pRecordToUpsert[pRequest.DAL.defaultGUIdentifier]) !== 'undefined') && pRecordToUpsert[pRequest.DAL.defaultGUIdentifier].length > 0)
+				{
+					tmpQuery.addFilter(pRequest.DAL.defaultGUIdentifier, pRecordToUpsert[pRequest.DAL.defaultGUIdentifier]);
+					pRequest.UpsertCreateOnly = false;
+				}
+				if ((typeof(pRecordToUpsert[pRequest.DAL.defaultIdentifier]) !== 'undefined') && (pRecordToUpsert[pRequest.DAL.defaultIdentifier] > 0))
+				{
+					tmpQuery.addFilter(pRequest.DAL.defaultIdentifier, pRecordToUpsert[pRequest.DAL.defaultIdentifier]);
+					pRequest.UpsertCreateOnly = false;
+				}
+
+				if (pRequest.UpsertCreateOnly)
+				{
+					// Just create the record
+					doCreate(pRecordToUpsert, pRequest, pResponse, fStageComplete);
+				}
+				else
+				{
+					// Load the record to see if it exists
+					pRequest.DAL.doRead(tmpQuery,
+						function(pError, pQuery, pRecord)
+						{
+							if (pError)
+							{
+								// Return the error, because there was an error.
+								return fStageComplete(pError);
+							}
+							else if (!pError && !pRecord)
+							{
+								// Record not found -- do a create.
+								doCreate(pRecordToUpsert, pRequest, pResponse, fStageComplete);
+							}
+							else
+							{
+								// Set the default ID in the passed-in record if it doesn't exist..
+								if (!pRecordToUpsert.hasOwnProperty(pRequest.DAL.defaultIdentifier))
+								{
+									pRecordToUpsert[pRequest.DAL.defaultIdentifier] = pRecord[pRequest.DAL.defaultIdentifier];
+								}
+								// If the found record does not match the passed ID --- what the heck?!
+								if (pRecordToUpsert[pRequest.DAL.defaultIdentifier] != pRecord[pRequest.DAL.defaultIdentifier])
+								{
+									return fStageComplete('Default identifier does not match GUID record.');
+								}
+								// Record found -- do an update.  Use the cached record, though.
 								doUpdate(pRecordToUpsert, pRequest, pResponse, fStageComplete, pRecord);
 							}
-	    				});
-    			}
-    		},
-    		function(fStageComplete)
-    		{
-    			// Now stuff the record into the upserted array
-    			pRequest.UpsertedRecords.push(pRequest.Record);
-    			fStageComplete(null);
-    		}
-    	], function(pError)
-    	{
-    		if (pError)
-    		{
-    			pRecordToUpsert.Error = 'Error upserting record:'+pError;
+						});
+				}
+			},
+			function(fStageComplete)
+			{
+				// Now stuff the record into the upserted array
+				pRequest.UpsertedRecords.push(pRequest.Record);
+				fStageComplete(null);
+			}
+		], function(pError)
+		{
+			if (pError)
+			{
+				pRecordToUpsert.Error = 'Error upserting record:'+pError;
 				pRequest.RecordUpsertError = true;
 				pRequest.RecordUpsertErrorMessage = pError;
-    			pRequest.UpsertedRecords.push(pRecordToUpsert);
-    			pRequest.CommonServices.log.error('Error upserting record:'+pError, {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-'+pRequest.MeadowOperation}, pRequest);
-    		}
-    
-    		return fCallback();
-    	});
+				pRequest.UpsertedRecords.push(pRecordToUpsert);
+				pRequest.CommonServices.log.error('Error upserting record:'+pError, {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-'+pRequest.MeadowOperation}, pRequest);
+			}
+
+			return fCallback();
+		});
 };
 
 module.exports = doUpsert;

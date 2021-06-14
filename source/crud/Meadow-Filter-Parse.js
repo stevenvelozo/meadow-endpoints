@@ -117,11 +117,11 @@ var addFilterStanzaToQuery = function(pFilterStanza, pQuery)
 			// Just split the value by comma for now.  May want to revisit better characters or techniques later.
 			pQuery.addFilter(pFilterStanza.Field, pFilterStanza.Value.split(','), getFilterComparisonOperator(pFilterStanza.Operator, 'OR'));
 			break;
-		
+
 		case 'FBD': // Filter by Date (exclude time)
 			pQuery.addFilter(`DATE(${pFilterStanza.Field})`, pFilterStanza.Value.split(','), getFilterComparisonOperator(pFilterStanza.Operator), 'AND', pFilterStanza.Field);
 			break;
-		
+
 		case 'FBDOR': // Filter by Date (exclude time)
 			pQuery.addFilter(`DATE(${pFilterStanza.Field})`, pFilterStanza.Value.split(','), getFilterComparisonOperator(pFilterStanza.Operator), 'OR', pFilterStanza.Field);
 			break;

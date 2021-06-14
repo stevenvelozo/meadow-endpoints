@@ -15,9 +15,9 @@ var doAPIReadsByEndpoint = function(pRequest, pResponse, fNext)
 	// This state is the requirement for the UserRoleIndex value in the UserSession object... processed by default as >=
 	// The default here is that any authenticated user can use this endpoint.
 	pRequest.EndpointAuthorizationRequirement = pRequest.EndpointAuthorizationLevels.Reads;
-	
+
 	// INJECT: Pre authorization (for instance to change the authorization level)
-	
+
 	if (pRequest.CommonServices.authorizeEndpoint(pRequest, pResponse, fNext) === false)
 	{
 		// If this endpoint fails, it's sent an error automatically.
@@ -72,7 +72,7 @@ var doAPIReadsByEndpoint = function(pRequest, pResponse, fNext)
 				}
 
 				var tmpFilters = pRequest.params.Filters;
-				if (tmpFilters && 
+				if (tmpFilters &&
 					tmpFilters.constructor === Array)
 				{
 					tmpFilters.forEach(function(filter)
@@ -84,7 +84,7 @@ var doAPIReadsByEndpoint = function(pRequest, pResponse, fNext)
 				{
 					addField(pRequest.params.ByField, pRequest.formattedParams.ByValue);
 				}
-				
+
 				fStageComplete(false);
 			},
 			// 3. INJECT: Query configuration
