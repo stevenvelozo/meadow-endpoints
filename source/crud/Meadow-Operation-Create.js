@@ -13,7 +13,7 @@ var libAsync = require('async');
 
 var doCreate = function(pRecord, pRequest, pResponse, fCallback)
 {
-    pRequest.MeadowOperation = (typeof(pRequest.MeadowOperation) === 'string') ? pRequest.MeadowOperation : 'Create';
+	pRequest.MeadowOperation = (typeof(pRequest.MeadowOperation) === 'string') ? pRequest.MeadowOperation : 'Create';
 
 	libAsync.waterfall(
 		[
@@ -22,12 +22,12 @@ var doCreate = function(pRecord, pRequest, pResponse, fCallback)
 				// Do this for compatibility with injected behaviors
 				pRequest.Record = pRecord;
 
-                //Make sure record gets created with a customerID
-                if (!pRequest.Record.hasOwnProperty('IDCustomer') &&
-                    pRequest.DAL.jsonSchema.properties.hasOwnProperty('IDCustomer'))
-                {
-                    pRequest.Record.IDCustomer = pRequest.UserSession.CustomerID || 0;
-                }
+				//Make sure record gets created with a customerID
+				if (!pRequest.Record.hasOwnProperty('IDCustomer') &&
+					pRequest.DAL.jsonSchema.properties.hasOwnProperty('IDCustomer'))
+				{
+					pRequest.Record.IDCustomer = pRequest.UserSession.CustomerID || 0;
+				}
 
 				pRequest.BehaviorModifications.runBehavior('Create-PreOperation', pRequest, fStageComplete);
 			},
@@ -71,7 +71,7 @@ var doCreate = function(pRecord, pRequest, pResponse, fCallback)
 						{
 							return fStageComplete('Error in DAL create: '+pError);
 						}
-						
+
 						pRequest.Record = pNewRecord;
 
 						pRequest.CreatedRecords.push(pNewRecord);

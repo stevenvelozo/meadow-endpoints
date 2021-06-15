@@ -14,7 +14,7 @@ var MeadowAuthorizers = function()
 	function createNew(pMeadow)
 	{
 		// If a valid fable object isn't passed in, return a constructor
-		if ((typeof(pMeadow) !== 'object') || (!pMeadow.hasOwnProperty('fable')))
+		if ((typeof(pMeadow) !== 'object') || !('fable' in pMeadow))
 		{
 			return {new: createNew};
 		}
@@ -33,7 +33,7 @@ var MeadowAuthorizers = function()
 		*      // Do some stuff with pRequest...
 		*      if (pRequest.UserSession.UserRoleIndex < 5)
 		*          pRequest.MeadowAuthorization = pRequest.MeadowAuthorization && false;
-		*      
+		*
 		*      return fComplete(false);
 		* }
 		*

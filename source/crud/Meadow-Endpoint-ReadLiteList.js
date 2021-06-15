@@ -17,7 +17,7 @@ var doAPIReadLiteEndpoint = function(pRequest, pResponse, fNext)
 	// This state is the requirement for the UserRoleIndex value in the UserSession object... processed by default as >=
 	// The default here is that any authenticated user can use this endpoint.
 	pRequest.EndpointAuthorizationRequirement = pRequest.EndpointAuthorizationLevels.Reads;
-	
+
 	// INJECT: Pre authorization (for instance to change the authorization level)
 
 	if (pRequest.CommonServices.authorizeEndpoint(pRequest, pResponse, fNext) === false)

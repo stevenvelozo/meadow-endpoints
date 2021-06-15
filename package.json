@@ -1,11 +1,11 @@
 {
   "name": "meadow-endpoints",
-  "version": "2.0.8",
+  "version": "2.0.9",
   "description": "Automatic API endpoints for Meadow data.",
   "main": "source/Meadow-Endpoints.js",
   "scripts": {
     "start": "node source/Meadow-Endpoints.js",
-    "coverage": "./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- --exit -u tdd -R spec",
+    "coverage": "nyc npm run test && nyc report --reporter=lcov",
     "test": "./node_modules/mocha/bin/_mocha --exit -u tdd -R spec"
   },
   "repository": {
@@ -26,14 +26,14 @@
     "chai": "4.1.2",
     "codeclimate-test-reporter": "0.5.0",
     "coveralls": "3.0.2",
-    "fable": "~1.0.2",
-    "istanbul": "0.4.5",
+    "fable": "^2.0.1",
     "mocha": "5.2.0",
+    "nyc": "^15.1.0",
     "supertest": "3.1.0"
   },
   "dependencies": {
     "async": "2.6.1",
-    "meadow": "~1.0.29",
+    "meadow": "~1.0.30",
     "mysql2": "1.6.1",
     "orator": "~2.0.2",
     "underscore": "1.9.1"

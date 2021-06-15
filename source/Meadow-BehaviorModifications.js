@@ -13,7 +13,7 @@ var MeadowBehaviorModifications = function()
 	function createNew(pMeadow)
 	{
 		// If a valid fable object isn't passed in, return a constructor
-		if ((typeof(pMeadow) !== 'object') || (!pMeadow.hasOwnProperty('fable')))
+		if ((typeof(pMeadow) !== 'object') || !('fable' in pMeadow))
 		{
 			return {new: createNew};
 		}

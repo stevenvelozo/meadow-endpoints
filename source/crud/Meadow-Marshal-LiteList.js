@@ -13,20 +13,20 @@
 var marshalLiteList = (pRecords, pRequest, pFieldList) =>
 {
 	if (pRecords.length < 1)
-	    return [];
+		return [];
 
 	let tmpLiteList = [];
 	// Allow the caller to pass in a list of fields.
 	let tmpFieldList = (typeof(pFieldList) !== 'undefined') ? pFieldList : [];
 
-    // See if this record has a GUID in the schema
+	// See if this record has a GUID in the schema
 	let tmpGUID = (pRequest.DAL.defaultGUIdentifier && pRequest.DAL.defaultGUIdentifier.length > 0) ? pRequest.DAL.defaultGUIdentifier : false;
 	// Peek at the first record to check for updatedate
 	let tmpHasUpdateDate = (pRecords[0].hasOwnProperty('UpdateDate')) ? true : false;
 	//Include all GUID and ID fields on the record
 	let tmpRecordFields = Object.keys(pRecords[0]);
 	tmpRecordFields.forEach(
-	    (pField) =>
+		(pField) =>
 		{
 			if (pField.indexOf('ID') === 0 ||
 				pField.indexOf('GUID') === 0 ||
@@ -60,14 +60,14 @@ var marshalLiteList = (pRecords, pRequest, pFieldList) =>
 			tmpLiteRecord['UpdateDate'] = pRecords[i].UpdateDate;
 
 		tmpFieldList.forEach(
-		    (pField) =>
-    		{
-    			tmpLiteRecord[pField] = pRecords[i][pField];
-    		});
+			(pField) =>
+			{
+				tmpLiteRecord[pField] = pRecords[i][pField];
+			});
 
 		tmpLiteList.push(tmpLiteRecord);
 	}
-	
+
 	return tmpLiteList;
 };
 

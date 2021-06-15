@@ -18,7 +18,7 @@ var doAPIDeleteEndpoint = function(pRequest, pResponse, fNext)
 	// This state is the requirement for the UserRoleIndex value in the UserSession object... processed by default as >=
 	// The default here is that any authenticated user can use this endpoint.
 	pRequest.EndpointAuthorizationRequirement = pRequest.EndpointAuthorizationLevels.Delete;
-	
+
 	// INJECT: Pre authorization (for instance to change the authorization level)
 
 	if (pRequest.CommonServices.authorizeEndpoint(pRequest, pResponse, fNext) === false)
@@ -111,7 +111,7 @@ var doAPIDeleteEndpoint = function(pRequest, pResponse, fNext)
 					{
 						// It returns the number of rows deleted
 						tmpRecordCount = {Count:pCount};
-						
+
 						return fStageComplete(pError);
 					});
 			},
