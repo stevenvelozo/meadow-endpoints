@@ -5,7 +5,7 @@
   "main": "source/Meadow-Endpoints.js",
   "scripts": {
     "start": "node source/Meadow-Endpoints.js",
-    "coverage": "./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- --exit -u tdd -R spec",
+    "coverage": "nyc npm run test && nyc report --reporter=lcov",
     "test": "./node_modules/mocha/bin/_mocha --exit -u tdd -R spec"
   },
   "repository": {
@@ -27,8 +27,8 @@
     "codeclimate-test-reporter": "0.5.0",
     "coveralls": "3.0.2",
     "fable": "^2.0.1",
-    "istanbul": "0.4.5",
     "mocha": "5.2.0",
+    "nyc": "^15.1.0",
     "supertest": "3.1.0"
   },
   "dependencies": {
