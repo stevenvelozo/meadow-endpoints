@@ -447,12 +447,10 @@ var MeadowEndpoints = function()
 					}
 
 					// The Satchel is a workaround to pass state between query invocation and query decoration
-					// In order to prevent queries from contaminating other queries, we clean up the Satchel
-					// during invocation and decorate it on the fake request object, minimizing the risk of
-					// cross-contamination.
+					// Unfortunately, it has other uses, so we can't safely remove it here; this creates a risk of
+					// cross-request state contamination (which we have seen cause issues).
 					//FIXME: We should rework invokeEndpoint to make this state management unnecessary
-					pRequest.Satchel = JSON.parse(JSON.stringify(pOptions.Satchel || {}));
-					delete pOptions.Satchel;
+					pRequest.Satchel = pOptions.Satchel;
 					//internal invoke mark as authenticated (because this is not called via webservice)
 					pRequest.EndpointAuthenticated = true;
 
