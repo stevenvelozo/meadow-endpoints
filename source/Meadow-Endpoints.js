@@ -342,36 +342,36 @@ var MeadowEndpoints = function()
 				pRestServer.get('/1.0/'+tmpEndpointName+'s/FilteredTo/:Filter', _EndpointAuthenticators.Reads, wireState, _Endpoints.Reads);
 				pRestServer.get('/1.0/'+tmpEndpointName+'s/FilteredTo/:Filter/:Begin/:Cap', _EndpointAuthenticators.Reads, wireState, _Endpoints.Reads);
 				pRestServer.get('/1.0/'+tmpEndpointName+'Select', _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadSelectList);
-				pRestServer.get('/1.0/'+tmpEndpointName+'Select/:Begin/:Cap', _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadSelectList);
 				pRestServer.get('/1.0/'+tmpEndpointName+'Select/FilteredTo/:Filter', _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadSelectList);
 				pRestServer.get('/1.0/'+tmpEndpointName+'Select/FilteredTo/:Filter/:Begin/:Cap', _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadSelectList);
+				pRestServer.get('/1.0/'+tmpEndpointName+'Select/:Begin/:Cap', _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadSelectList);
 				pRestServer.get('/1.0/'+tmpEndpointName+'s/Lite', _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadLiteList);
-				pRestServer.get('/1.0/'+tmpEndpointName+'s/Lite/:Begin/:Cap', _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadLiteList);
 				pRestServer.get('/1.0/'+tmpEndpointName+'s/Lite/FilteredTo/:Filter', _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadLiteList);
 				pRestServer.get('/1.0/'+tmpEndpointName+'s/Lite/FilteredTo/:Filter/:Begin/:Cap', _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadLiteList);
+				pRestServer.get('/1.0/'+tmpEndpointName+'s/Lite/:Begin/:Cap', _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadLiteList);
 				pRestServer.get('/1.0/'+tmpEndpointName+'s/LiteExtended/:ExtraColumns', _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadLiteList);
-				pRestServer.get('/1.0/'+tmpEndpointName+'s/LiteExtended/:ExtraColumns/:Begin/:Cap', _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadLiteList);
 				pRestServer.get('/1.0/'+tmpEndpointName+'s/LiteExtended/:ExtraColumns/FilteredTo/:Filter', _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadLiteList);
 				pRestServer.get('/1.0/'+tmpEndpointName+'s/LiteExtended/:ExtraColumns/FilteredTo/:Filter/:Begin/:Cap', _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadLiteList);
+				pRestServer.get('/1.0/'+tmpEndpointName+'s/LiteExtended/:ExtraColumns/:Begin/:Cap', _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadLiteList);
 				pRestServer.get('/1.0/'+tmpEndpointName+'s/:Begin/:Cap', _EndpointAuthenticators.Reads, wireState, _Endpoints.Reads);
 			}
 			if (_EnabledBehaviors.Update)
 			{
-					pRestServer.put('/1.0/'+tmpEndpointName, _CommonServices.bodyParser(), _EndpointAuthenticators.Update, wireState, _Endpoints.Update);
-					pRestServer.put('/1.0/'+tmpEndpointName+'s', _CommonServices.bodyParser(), _EndpointAuthenticators.Update, wireState, _Endpoints.Updates);
-					pRestServer.put('/1.0/'+tmpEndpointName+'/Upsert', _CommonServices.bodyParser(), _EndpointAuthenticators.Update, wireState, _Endpoints.Upsert);
-					pRestServer.put('/1.0/'+tmpEndpointName+'/Upserts', _CommonServices.bodyParser(), _EndpointAuthenticators.Update, wireState, _Endpoints.Upserts);
+				pRestServer.put('/1.0/'+tmpEndpointName, _CommonServices.bodyParser(), _EndpointAuthenticators.Update, wireState, _Endpoints.Update);
+				pRestServer.put('/1.0/'+tmpEndpointName+'s', _CommonServices.bodyParser(), _EndpointAuthenticators.Update, wireState, _Endpoints.Updates);
+				pRestServer.put('/1.0/'+tmpEndpointName+'/Upsert', _CommonServices.bodyParser(), _EndpointAuthenticators.Update, wireState, _Endpoints.Upsert);
+				pRestServer.put('/1.0/'+tmpEndpointName+'/Upserts', _CommonServices.bodyParser(), _EndpointAuthenticators.Update, wireState, _Endpoints.Upserts);
 			}
 			if (_EnabledBehaviors.Delete)
 			{
-					pRestServer.del('/1.0/'+tmpEndpointName, _CommonServices.bodyParser(), _EndpointAuthenticators.Delete, wireState, _Endpoints.Delete);
-					pRestServer.del('/1.0/'+tmpEndpointName+'/:IDRecord', _EndpointAuthenticators.Delete, wireState, _Endpoints.Delete);
+				pRestServer.del('/1.0/'+tmpEndpointName, _CommonServices.bodyParser(), _EndpointAuthenticators.Delete, wireState, _Endpoints.Delete);
+				pRestServer.del('/1.0/'+tmpEndpointName+'/:IDRecord', _EndpointAuthenticators.Delete, wireState, _Endpoints.Delete);
 			}
 			if (_EnabledBehaviors.Count)
 			{
-					pRestServer.get('/1.0/'+tmpEndpointName+'s/Count', _EndpointAuthenticators.Count, wireState, _Endpoints.Count);
-					pRestServer.get('/1.0/'+tmpEndpointName+'s/Count/By/:ByField/:ByValue', _EndpointAuthenticators.Count, wireState, _Endpoints.CountBy);
-					pRestServer.get('/1.0/'+tmpEndpointName+'s/Count/FilteredTo/:Filter', _EndpointAuthenticators.Count, wireState, _Endpoints.Count);
+				pRestServer.get('/1.0/'+tmpEndpointName+'s/Count', _EndpointAuthenticators.Count, wireState, _Endpoints.Count);
+				pRestServer.get('/1.0/'+tmpEndpointName+'s/Count/By/:ByField/:ByValue', _EndpointAuthenticators.Count, wireState, _Endpoints.CountBy);
+				pRestServer.get('/1.0/'+tmpEndpointName+'s/Count/FilteredTo/:Filter', _EndpointAuthenticators.Count, wireState, _Endpoints.Count);
 			}
 		};
 
