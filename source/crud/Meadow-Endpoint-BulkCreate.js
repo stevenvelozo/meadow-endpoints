@@ -13,6 +13,7 @@
 var libAsync = require('async');
 
 var doCreate = require('./Meadow-Operation-Create.js');
+const streamRecordsToResponse = require('./Meadow-StreamRecordArray');
 
 var doAPIBulkCreateEndpoint = function(pRequest, pResponse, fNext)
 {
@@ -50,8 +51,7 @@ var doAPIBulkCreateEndpoint = function(pRequest, pResponse, fNext)
 			function(fStageComplete)
 			{
 				//5. Respond with the new records
-				pResponse.send(pRequest.CreatedRecords);
-				return fStageComplete(null);
+				return streamRecordsToResponse(pResponse, pRequest.CreatedRecords, fStageComplete);
 			}
 		], function(pError)
 		{

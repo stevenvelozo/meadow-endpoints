@@ -736,10 +736,9 @@ suite
 						.end(
 							function (pError, pResponse)
 							{
-								console.log('FUCK'+pResponse.text)
 								var tmpResults = JSON.parse(pResponse.text);
-								Expect(tmpResults.length).to.equal(6);
-								Expect(tmpResults[0].Value).to.equal('FableTest #1');
+								Expect(tmpResults.length).to.equal(2);
+								Expect(tmpResults[0].Value).to.equal('FableTest #3');
 								fDone();
 							}
 						);

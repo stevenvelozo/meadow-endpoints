@@ -13,6 +13,7 @@
 var libAsync = require('async');
 
 var doUpdate = require('./Meadow-Operation-Update.js');
+const streamRecordsToResponse = require('./Meadow-StreamRecordArray');
 
 var doAPIUpdateEndpoint = function(pRequest, pResponse, fNext)
 {
@@ -57,8 +58,7 @@ var doAPIUpdateEndpoint = function(pRequest, pResponse, fNext)
 			function(fStageComplete)
 			{
 				//5. Respond with the new record
-				pResponse.send(pRequest.UpdatedRecords);
-				return fStageComplete(null);
+				return streamRecordsToResponse(pResponse, pRequest.UpdatedRecords, fStageComplete);
 			}
 		], function(pError)
 		{
