@@ -9,6 +9,8 @@
 var libAsync = require('async');
 var meadowFilterParser = require('./Meadow-Filter-Parse.js');
 var marshalLiteList = require('./Meadow-Marshal-LiteList.js');
+const streamRecordsToResponse = require('./Meadow-StreamRecordArray');
+
 /**
 * Get a set of records from a DAL.
 */
@@ -123,8 +125,7 @@ var doAPIReadLiteEndpoint = function(pRequest, pResponse, fNext)
 			}
 
 			pRequest.CommonServices.log.info('Read a recordset lite list with '+pResultRecords.length+' results.', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-ReadLite'}, pRequest);
-			pResponse.send(pResultRecords);
-			return fNext();
+			return streamRecordsToResponse(pResponse, pResultRecords, fNext);
 		}
 	);
 };

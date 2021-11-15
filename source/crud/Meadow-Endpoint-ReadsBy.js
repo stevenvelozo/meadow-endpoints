@@ -7,6 +7,8 @@
 * @module Meadow
 */
 var libAsync = require('async');
+const streamRecordsToResponse = require('./Meadow-StreamRecordArray');
+
 /**
 * Get a specific record from a DAL.
 */
@@ -140,8 +142,7 @@ var doAPIReadsByEndpoint = function(pRequest, pResponse, fNext)
 			}
 
 			pRequest.CommonServices.log.info('Read a list of records by '+pRequest.params.ByField+' = '+pRequest.params.ByValue+'.', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-ReadsBy'}, pRequest);
-			pResponse.send(pRequest.Records);
-			return fNext();
+			return streamRecordsToResponse(pResponse, pRequest.Records, fNext);
 		}
 	);
 };

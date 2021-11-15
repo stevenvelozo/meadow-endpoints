@@ -8,6 +8,8 @@
 */
 var libAsync = require('async');
 var meadowFilterParser = require('./Meadow-Filter-Parse.js');
+const streamRecordsToResponse = require('./Meadow-StreamRecordArray');
+
 /**
 * Get a set of records from a DAL.
 */
@@ -113,8 +115,8 @@ var doAPIReadsEndpoint = function(pRequest, pResponse, fNext)
 			}
 
 			pRequest.CommonServices.log.info('Read a list of records.', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Reads'}, pRequest);
-			pResponse.send(pRequest.Records);
-			return fNext();
+
+			streamRecordsToResponse(pResponse, pRequest.Records, fNext);
 		}
 	);
 };
