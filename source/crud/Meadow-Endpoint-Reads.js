@@ -7,7 +7,7 @@
 * @module Meadow
 */
 var libAsync = require('async');
-var meadowFilterParser = require('./Meadow-Filter-Parse.js');
+const meadowFilterParser = require('meadow-filter').parse;
 const streamRecordsToResponse = require('./Meadow-StreamRecordArray');
 
 /**
