@@ -71,6 +71,11 @@ var doAPIReadLiteEndpoint = function(pRequest, pResponse, fNext)
 			{
 				pRequest.BehaviorModifications.runBehavior('Reads-QueryConfiguration', pRequest, fStageComplete);
 			},
+			// 1b2. INJECT: Query pre-authorization behavior (ex. if authorizer needs fields to be included, it can add them)
+			function (fStageComplete)
+			{
+				pRequest.BehaviorModifications.runBehavior('Reads-PreAuth', pRequest, fStageComplete);
+			},
 			// 1c. Do the record read
 			function (fStageComplete)
 			{
@@ -92,7 +97,8 @@ var doAPIReadLiteEndpoint = function(pRequest, pResponse, fNext)
 			// 2.5: Check if there is an authorizer set for this endpoint and user role combination, and authorize based on that
 			function (fStageComplete)
 			{
-				pRequest.Authorizers.authorizeRequest('ReadLite', pRequest, fStageComplete);
+				// shared permission with reads
+				pRequest.Authorizers.authorizeRequest('Reads', pRequest, fStageComplete);
 			},
 			// 2.6: Check if authorization or post processing denied security access to the record
 			function (fStageComplete)

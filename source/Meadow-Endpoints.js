@@ -56,6 +56,7 @@ var MeadowEndpoints = function()
 
 			ReadSelectList: require('./crud/Meadow-Endpoint-ReadSelectList.js'),
 			ReadLiteList: require('./crud/Meadow-Endpoint-ReadLiteList.js'),
+			ReadDistinctList: require('./crud/Meadow-Endpoint-ReadDistinctList.js'),
 
 			Update: require('./crud/Meadow-Endpoint-Update.js'),
 			Updates: require('./crud/Meadow-Endpoint-BulkUpdate.js'),
@@ -172,6 +173,10 @@ var MeadowEndpoints = function()
 			// GET  [/1.0/SomeEndpoint/LiteExtended/:ExtraColumns/:Begin/:Cap]
 			// GET  [/1.0/SomeEndpoint/LiteExtended/:ExtraColumns/FilteredTo/:Filter]
 			// GET  [/1.0/SomeEndpoint/LiteExtended/:ExtraColumns/FilteredTo/:Filter/:Begin/:Cap]
+			// GET  [/1.0/SomeEndpoint/Distinct/:Columns]
+			// GET  [/1.0/SomeEndpoint/Distinct/:Columns/:Begin/:Cap]
+			// GET  [/1.0/SomeEndpoint/Distinct/:Columns/FilteredTo/:Filter]
+			// GET  [/1.0/SomeEndpoint/Distinct/:Columns/FilteredTo/:Filter/:Begin/:Cap]
 
 			Update: true,
 			// PUT [/1.0/SomeEndpoint]
@@ -355,6 +360,10 @@ var MeadowEndpoints = function()
 				pRestServer.get(`${tmpEndpointPrefix}s/LiteExtended/:ExtraColumns/FilteredTo/:Filter`, _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadLiteList);
 				pRestServer.get(`${tmpEndpointPrefix}s/LiteExtended/:ExtraColumns/FilteredTo/:Filter/:Begin/:Cap`, _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadLiteList);
 				pRestServer.get(`${tmpEndpointPrefix}s/LiteExtended/:ExtraColumns/:Begin/:Cap`, _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadLiteList);
+				pRestServer.get(`${tmpEndpointPrefix}s/Distinct/:Columns`, _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadDistinctList);
+				pRestServer.get(`${tmpEndpointPrefix}s/Distinct/:Columns/FilteredTo/:Filter`, _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadDistinctList);
+				pRestServer.get(`${tmpEndpointPrefix}s/Distinct/:Columns/FilteredTo/:Filter/:Begin/:Cap`, _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadDistinctList);
+				pRestServer.get(`${tmpEndpointPrefix}s/Distinct/:Columns/:Begin/:Cap`, _EndpointAuthenticators.Reads, wireState, _Endpoints.ReadDistinctList);
 				pRestServer.get(`${tmpEndpointPrefix}s/:Begin/:Cap`, _EndpointAuthenticators.Reads, wireState, _Endpoints.Reads);
 			}
 			if (_EnabledBehaviors.Update)
