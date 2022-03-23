@@ -7,9 +7,6 @@
 * @module Meadow
 */
 
-//Meadow needs to connect some general route handlers, this ensures it is done lazily, and only once.
-var _AttachedRequestHandlers = false;
-
 /**
 * Meadow Data Broker Library
 *
@@ -303,14 +300,17 @@ var MeadowEndpoints = function()
 
 			const tmpEndpointPrefix = `/${tmpEndpointVersion}/${tmpEndpointName}`;
 
-			if (!_AttachedRequestHandlers)
+			if (!pRestServer._AttachedMeadowEndpointsRequestHandlers)
 			{
-				_AttachedRequestHandlers = true;
+				pRestServer._AttachedMeadowEndpointsRequestHandlers = true;
 				// Connect the common services to the route
 				pRestServer.use(wireCommonServices);
 
 				// Build formattedParams route parameters
 				pRestServer.use(formatRouteParams);
+
+				// Marshall session data in, if needed / configured
+				pRestServer.use(require('./Meadow-MarshallSessionData')(_Fable));
 			}
 
 			// These special schema services must come in the route table before the READ because they
