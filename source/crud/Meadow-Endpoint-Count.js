@@ -8,7 +8,7 @@
 */
 
 var libAsync = require('async');
-var meadowFilterParser = require('./Meadow-Filter-Parse.js');
+const meadowFilterParser = require('meadow-filter').parse;
 /**
 * Count a record using the Meadow DAL object
 */

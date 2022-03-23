@@ -94,6 +94,11 @@ var doAPIReadsByEndpoint = function(pRequest, pResponse, fNext)
 			{
 				pRequest.BehaviorModifications.runBehavior('Reads-QueryConfiguration', pRequest, fStageComplete);
 			},
+			// 3b. INJECT: Query pre-authorization behavior (ex. if authorizer needs fields to be included, it can add them)
+			function (fStageComplete)
+			{
+				pRequest.BehaviorModifications.runBehavior('Reads-PreAuth', pRequest, fStageComplete);
+			},
 			// 4. Execute the query
 			function (fStageComplete)
 			{

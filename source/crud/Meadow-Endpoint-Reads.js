@@ -7,7 +7,7 @@
 * @module Meadow
 */
 var libAsync = require('async');
-var meadowFilterParser = require('./Meadow-Filter-Parse.js');
+const meadowFilterParser = require('meadow-filter').parse;
 const streamRecordsToResponse = require('./Meadow-StreamRecordArray');
 
 /**
@@ -66,6 +66,11 @@ var doAPIReadsEndpoint = function(pRequest, pResponse, fNext)
 			function (fStageComplete)
 			{
 				pRequest.BehaviorModifications.runBehavior('Reads-QueryConfiguration', pRequest, fStageComplete);
+			},
+			// 2b. INJECT: Query pre-authorization behavior (ex. if authorizer needs fields to be included, it can add them)
+			function (fStageComplete)
+			{
+				pRequest.BehaviorModifications.runBehavior('Reads-PreAuth', pRequest, fStageComplete);
 			},
 			// 3. Execute the query
 			function (fStageComplete)

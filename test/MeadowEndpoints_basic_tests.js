@@ -807,7 +807,6 @@ suite
 					function(fDone)
 					{
 						libSuperTest('http://localhost:9080/')
-						// Get page 2, 2 records per page.
 						.get('1.0/FableTests/FilteredTo/FBV~Type~EQ~Frog')
 						.end(
 							function (pError, pResponse)
@@ -819,13 +818,88 @@ suite
 							}
 						);
 					}
-				);				test
+				);
+				test
+				(
+					'reads: get distinct values for a column',
+					function(fDone)
+					{
+						libSuperTest('http://localhost:9080/')
+						.get('1.0/FableTests/Distinct/Type')
+						.end(
+							function (pError, pResponse)
+							{
+								var tmpResults = JSON.parse(pResponse.text);
+								Expect(tmpResults.length).to.equal(5);
+								const types = tmpResults.map((r) => r.Type);
+								Expect(types).to.have.members(['Bunny', 'Girl', 'Dog', 'Frog', 'Mammoth']);
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'reads: get distinct values for a column with filter',
+					function(fDone)
+					{
+						libSuperTest('http://localhost:9080/')
+						.get('1.0/FableTests/Distinct/Type/FilteredTo/FBV~IDAnimal~LT~3')
+						.end(
+							function (pError, pResponse)
+							{
+								var tmpResults = JSON.parse(pResponse.text);
+								Expect(tmpResults.length).to.equal(2);
+								const types = new Set(tmpResults.map((r) => r.Type));
+								Expect(types.size).to.equal(2);
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'reads: get distinct values for a column with filter and pagination',
+					function(fDone)
+					{
+						libSuperTest('http://localhost:9080/')
+						.get('1.0/FableTests/Distinct/Type/FilteredTo/FBV~IDAnimal~LT~3/0/1')
+						.end(
+							function (pError, pResponse)
+							{
+								var tmpResults = JSON.parse(pResponse.text);
+								Expect(tmpResults.length).to.equal(1);
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'reads: get distinct values for a column with pagination',
+					function(fDone)
+					{
+						libSuperTest('http://localhost:9080/')
+						.get('1.0/FableTests/Distinct/Type/2/2')
+						.end(
+							function (pError, pResponse)
+							{
+								var tmpResults = JSON.parse(pResponse.text);
+								Expect(tmpResults.length).to.equal(2);
+								const types = new Set(tmpResults.map((r) => r.Type));
+								Expect(types.size).to.equal(2);
+								fDone();
+							}
+						);
+					}
+				);
+				test
 				(
 					'reads: get a filtered paged set of records',
 					function(fDone)
 					{
 						libSuperTest('http://localhost:9080/')
-						// Get page 2, 2 records per page.
+						// Skip one record, 2 records per page.
 						.get('1.0/FableTests/FilteredTo/FBV~Type~EQ~Dog/1/2')
 						.end(
 							function (pError, pResponse)

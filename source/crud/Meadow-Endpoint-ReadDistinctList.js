@@ -1,19 +1,20 @@
 /**
-* Meadow Endpoint - Read a select list of Records (for Drop-downs and such)
+* Meadow Endpoint - Read a list of Records with a specified set of columns, distinct by those columns.
 *
 * @license MIT
 *
-* @author Steven Velozo <steven@velozo.com>
+* @author Alex Decker <alex.decker@headlight.com>
 * @module Meadow
 */
-var libAsync = require('async');
+const libAsync = require('async');
 const meadowFilterParser = require('meadow-filter').parse;
+const marshalDistinctList = require('./Meadow-Marshal-DistinctList.js');
 const streamRecordsToResponse = require('./Meadow-StreamRecordArray');
 
 /**
 * Get a set of records from a DAL.
 */
-var doAPIReadSelectListEndpoint = function(pRequest, pResponse, fNext)
+const doAPIReadDistinctEndpoint = function(pRequest, pResponse, fNext)
 {
 	// This state is the requirement for the UserRoleIndex value in the UserSession object... processed by default as >=
 	// The default here is that any authenticated user can use this endpoint.
@@ -27,25 +28,26 @@ var doAPIReadSelectListEndpoint = function(pRequest, pResponse, fNext)
 		return;
 	}
 
+	let tmpDistinctColumns;
 	libAsync.waterfall(
 		[
 			// 1a. Get the records
 			function (fStageComplete)
 			{
-				pRequest.Query = pRequest.DAL.query;
+				pRequest.Query = pRequest.DAL.query.setDistinct(true);
 				// TODO: Limit the query to the columns we need for the templated expression
 
-				var tmpCap = false;
-				var tmpBegin = false;
+				let tmpCap = false;
+				let tmpBegin = false;
 				if (typeof(pRequest.params.Begin) === 'string' ||
 					typeof(pRequest.params.Begin) === 'number')
 				{
-					tmpBegin = parseInt(pRequest.params.Begin);
+					tmpBegin = parseInt(pRequest.params.Begin, 10);
 				}
 				if (typeof(pRequest.params.Cap) === 'string' ||
 					typeof(pRequest.params.Cap) === 'number')
 				{
-					tmpCap = parseInt(pRequest.params.Cap);
+					tmpCap = parseInt(pRequest.params.Cap, 10);
 				}
 				else
 				{
@@ -58,7 +60,19 @@ var doAPIReadSelectListEndpoint = function(pRequest, pResponse, fNext)
 					// If a filter has been passed in, parse it and add the values to the query.
 					meadowFilterParser(pRequest.params.Filter, pRequest.Query);
 				}
-
+				else if (pRequest.params.Filter)
+				{
+					pRequest.Query.setFilter(pRequest.params.Filter);
+				}
+				if (typeof(pRequest.params.Columns) === 'string')
+				{
+					tmpDistinctColumns = pRequest.params.Columns.split(',');
+					if (!tmpDistinctColumns)
+					{
+						return fStageComplete({Code:400,Message:'Columns to distinct on must be provided.'});
+					}
+					pRequest.Query.setDataElements(tmpDistinctColumns);
+				}
 				fStageComplete(false);
 			},
 			// 1b. INJECT: Query configuration
@@ -92,7 +106,8 @@ var doAPIReadSelectListEndpoint = function(pRequest, pResponse, fNext)
 			// 2.5: Check if there is an authorizer set for this endpoint and user role combination, and authorize based on that
 			function (fStageComplete)
 			{
-				pRequest.Authorizers.authorizeRequest('ReadSelectList', pRequest, fStageComplete);
+				// shared permission with reads
+				pRequest.Authorizers.authorizeRequest('Reads', pRequest, fStageComplete);
 			},
 			// 2.6: Check if authorization or post processing denied security access to the record
 			function (fStageComplete)
@@ -108,21 +123,7 @@ var doAPIReadSelectListEndpoint = function(pRequest, pResponse, fNext)
 			// 3. Marshalling of records into the hash list, using underscore templates.
 			function (fStageComplete)
 			{
-				// Look on the Endpoint Customization object for an underscore template to generate hashes.
-				var tmpSelectList = [];
-
-				for (var i = 0; i < pRequest.Records.length; i++)
-				{
-					tmpSelectList.push
-					(
-						{
-							Hash: pRequest.Records[i][pRequest.DAL.defaultIdentifier],
-							Value: pRequest.BehaviorModifications.processTemplate('SelectList', {Record:pRequest.Records[i]}, pRequest.DAL.scope+' #<%= Record.'+pRequest.DAL.defaultIdentifier+'%>')
-						}
-					);
-				}
-
-				fStageComplete(false, tmpSelectList);
+				fStageComplete(false, marshalDistinctList(pRequest.Records, pRequest, tmpDistinctColumns));
 			}
 		],
 		// 3. Return the results to the user
@@ -136,10 +137,10 @@ var doAPIReadSelectListEndpoint = function(pRequest, pResponse, fNext)
 				return pRequest.CommonServices.sendCodedError('Error retreiving a recordset.', pError, pRequest, pResponse, fNext);
 			}
 
-			pRequest.CommonServices.log.info('Read a recordset select list with '+pResultRecords.length+' results.', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-ReadSelectList'}, pRequest);
+			pRequest.CommonServices.log.info('Read a recordset lite list with '+pResultRecords.length+' results.', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-ReadDistinct'}, pRequest);
 			return streamRecordsToResponse(pResponse, pResultRecords, fNext);
 		}
 	);
 };
 
-module.exports = doAPIReadSelectListEndpoint;
+module.exports = doAPIReadDistinctEndpoint;
