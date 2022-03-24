@@ -21,12 +21,8 @@ let tmpFableSettings = 	(
 	ProductVersion: '0.0.0',
 
 	UnauthorizedRequestDelay: 10,
-	MeadowEndpointsSessionDataSource: 'Header',
 
-	MeadowAuthenticationMode: 'LoggedIn',
-	MeadowAuthorizationMode: 'SimpleOwnership',
-
-	APIServerPort: 9081,
+	APIServerPort: 9082,
 
 	MySQL:
 	{
@@ -57,17 +53,6 @@ libFable.MeadowMySQLConnectionPool = libMySQL.createPool
 		}
 	);
 
-const _MockSessionValidUser = (
-	{
-		SessionID: '0000-VALID',
-		UserID: 37,
-		UserRole: 'User',
-		UserRoleIndex: 1,
-		LoggedIn: true,
-		DeviceID: 'TEST-HARNESS',
-		CustomerID: 1
-	});
-
 let _Meadow;
 let _MeadowEndpoints;
 
@@ -89,7 +74,7 @@ _MeadowEndpoints = require('../source/Meadow-Endpoints.js').new(_Meadow);
 
 suite
 (
-	'Meadow-Endpoints with Trusted Header Auth',
+	'Meadow-Endpoints with Disabled Auth',
 	function()
 	{
 		// TODO: Abstract this so it can be run again and again.
@@ -237,48 +222,6 @@ suite
 			{
 				test
 				(
-					'instantiate a behavior modification object',
-					function()
-					{
-						const tmpBehaviorMods = require('../source/Meadow-BehaviorModifications.js').new(libFable);
-						Expect(tmpBehaviorMods).to.be.an('object');
-					}
-				);
-				test
-				(
-					'exercise the templates api',
-					function()
-					{
-						const tmpBehaviorMods = require('../source/Meadow-BehaviorModifications.js').new(libFable);
-
-						let tmpCrossBehaviorState = 0;
-
-						Expect(tmpBehaviorMods.runBehavior('NoBehaviorsHere', {}, function() {})).to.equal(undefined, 'nonexistant behaviors should just execute');
-						tmpBehaviorMods.setBehavior('BigBehavior', function() { tmpCrossBehaviorState++ });
-						Expect(tmpCrossBehaviorState).to.equal(0);
-						Expect(tmpBehaviorMods.runBehavior('BigBehavior', {}, function() {})).to.equal(undefined, 'existant behaviors should just execute');
-						Expect(tmpCrossBehaviorState).to.equal(1);
-					}
-				);
-				test
-				(
-					'exercise the behavior modification api',
-					function()
-					{
-						const tmpBehaviorMods = require('../source/Meadow-BehaviorModifications.js').new(libFable);
-						Expect(tmpBehaviorMods.getTemplateFunction('NoTemplatesHere')).to.equal(false, 'empty template hashes on empty sets should return false');
-						Expect(tmpBehaviorMods.getTemplate('NoTemplatesHere')).to.equal(false,'emtpy template sets should be false');
-						tmpBehaviorMods.setTemplate('AnimalFormatter', '<p>An animal (id <%= Number %> is here</p>');
-						Expect(tmpBehaviorMods.getTemplate('AnimalFormatter')).to.contain('An animal');
-						Expect(tmpBehaviorMods.processTemplate('AnimalFormatter', {Number:5})).to.contain('id 5');
-						Expect(tmpBehaviorMods.processTemplate('FriendFormatter', {Number:5}, 'blit <%= Number %>')).to.contain('blit 5');
-						Expect(tmpBehaviorMods.processTemplate('Blank', {Number:5})).to.equal('');
-						tmpBehaviorMods.setTemplate('SimpleTemplate', 'Not so simple.');
-						Expect(tmpBehaviorMods.processTemplate('SimpleTemplate')).to.equal('Not so simple.');
-					}
-				);
-				test
-				(
 					'exercise the security modification api',
 					function()
 					{
@@ -286,17 +229,18 @@ suite
 						tmpAuthorizers.setAuthorizer('AlwaysAuthorize',
 							function(pRequest, fComplete)
 							{
-								pRequest.MeadowAuthorization = true;
+								pRequest.MeadowAuthorization = false;
 							});
-						const tmpMockRequest = {MeadowAuthorization: 'Green'};
+						const tmpMockRequest = { };
 						tmpAuthorizers.authorize('BadHash', tmpMockRequest,
 							function()
 							{
-								Expect(tmpMockRequest.MeadowAuthorization).to.equal('Green');
+								Expect(tmpMockRequest.MeadowAuthorization).to.equal(true);
 							});
 						tmpAuthorizers.authorize('AlwaysAuthorize', tmpMockRequest,
 							function()
 							{
+								// doesn't invoke behavior when disabled
 								Expect(tmpMockRequest.MeadowAuthorization).to.equal(true);
 							});
 						tmpAuthorizers.authorize('Allow', tmpMockRequest,
@@ -307,7 +251,42 @@ suite
 						tmpAuthorizers.authorize('Deny', tmpMockRequest,
 							function()
 							{
-								Expect(tmpMockRequest.MeadowAuthorization).to.equal(false);
+								Expect(tmpMockRequest.MeadowAuthorization).to.equal(true);
+							});
+					}
+				);
+				test
+				(
+					'exercise the security modification api with initial authorization state',
+					function()
+					{
+						const tmpAuthorizers = require('../source/Meadow-Authorizers.js').new(libFable);
+						tmpAuthorizers.setAuthorizer('AlwaysAuthorize',
+							function(pRequest, fComplete)
+							{
+								pRequest.MeadowAuthorization = false;
+							});
+						// disabled doesn't force to true, it just leaves what's there (if anything; if absent, will set true as default)
+						const tmpMockRequest = {MeadowAuthorization: 'Green'};
+						tmpAuthorizers.authorize('BadHash', tmpMockRequest,
+							function()
+							{
+								Expect(tmpMockRequest.MeadowAuthorization).to.equal('Green');
+							});
+						tmpAuthorizers.authorize('AlwaysAuthorize', tmpMockRequest,
+							function()
+							{
+								Expect(tmpMockRequest.MeadowAuthorization).to.equal('Green');
+							});
+						tmpAuthorizers.authorize('Allow', tmpMockRequest,
+							function()
+							{
+								Expect(tmpMockRequest.MeadowAuthorization).to.equal('Green');
+							});
+						tmpAuthorizers.authorize('Deny', tmpMockRequest,
+							function()
+							{
+								Expect(tmpMockRequest.MeadowAuthorization).to.equal('Green');
 							});
 					}
 				);
@@ -347,14 +326,14 @@ suite
 						tmpAuthorizers.authorize('Mine', tmpMockFullRequest,
 							function()
 							{
-								//If record does not have matching CreatingIDUser, then it should fail
-								Expect(tmpMockFullRequest.MeadowAuthorization).to.equal(false);
+								// Auth disabled, so this should still be allowed
+								Expect(tmpMockFullRequest.MeadowAuthorization).to.equal(true);
 							});
 						tmpAuthorizers.authorize('MyCustomer', tmpMockFullRequest,
 							function()
 							{
-								//If record does not have matching CustomerID, then it should fail
-								Expect(tmpMockFullRequest.MeadowAuthorization).to.equal(false);
+								// Auth disabled, so this should still be allowed
+								Expect(tmpMockFullRequest.MeadowAuthorization).to.equal(true);
 							});
 					}
 				);
@@ -370,19 +349,17 @@ suite
 					'create: create a record',
 					function(fDone)
 					{
-						const tmpRecord = {Name:'BatBrains', Type:'Mammoth'};
-						_MockSessionValidUser.UserRoleIndex = 2;
-						libSuperTest('http://localhost:9081/')
+						var tmpRecord = {Name:'BatBrains', Type:'Mammoth'};
+						libSuperTest('http://localhost:9082/')
 						.post('1.0/FableTest')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.send(tmpRecord)
 						.end(
 							function(pError, pResponse)
 							{
 								// Expect response to be the record we just created.
-								const tmpResult = JSON.parse(pResponse.text);
+								var tmpResult = JSON.parse(pResponse.text);
 								Expect(tmpResult.Type).to.equal('Mammoth');
-								Expect(tmpResult.CreatingIDUser).to.equal(37);
+								//Expect(tmpResult.CreatingIDUser).to.equal(37);
 								fDone();
 							}
 						);
@@ -393,18 +370,17 @@ suite
 					'create: create a record',
 					function(fDone)
 					{
-						const tmpRecord = {Name:'BatBrains', Type:'Mammoth'};
-						_MockSessionValidUser.UserRoleIndex = 1;
-						libSuperTest('http://localhost:9081/')
+						var tmpRecord = {Name:'BatBrains', Type:'Mammoth'};
+						libSuperTest('http://localhost:9082/')
 						.post('1.0/FableTest')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.send(tmpRecord)
 						.end(
 							function(pError, pResponse)
 							{
 								// Expect response to be the record we just created.
-								const tmpResult = JSON.parse(pResponse.text);
-								Expect(tmpResult.Error).to.contain('authenticated');
+								var tmpResult = JSON.parse(pResponse.text);
+								Expect(tmpResult.Error).to.not.exist;
+								Expect(tmpResult.ErrorCode).to.not.exist;
 								fDone();
 							}
 						);
@@ -415,17 +391,15 @@ suite
 					'create: create a record with a bad record passed in',
 					function(fDone)
 					{
-						const tmpRecord = ' ';
-						_MockSessionValidUser.UserRoleIndex = 2;
-						libSuperTest('http://localhost:9081/')
+						var tmpRecord = ' ';
+						libSuperTest('http://localhost:9082/')
 						.post('1.0/FableTest')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.send(tmpRecord)
 						.end(
 							function(pError, pResponse)
 							{
 								// Expect response to be the record we just created.
-								const tmpResult = JSON.parse(pResponse.text);
+								var tmpResult = JSON.parse(pResponse.text);
 								Expect(tmpResult.Error).to.not.be.null;
 								fDone();
 							}
@@ -437,13 +411,12 @@ suite
 					'read: get a specific record',
 					function(fDone)
 					{
-						libSuperTest('http://localhost:9081/')
+						libSuperTest('http://localhost:9082/')
 						.get('1.0/FableTest/2')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.end(
 							function (pError, pResponse)
 							{
-								const tmpResult = JSON.parse(pResponse.text);
+								var tmpResult = JSON.parse(pResponse.text);
 								Expect(tmpResult.Type).to.equal('Girl');
 								fDone();
 							}
@@ -456,13 +429,12 @@ suite
 					function(fDone)
 					{
 						_Orator.webServer.get('/CustomHotRodRoute/:IDRecord', _MeadowEndpoints.endpointAuthenticators.Read, _MeadowEndpoints.wireState, _MeadowEndpoints.endpoints.Read);
-						libSuperTest('http://localhost:9081/')
+						libSuperTest('http://localhost:9082/')
 						.get('CustomHotRodRoute/2')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.end(
 							function (pError, pResponse)
 							{
-								const tmpResult = JSON.parse(pResponse.text);
+								var tmpResult = JSON.parse(pResponse.text);
 								Expect(tmpResult.Type).to.equal('Girl');
 								fDone();
 							}
@@ -477,13 +449,13 @@ suite
 						_Meadow.schemaFull.authorizer.Manager = {};
 						_Meadow.schemaFull.authorizer.Manager.Read = 'Deny';
 
-						libSuperTest('http://localhost:9081/')
+						libSuperTest('http://localhost:9082/')
 						.get('1.0/FableTest/2')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.end(
 							function (pError, pResponse)
 							{
-								Expect(pResponse.text).to.contain('UNAUTHORIZED ACCESS IS NOT ALLOWED');
+								Expect(pError).to.not.exist;
+								Expect(pResponse.text).not.to.contain('UNAUTHORIZED ACCESS IS NOT ALLOWED');
 								// Reset authorization
 								_Meadow.schemaFull.authorizer.Manager.Read = 'Allow';
 								fDone();
@@ -496,13 +468,12 @@ suite
 					'read: get a specific record with a bad parameter',
 					function(fDone)
 					{
-						libSuperTest('http://localhost:9081/')
+						libSuperTest('http://localhost:9082/')
 						.get('1.0/FableTest/')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.end(
 							function (pError, pResponse)
 							{
-								const tmpResult = JSON.parse(pResponse.text);
+								var tmpResult = JSON.parse(pResponse.text);
 								Expect(tmpResult.Error).to.equal('Error retreiving a record. Record not found');
 								fDone();
 							}
@@ -514,14 +485,13 @@ suite
 					'reads: get all records',
 					function(fDone)
 					{
-						libSuperTest('http://localhost:9081/')
+						libSuperTest('http://localhost:9082/')
 						.get('1.0/FableTests')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.end(
 							function (pError, pResponse)
 							{
-								const tmpResults = JSON.parse(pResponse.text);
-								Expect(tmpResults.length).to.equal(6);
+								var tmpResults = JSON.parse(pResponse.text);
+								Expect(tmpResults.length).to.equal(7);
 								Expect(tmpResults[0].Type).to.equal('Bunny');
 								Expect(tmpResults[4].Name).to.equal('Gertrude');
 								fDone();
@@ -534,14 +504,13 @@ suite
 					'readsLiteExtended: get all records',
 					function(fDone)
 					{
-						libSuperTest('http://localhost:9081/')
+						libSuperTest('http://localhost:9082/')
 						.get('1.0/FableTests/LiteExtended/Type,Name')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.end(
 							function (pError, pResponse)
 							{
-								const tmpResults = JSON.parse(pResponse.text);
-								Expect(tmpResults.length).to.equal(6);
+								var tmpResults = JSON.parse(pResponse.text);
+								Expect(tmpResults.length).to.equal(7);
 								Expect(tmpResults[0].IDAnimal).to.equal(1);
 								Expect(tmpResults[4].IDAnimal).to.equal(5);
 								Expect(tmpResults[4].Type).to.equal('Frog');
@@ -555,13 +524,12 @@ suite
 					'readsby: get all records by Type',
 					function(fDone)
 					{
-						libSuperTest('http://localhost:9081/')
+						libSuperTest('http://localhost:9082/')
 						.get('1.0/FableTests/By/Type/Dog')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.end(
 							function (pError, pResponse)
 							{
-								const tmpResults = JSON.parse(pResponse.text);
+								var tmpResults = JSON.parse(pResponse.text);
 								Expect(tmpResults.length).to.equal(2);
 								Expect(tmpResults[0].Type).to.equal('Dog');
 								fDone();
@@ -574,13 +542,12 @@ suite
 					'readsby: get all records by Type IN LIST',
 					function(fDone)
 					{
-						libSuperTest('http://localhost:9081/')
+						libSuperTest('http://localhost:9082/')
 						.get('1.0/FableTests/By/Type/Mammoth%2C%20WithComma,Dog')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.end(
 							function (pError, pResponse)
 							{
-								const tmpResults = JSON.parse(pResponse.text);
+								var tmpResults = JSON.parse(pResponse.text);
 								Expect(tmpResults.length).to.equal(2);
 								Expect(tmpResults[0].Type).to.equal('Dog');
 								fDone();
@@ -593,13 +560,12 @@ suite
 					'countby: get count of records by Type',
 					function(fDone)
 					{
-						libSuperTest('http://localhost:9081/')
+						libSuperTest('http://localhost:9082/')
 						.get('1.0/FableTests/Count/By/Type/Dog')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.end(
 							function (pError, pResponse)
 							{
-								const tmpResults = JSON.parse(pResponse.text);
+								var tmpResults = JSON.parse(pResponse.text);
 								Expect(tmpResults.Count).to.equal(2);
 								fDone();
 							}
@@ -611,14 +577,13 @@ suite
 					'countby: get count of records by multiple Types',
 					function(fDone)
 					{
-						libSuperTest('http://localhost:9081/')
+						libSuperTest('http://localhost:9082/')
 						.get('1.0/FableTests/Count/By/Type/Dog,Mammoth')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.end(
 							function (pError, pResponse)
 							{
-								const tmpResults = JSON.parse(pResponse.text);
-								Expect(tmpResults.Count).to.equal(3);
+								var tmpResults = JSON.parse(pResponse.text);
+								Expect(tmpResults.Count).to.equal(4);
 								fDone();
 							}
 						);
@@ -629,13 +594,12 @@ suite
 					'readsby: get paged records by Type',
 					function(fDone)
 					{
-						libSuperTest('http://localhost:9081/')
+						libSuperTest('http://localhost:9082/')
 						.get('1.0/FableTests/By/Type/Dog/1/1')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.end(
 							function (pError, pResponse)
 							{
-								const tmpResults = JSON.parse(pResponse.text);
+								var tmpResults = JSON.parse(pResponse.text);
 								Expect(tmpResults.length).to.equal(1);
 								Expect(tmpResults[0].Name).to.equal('Spot');
 								fDone();
@@ -648,17 +612,16 @@ suite
 					'readselect: get a page of filtered records by date',
 					function(fDone)
 					{
-						let today = new Date();
+						var today = new Date();
 						today = today.toISOString().substring(0, 10);
 
-						libSuperTest('http://localhost:9081/')
+						libSuperTest('http://localhost:9082/')
 						.get(`1.0/FableTestSelect/FilteredTo/FBD~UpdateDate~EQ~${today}/0/1`)
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.end(
 							function (pError, pResponse)
 							{
 								console.log(pResponse.text)
-								const tmpResults = JSON.parse(pResponse.text);
+								var tmpResults = JSON.parse(pResponse.text);
 								Expect(tmpResults.length).to.equal(1);
 								Expect(tmpResults[0].Value).to.equal('FableTest #1');
 								fDone();
@@ -671,15 +634,14 @@ suite
 					'readselect: get all records',
 					function(fDone)
 					{
-						libSuperTest('http://localhost:9081/')
+						libSuperTest('http://localhost:9082/')
 						.get('1.0/FableTestSelect')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.end(
 							function (pError, pResponse)
 							{
 								console.log(pResponse.text)
-								const tmpResults = JSON.parse(pResponse.text);
-								Expect(tmpResults.length).to.equal(6);
+								var tmpResults = JSON.parse(pResponse.text);
+								Expect(tmpResults.length).to.equal(7);
 								Expect(tmpResults[4].Value).to.equal('FableTest #5');
 								fDone();
 							}
@@ -691,14 +653,13 @@ suite
 					'readselect: get a page of records',
 					function(fDone)
 					{
-						libSuperTest('http://localhost:9081/')
+						libSuperTest('http://localhost:9082/')
 						.get('1.0/FableTestSelect/2/2')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.end(
 							function (pError, pResponse)
 							{
 								console.log(pResponse.text)
-								const tmpResults = JSON.parse(pResponse.text);
+								var tmpResults = JSON.parse(pResponse.text);
 								Expect(tmpResults.length).to.equal(2);
 								Expect(tmpResults[1].Value).to.equal('FableTest #4');
 								fDone();
@@ -711,14 +672,13 @@ suite
 					'readselect: get a page of records',
 					function(fDone)
 					{
-						libSuperTest('http://localhost:9081/')
+						libSuperTest('http://localhost:9082/')
 						.get('1.0/FableTestSelect/2/2')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.end(
 							function (pError, pResponse)
 							{
 								console.log(pResponse.text)
-								const tmpResults = JSON.parse(pResponse.text);
+								var tmpResults = JSON.parse(pResponse.text);
 								Expect(tmpResults.length).to.equal(2);
 								Expect(tmpResults[1].Value).to.equal('FableTest #4');
 								fDone();
@@ -731,13 +691,12 @@ suite
 					'readselect: get filtered records',
 					function(fDone)
 					{
-						libSuperTest('http://localhost:9081/')
+						libSuperTest('http://localhost:9082/')
 						.get('1.0/FableTestSelect/FilteredTo/FBV~Type~EQ~Dog')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.end(
 							function (pError, pResponse)
 							{
-								const tmpResults = JSON.parse(pResponse.text);
+								var tmpResults = JSON.parse(pResponse.text);
 								Expect(tmpResults.length).to.equal(2);
 								Expect(tmpResults[0].Value).to.equal('FableTest #3');
 								fDone();
@@ -750,14 +709,13 @@ suite
 					'readselect: get a page of filtered records',
 					function(fDone)
 					{
-						libSuperTest('http://localhost:9081/')
+						libSuperTest('http://localhost:9082/')
 						.get('1.0/FableTestSelect/FilteredTo/FBV~Type~EQ~Dog/1/1')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.end(
 							function (pError, pResponse)
 							{
 								console.log(pResponse.text)
-								const tmpResults = JSON.parse(pResponse.text);
+								var tmpResults = JSON.parse(pResponse.text);
 								Expect(tmpResults.length).to.equal(1);
 								Expect(tmpResults[0].Value).to.equal('FableTest #4');
 								fDone();
@@ -770,14 +728,13 @@ suite
 					'readselect: get an empty page of records',
 					function(fDone)
 					{
-						libSuperTest('http://localhost:9081/')
+						libSuperTest('http://localhost:9082/')
 						.get('1.0/FableTestSelect/200/200')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.end(
 							function (pError, pResponse)
 							{
 								console.log(pResponse.text)
-								const tmpResults = JSON.parse(pResponse.text);
+								var tmpResults = JSON.parse(pResponse.text);
 								Expect(tmpResults.length).to.equal(0);
 								fDone();
 							}
@@ -789,14 +746,13 @@ suite
 					'reads: get a page of records',
 					function(fDone)
 					{
-						libSuperTest('http://localhost:9081/')
+						libSuperTest('http://localhost:9082/')
 						// Get page 2, 2 records per page.
 						.get('1.0/FableTests/2/2')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.end(
 							function (pError, pResponse)
 							{
-								const tmpResults = JSON.parse(pResponse.text);
+								var tmpResults = JSON.parse(pResponse.text);
 								Expect(tmpResults.length).to.equal(2);
 								Expect(tmpResults[0].Type).to.equal('Dog');
 								Expect(tmpResults[1].Name).to.equal('Spot');
@@ -810,13 +766,12 @@ suite
 					'reads: get a filtered set of records',
 					function(fDone)
 					{
-						libSuperTest('http://localhost:9081/')
+						libSuperTest('http://localhost:9082/')
 						.get('1.0/FableTests/FilteredTo/FBV~Type~EQ~Frog')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.end(
 							function (pError, pResponse)
 							{
-								const tmpResults = JSON.parse(pResponse.text);
+								var tmpResults = JSON.parse(pResponse.text);
 								Expect(tmpResults.length).to.equal(1);
 								Expect(tmpResults[0].Type).to.equal('Frog');
 								fDone();
@@ -829,13 +784,12 @@ suite
 					'reads: get distinct values for a column',
 					function(fDone)
 					{
-						libSuperTest('http://localhost:9081/')
+						libSuperTest('http://localhost:9082/')
 						.get('1.0/FableTests/Distinct/Type')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.end(
 							function (pError, pResponse)
 							{
-								const tmpResults = JSON.parse(pResponse.text);
+								var tmpResults = JSON.parse(pResponse.text);
 								Expect(tmpResults.length).to.equal(5);
 								const types = tmpResults.map((r) => r.Type);
 								Expect(types).to.have.members(['Bunny', 'Girl', 'Dog', 'Frog', 'Mammoth']);
@@ -849,13 +803,12 @@ suite
 					'reads: get distinct values for a column with filter',
 					function(fDone)
 					{
-						libSuperTest('http://localhost:9081/')
+						libSuperTest('http://localhost:9082/')
 						.get('1.0/FableTests/Distinct/Type/FilteredTo/FBV~IDAnimal~LT~3')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.end(
 							function (pError, pResponse)
 							{
-								const tmpResults = JSON.parse(pResponse.text);
+								var tmpResults = JSON.parse(pResponse.text);
 								Expect(tmpResults.length).to.equal(2);
 								const types = new Set(tmpResults.map((r) => r.Type));
 								Expect(types.size).to.equal(2);
@@ -869,13 +822,12 @@ suite
 					'reads: get distinct values for a column with filter and pagination',
 					function(fDone)
 					{
-						libSuperTest('http://localhost:9081/')
+						libSuperTest('http://localhost:9082/')
 						.get('1.0/FableTests/Distinct/Type/FilteredTo/FBV~IDAnimal~LT~3/0/1')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.end(
 							function (pError, pResponse)
 							{
-								const tmpResults = JSON.parse(pResponse.text);
+								var tmpResults = JSON.parse(pResponse.text);
 								Expect(tmpResults.length).to.equal(1);
 								fDone();
 							}
@@ -887,13 +839,12 @@ suite
 					'reads: get distinct values for a column with pagination',
 					function(fDone)
 					{
-						libSuperTest('http://localhost:9081/')
+						libSuperTest('http://localhost:9082/')
 						.get('1.0/FableTests/Distinct/Type/2/2')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.end(
 							function (pError, pResponse)
 							{
-								const tmpResults = JSON.parse(pResponse.text);
+								var tmpResults = JSON.parse(pResponse.text);
 								Expect(tmpResults.length).to.equal(2);
 								const types = new Set(tmpResults.map((r) => r.Type));
 								Expect(types.size).to.equal(2);
@@ -907,14 +858,13 @@ suite
 					'reads: get a filtered paged set of records',
 					function(fDone)
 					{
-						libSuperTest('http://localhost:9081/')
+						libSuperTest('http://localhost:9082/')
 						// Skip one record, 2 records per page.
 						.get('1.0/FableTests/FilteredTo/FBV~Type~EQ~Dog/1/2')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.end(
 							function (pError, pResponse)
 							{
-								const tmpResults = JSON.parse(pResponse.text);
+								var tmpResults = JSON.parse(pResponse.text);
 								Expect(tmpResults.length).to.equal(1);
 								Expect(tmpResults[0].Type).to.equal('Dog');
 								fDone();
@@ -928,19 +878,18 @@ suite
 					function(fDone)
 					{
 						// Change animal 4 ("Spot") to a Corgi
-						const tmpRecord = {IDAnimal:4, Type:'Corgi'};
-						libSuperTest('http://localhost:9081/')
+						var tmpRecord = {IDAnimal:4, Type:'Corgi'};
+						libSuperTest('http://localhost:9082/')
 						.put('1.0/FableTest')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.send(tmpRecord)
 						.end(
 							function(pError, pResponse)
 							{
 								// Expect response to be the record we just created.
-								const tmpResult = JSON.parse(pResponse.text);
+								var tmpResult = JSON.parse(pResponse.text);
 								Expect(tmpResult.Type).to.equal('Corgi');
-								Expect(tmpResult.CreatingIDUser).to.equal(1);
-								Expect(tmpResult.UpdatingIDUser).to.equal(37);
+								//Expect(tmpResult.CreatingIDUser).to.equal(1);
+								//Expect(tmpResult.UpdatingIDUser).to.equal(37);
 								fDone();
 							}
 						);
@@ -952,16 +901,15 @@ suite
 					function(fDone)
 					{
 						// Delete animal 3 ("Red")
-						const tmpRecord = {IDAnimal:3};
-						libSuperTest('http://localhost:9081/')
+						var tmpRecord = {IDAnimal:3};
+						libSuperTest('http://localhost:9082/')
 						.del('1.0/FableTest')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.send(tmpRecord)
 						.end(
 							function(pError, pResponse)
 							{
 								// Expect response to be the count of deleted records.
-								const tmpResult = JSON.parse(pResponse.text);
+								var tmpResult = JSON.parse(pResponse.text);
 								Expect(tmpResult.Count).to.equal(1);
 								fDone();
 							}
@@ -974,16 +922,15 @@ suite
 					function(fDone)
 					{
 						// Delete animal 3 ("Red")
-						const tmpRecord = {IDAnimal:{MyStuff:4}};
-						libSuperTest('http://localhost:9081/')
+						var tmpRecord = {IDAnimal:{MyStuff:4}};
+						libSuperTest('http://localhost:9082/')
 						.del('1.0/FableTest')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.send(tmpRecord)
 						.end(
 							function(pError, pResponse)
 							{
 								// Expect response to be the count of deleted records.
-								const tmpResult = JSON.parse(pResponse.text);
+								var tmpResult = JSON.parse(pResponse.text);
 								Expect(tmpResult.Error).to.contain('a valid record ID is required');
 								fDone();
 							}
@@ -995,14 +942,13 @@ suite
 					'count: get the count of records',
 					function(fDone)
 					{
-						libSuperTest('http://localhost:9081/')
+						libSuperTest('http://localhost:9082/')
 						.get('1.0/FableTests/Count')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.end(
 							function (pError, pResponse)
 							{
-								const tmpResults = JSON.parse(pResponse.text);
-								Expect(tmpResults.Count).to.equal(5);
+								var tmpResults = JSON.parse(pResponse.text);
+								Expect(tmpResults.Count).to.equal(6);
 								fDone();
 							}
 						);
@@ -1013,13 +959,12 @@ suite
 					'count: get the count of filtered records',
 					function(fDone)
 					{
-						libSuperTest('http://localhost:9081/')
+						libSuperTest('http://localhost:9082/')
 						.get('1.0/FableTests/Count/FilteredTo/FBV~Type~EQ~Girl')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.end(
 							function (pError, pResponse)
 							{
-								const tmpResults = JSON.parse(pResponse.text);
+								var tmpResults = JSON.parse(pResponse.text);
 								Expect(tmpResults.Count).to.equal(1);
 								fDone();
 							}
@@ -1031,13 +976,12 @@ suite
 					'schema: get the schema of a record',
 					function(fDone)
 					{
-						libSuperTest('http://localhost:9081/')
+						libSuperTest('http://localhost:9082/')
 						.get('1.0/FableTest/Schema')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.end(
 							function (pError, pResponse)
 							{
-								const tmpResults = JSON.parse(pResponse.text);
+								var tmpResults = JSON.parse(pResponse.text);
 								//console.log('SCHEMA --> '+JSON.stringify(tmpResults, null, 4))
 								Expect(tmpResults.title).to.equal('Animal');
 								Expect(tmpResults.description).to.contain('creature that lives in');
@@ -1051,13 +995,12 @@ suite
 					'new: get a new empty record',
 					function(fDone)
 					{
-						libSuperTest('http://localhost:9081/')
+						libSuperTest('http://localhost:9082/')
 						.get('1.0/FableTest/Schema/New')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.end(
 							function (pError, pResponse)
 							{
-								const tmpResults = JSON.parse(pResponse.text);
+								var tmpResults = JSON.parse(pResponse.text);
 								//console.log(JSON.stringify(tmpResults, null, 4))
 								Expect(tmpResults.IDAnimal).to.equal(null);
 								Expect(tmpResults.Name).to.equal('Unknown');
@@ -1072,16 +1015,15 @@ suite
 					'validate: validate an invalid record',
 					function(fDone)
 					{
-						const tmpRecord = {IDAnimal:4, Type:'Corgi'};
-						libSuperTest('http://localhost:9081/')
+						var tmpRecord = {IDAnimal:4, Type:'Corgi'};
+						libSuperTest('http://localhost:9082/')
 						.post('1.0/FableTest/Schema/Validate')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.send(tmpRecord)
 						.end(
 							function(pError, pResponse)
 							{
 								// Expect response to be the record we just created.
-								const tmpResult = JSON.parse(pResponse.text);
+								var tmpResult = JSON.parse(pResponse.text);
 								//console.log(JSON.stringify(tmpResult, null, 4))
 								Expect(tmpResult.Valid).to.equal(false);
 								Expect(tmpResult.Errors[0].field).to.equal('data.Name');
@@ -1096,16 +1038,15 @@ suite
 					'validate: validate a valid record',
 					function(fDone)
 					{
-						const tmpRecord = {IDAnimal:4, Type:'Corgi', Name:'Doofer', CreatingIDUser:10};
-						libSuperTest('http://localhost:9081/')
+						var tmpRecord = {IDAnimal:4, Type:'Corgi', Name:'Doofer', CreatingIDUser:10};
+						libSuperTest('http://localhost:9082/')
 						.post('1.0/FableTest/Schema/Validate')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.send(tmpRecord)
 						.end(
 							function(pError, pResponse)
 							{
 								// Expect response to be the record we just created.
-								const tmpResult = JSON.parse(pResponse.text);
+								var tmpResult = JSON.parse(pResponse.text);
 								//console.log(JSON.stringify(tmpResult, null, 4))
 								Expect(tmpResult.Valid).to.equal(true);
 								fDone();
@@ -1118,16 +1059,15 @@ suite
 					'validate: validate bad data',
 					function(fDone)
 					{
-						const tmpRecord = 'IAMBAD';
-						libSuperTest('http://localhost:9081/')
+						var tmpRecord = 'IAMBAD';
+						libSuperTest('http://localhost:9082/')
 						.post('1.0/FableTest/Schema/Validate')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.send(tmpRecord)
 						.end(
 							function(pError, pResponse)
 							{
 								// Expect response to be the record we just created.
-								const tmpResult = JSON.parse(pResponse.text);
+								var tmpResult = JSON.parse(pResponse.text);
 								//console.log(JSON.stringify(tmpResult, null, 4))
 								Expect(tmpResult.Valid).to.be.false;
 								fDone();
@@ -1135,6 +1075,13 @@ suite
 						);
 					}
 				);
+			}
+		);
+		suite
+		(
+			'Basic Server Routes',
+			function()
+			{
 			}
 		);
 		suite
@@ -1147,16 +1094,14 @@ suite
 					'read: get a specific record',
 					function(fDone)
 					{
-						_MockSessionValidUser.UserRoleIndex = -1;
-						libSuperTest('http://localhost:9081/')
+						libSuperTest('http://localhost:9082/')
 						.get('1.0/FableTest/2')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.end(
 							function (pError, pResponse)
 							{
 								const tmpResult = JSON.parse(pResponse.text);
-								Expect(tmpResult.Error).to.contain('You must be appropriately authenticated');
-								_MockSessionValidUser.UserRoleIndex = 1;
+								Expect(tmpResult.Error).to.not.exist;
+								Expect(tmpResult.ErrorCode).to.not.exist;
 								fDone();
 							}
 						);
@@ -1174,18 +1119,16 @@ suite
 					'create: create a record',
 					function(fDone)
 					{
-						_MockSessionValidUser.UserID = 0;
 						const tmpRecord = {Name:'BatBrains', Type:'Mammoth'};
-						libSuperTest('http://localhost:9081/')
+						libSuperTest('http://localhost:9082/')
 						.post('1.0/FableTest')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.send(tmpRecord)
 						.end(
 							function(pError, pResponse)
 							{
-								// Expect response to be the record we just created.
 								const tmpResult = JSON.parse(pResponse.text);
-								Expect(tmpResult.Error).to.contain('authenticated');
+								Expect(tmpResult.Error).to.not.exist;
+								Expect(tmpResult.ErrorCode).to.not.exist;
 								fDone();
 							}
 						);
@@ -1196,14 +1139,14 @@ suite
 					'read: get a specific record',
 					function(fDone)
 					{
-						libSuperTest('http://localhost:9081/')
+						libSuperTest('http://localhost:9082/')
 						.get('1.0/FableTest/2')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.end(
 							function (pError, pResponse)
 							{
 								const tmpResult = JSON.parse(pResponse.text);
-								Expect(tmpResult.Error).to.contain('authenticated');
+								Expect(tmpResult.Error).to.not.exist;
+								Expect(tmpResult.ErrorCode).to.not.exist;
 								fDone();
 							}
 						);
@@ -1214,15 +1157,15 @@ suite
 					'readselect: get all records',
 					function(fDone)
 					{
-						libSuperTest('http://localhost:9081/')
+						libSuperTest('http://localhost:9082/')
 						.get('1.0/FableTestSelect')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.end(
 							function (pError, pResponse)
 							{
 								console.log(pResponse.text)
 								const tmpResults = JSON.parse(pResponse.text);
-								Expect(tmpResults.Error).to.contain('authenticated');
+								Expect(tmpResults.Error).to.not.exist;
+								Expect(tmpResults.ErrorCode).to.not.exist;
 								fDone();
 							}
 						);
@@ -1235,16 +1178,16 @@ suite
 					{
 						// Change animal 4 ("Spot") to a Corgi
 						const tmpRecord = {IDAnimal:4, Type:'Corgi'};
-						libSuperTest('http://localhost:9081/')
+						libSuperTest('http://localhost:9082/')
 						.put('1.0/FableTest')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.send(tmpRecord)
 						.end(
 							function(pError, pResponse)
 							{
 								// Expect response to be the record we just created.
 								const tmpResult = JSON.parse(pResponse.text);
-								Expect(tmpResult.Error).to.contain('authenticated');
+								Expect(tmpResult.Error).to.not.exist;
+								Expect(tmpResult.ErrorCode).to.not.exist;
 								fDone();
 							}
 						);
@@ -1255,15 +1198,15 @@ suite
 					'schema: get the schema of a record',
 					function(fDone)
 					{
-						libSuperTest('http://localhost:9081/')
+						libSuperTest('http://localhost:9082/')
 						.get('1.0/FableTest/Schema')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.end(
 							function (pError, pResponse)
 							{
 								const tmpResults = JSON.parse(pResponse.text);
 								//console.log('SCHEMA --> '+JSON.stringify(tmpResults, null, 4))
-								Expect(tmpResults.Error).to.contain('authenticated');
+								Expect(tmpResults.Error).to.not.exist;
+								Expect(tmpResults.ErrorCode).to.not.exist;
 								fDone();
 							}
 						);
@@ -1274,15 +1217,15 @@ suite
 					'new: get a new empty record',
 					function(fDone)
 					{
-						libSuperTest('http://localhost:9081/')
+						libSuperTest('http://localhost:9082/')
 						.get('1.0/FableTest/Schema/New')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.end(
 							function (pError, pResponse)
 							{
 								const tmpResults = JSON.parse(pResponse.text);
 								//console.log(JSON.stringify(tmpResults, null, 4))
-								Expect(tmpResults.Error).to.contain('authenticated');
+								Expect(tmpResults.Error).to.not.exist;
+								Expect(tmpResults.ErrorCode).to.not.exist;
 								fDone();
 							}
 						);
@@ -1294,17 +1237,17 @@ suite
 					function(fDone)
 					{
 						const tmpRecord = {IDAnimal:4, Type:'Corgi'};
-						libSuperTest('http://localhost:9081/')
+						libSuperTest('http://localhost:9082/')
 						.post('1.0/FableTest/Schema/Validate')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.send(tmpRecord)
 						.end(
 							function(pError, pResponse)
 							{
 								// Expect response to be the record we just created.
 								const tmpResult = JSON.parse(pResponse.text);
-								//console.log(JSON.stringify(tmpResult, null, 4))
-								Expect(tmpResult.Error).to.contain('authenticated');
+								console.log(JSON.stringify(tmpResult, null, 4))
+								Expect(tmpResult.Error).to.not.exist;
+								Expect(tmpResult.ErrorCode).to.not.exist;
 								fDone();
 
 							}
@@ -1316,14 +1259,14 @@ suite
 					'count: get the count of records',
 					function(fDone)
 					{
-						libSuperTest('http://localhost:9081/')
+						libSuperTest('http://localhost:9082/')
 						.get('1.0/FableTests/Count')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.end(
 							function (pError, pResponse)
 							{
 								const tmpResult = JSON.parse(pResponse.text);
-								Expect(tmpResult.Error).to.contain('authenticated');
+								Expect(tmpResult.Error).to.not.exist;
+								Expect(tmpResult.ErrorCode).to.not.exist;
 								fDone();
 							}
 						);
@@ -1336,17 +1279,16 @@ suite
 					{
 						// Delete animal 3 ("Red")
 						const tmpRecord = {IDAnimal:3};
-						libSuperTest('http://localhost:9081/')
+						libSuperTest('http://localhost:9082/')
 						.del('1.0/FableTest')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.send(tmpRecord)
 						.end(
 							function(pError, pResponse)
 							{
 								// Expect response to be the count of deleted records.
 								const tmpResult = JSON.parse(pResponse.text);
-								Expect(tmpResult.Error).to.contain('authenticated');
-								_MockSessionValidUser.UserID = 10;
+								Expect(tmpResult.Error).to.not.exist;
+								Expect(tmpResult.ErrorCode).to.not.exist;
 								fDone();
 							}
 						);
@@ -1364,362 +1306,14 @@ suite
 					'read: get a specific record',
 					function(fDone)
 					{
-						_MockSessionValidUser.LoggedIn = false;
-						libSuperTest('http://localhost:9081/')
+						libSuperTest('http://localhost:9082/')
 						.get('1.0/FableTest/2')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
 						.end(
 							function (pError, pResponse)
 							{
 								const tmpResult = JSON.parse(pResponse.text);
-								Expect(tmpResult.Error).to.contain('You must be authenticated');
-								_MockSessionValidUser.LoggedIn = true;
-								fDone();
-							}
-						);
-					}
-				);
-			}
-		);
-		suite
-		(
-			'Filter parser',
-			function()
-			{
-				test
-				(
-					'Filter parse',
-					function(fDone)
-					{
-						const tmpQuery = _MeadowEndpoints.DAL.query;
-						_MeadowEndpoints.parseFilter('FBV~UUIDAnimal~EQ~1000000', tmpQuery);
-						Expect(tmpQuery.parameters.filter[0].Column).to.equal('UUIDAnimal');
-						fDone();
-					}
-				);
-			}
-		);
-		suite
-		(
-			'Changing route requirement',
-			function()
-			{
-				test
-				(
-					'read: get a specific record',
-					function(fDone)
-					{
-						Expect(_MeadowEndpoints.endpointAuthorizationLevels.Read).to.equal(0);
-						fDone();
-					}
-				);
-			}
-		);
-		suite
-		(
-			'Behavior modifications',
-			function()
-			{
-				test
-				(
-					'read: modified get of a specific record',
-					function(fDone)
-					{
-						// Override the query configuration
-						_MeadowEndpoints.behaviorModifications.setBehavior('Read-QueryConfiguration', [
-							function(pRequest, fComplete)
-							{
-								//implicitly test behvaior-cascade
-								return fComplete(false);
-							},
-							function(pRequest, fComplete)
-							{
-								// Turn up logging on the request.
-								pRequest.Query.setLogLevel(5);
-								fComplete(false);
-							} ]);
-						libSuperTest('http://localhost:9081/')
-						.get('1.0/FableTest/2')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
-						.end(
-							function (pError, pResponse)
-							{
-								const tmpResult = JSON.parse(pResponse.text);
-								//console.log(JSON.stringify(tmpResult, null, 4))
-								Expect(tmpResult.Name).to.equal('Red Riding Hood');
-								fDone();
-							}
-						);
-					}
-				);
-				test
-				(
-					'read: inject data into the record',
-					function(fDone)
-					{
-						// Override the query configuration
-						_MeadowEndpoints.behaviorModifications.setBehavior('Read-PostOperation',
-							function(pRequest, fComplete)
-							{
-								// Create a custom property on the record.
-								pRequest.Record.CustomProperty = 'Custom '+pRequest.Record.Type+' ID '+pRequest.Record.IDAnimal;
-								fComplete(false);
-							});
-						_MockSessionValidUser.LoggedIn = true;
-						libSuperTest('http://localhost:9081/')
-						.get('1.0/FableTest/2')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
-						.end(
-							function (pError, pResponse)
-							{
-								const tmpResult = JSON.parse(pResponse.text);
-								//console.log(JSON.stringify(tmpResult, null, 4))
-								Expect(tmpResult.CustomProperty).to.equal('Custom Girl ID 2');
-								fDone();
-							}
-						);
-					}
-				);
-				test
-				(
-					'read-max: get the max record ID',
-					function(fDone)
-					{
-						libSuperTest('http://localhost:9081/')
-						.get('1.0/FableTest/Max/IDAnimal')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
-						.end(
-							function (pError, pResponse)
-							{
-								const tmpResult = JSON.parse(pResponse.text);
-								Expect(tmpResult.IDAnimal).to.equal(6);
-								fDone();
-							}
-						);
-					}
-				);
-				test
-				(
-					'read-max: get the max name',
-					function(fDone)
-					{
-						libSuperTest('http://localhost:9081/')
-						.get('1.0/FableTest/Max/Name')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
-						.end(
-							function (pError, pResponse)
-							{
-								const tmpResult = JSON.parse(pResponse.text);
-								Expect(tmpResult.Name).to.equal('Spot');
-								fDone();
-							}
-						);
-					}
-				);
-			}
-		);
-
-		suite
-		(
-			'Endpoint Security - Deny',
-			function()
-			{
-				test
-				(
-					'bulk creates',
-					function(fDone)
-					{
-						const tmpRecords = [
-							{Name:'Billy', Type:'Cat'},
-							{Name:'Jim', Type:'Cat'},
-							{Name:'Janet', Type:'Cat'},
-							{Name:'Sweeps', Type:'Cat'},
-							{Name:'Stakes', Type:'Dog'},
-							{Name:'Sally', Type:'Dog'},
-							{Name:'Bill', Type:'Dog'},
-							{Name:'Chris', Type:'Dog'},
-							{Name:'Haji', Type:'Snake'}
-						];
-						_MockSessionValidUser.UserRoleIndex = 2;
-						libSuperTest('http://localhost:9081/')
-						.post('1.0/FableTests')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
-						.send(tmpRecords)
-						.end(
-							function(pError, pResponse)
-							{
-								// Expect response to be the record we just created.
-								const tmpResult = JSON.parse(pResponse.text);
-								//console.log(JSON.stringify(tmpResult,null,4));
-								Expect(tmpResult[0].Name).to.equal('Billy');
-								Expect(tmpResult[5].Type).to.equal('Dog');
-								fDone();
-							}
-						);
-					}
-				);
-				test
-				(
-					'bulk create with a bad record',
-					function(fDone)
-					{
-						const tmpRecords = [
-							{Name:'Astro', Type:'Cartoon'},
-							{Name:'Boy', Type:'Cartoon'},
-							{License:'Whoops', Type:'Cat'},
-							{Name:'Froggy', Type:'Cartoon'}
-						];
-						_MockSessionValidUser.UserRoleIndex = 2;
-						libSuperTest('http://localhost:9081/')
-						.post('1.0/FableTests')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
-						.send(tmpRecords)
-						.end(
-							function(pError, pResponse)
-							{
-								// Expect response to be the record we just created.
-								const tmpResult = JSON.parse(pResponse.text);
-								Expect(tmpResult[0].Type).to.equal('Cartoon');
-								fDone();
-							}
-						);
-					}
-				);
-				test
-				(
-					'bulk updates',
-					function(fDone)
-					{
-						const tmpRecords = [
-							{IDAnimal: 11, Type:'Hoss'},
-							{IDAnimal: 12, Type:'Hoss'},
-							{IDAnimal: 14, Type:'Hoss'},
-							{IDAnimal: 15, Type:'Hoss'}
-						];
-						_MockSessionValidUser.UserRoleIndex = 2;
-						libSuperTest('http://localhost:9081/')
-						.put('1.0/FableTests')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
-						.send(tmpRecords)
-						.end(
-							function(pError, pResponse)
-							{
-								// Expect response to be the record we just created.
-								const tmpResult = JSON.parse(pResponse.text);
-								//console.log(JSON.stringify(tmpResult,null,4));
-								Expect(tmpResult[0].IDAnimal).to.equal(11);
-								Expect(tmpResult[0].Type).to.equal('Hoss');
-								Expect(tmpResult[1].Type).to.equal('Hoss');
-								Expect(tmpResult[2].Type).to.equal('Hoss');
-								Expect(tmpResult[3].Type).to.equal('Hoss');
-								fDone();
-							}
-						);
-					}
-				);
-				test
-				(
-					'bulk updates with bad record',
-					function(fDone)
-					{
-						const tmpRecords = [
-							{IDAnimal: 11, Type:'Horsse'},
-							{IDAnimal: 12, Type:'Horsse'},
-							{IDAnimal: 14, Genus:'Hosse'},
-							{IDAnimal: 15, Type:'Hosses'}
-						];
-						_MockSessionValidUser.UserRoleIndex = 2;
-						libSuperTest('http://localhost:9081/')
-						.put('1.0/FableTests')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
-						.send(tmpRecords)
-						.end(
-							function(pError, pResponse)
-							{
-								// Expect response to be the record we just created.
-								const tmpResult = JSON.parse(pResponse.text);
-								//console.log(JSON.stringify(tmpResult,null,4));
-								Expect(tmpResult[3].Type).to.equal('Hosses');
-								fDone();
-							}
-						);
-					}
-				);
-				test
-				(
-					'upsert: create a record',
-					function(fDone)
-					{
-						const tmpRecord = {GUIDAnimal:'0xHAXXXX', Name:'Jason', Type:'Tyranosaurus'};
-						_MockSessionValidUser.UserRoleIndex = 2;
-						libSuperTest('http://localhost:9081/')
-						.put('1.0/FableTest/Upsert')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
-						.send(tmpRecord)
-						.end(
-							function(pError, pResponse)
-							{
-								// Expect response to be the record we just created.
-								//console.log(pResponse.text)
-								const tmpResult = JSON.parse(pResponse.text);
-								Expect(tmpResult.Type).to.equal('Tyranosaurus');
-								Expect(tmpResult.CreatingIDUser).to.equal(10);
-								fDone();
-							}
-						);
-					}
-				);
-				test
-				(
-					'upsert: Update a record',
-					function(fDone)
-					{
-						const tmpRecord = {GUIDAnimal:'0xHAXXXX', Type:'Stegosaurus'};
-						_MockSessionValidUser.UserRoleIndex = 2;
-						libSuperTest('http://localhost:9081/')
-						.put('1.0/FableTest/Upsert')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
-						.send(tmpRecord)
-						.end(
-							function(pError, pResponse)
-							{
-								// Expect response to be the record we just created.
-								console.log(pResponse.text)
-								const tmpResult = JSON.parse(pResponse.text);
-								Expect(tmpResult.Type).to.equal('Stegosaurus');
-								Expect(tmpResult.Name).to.equal('Jason');
-								fDone();
-							}
-						);
-					}
-				);
-				test
-				(
-					'bulk upserts',
-					function(fDone)
-					{
-						_MeadowEndpoints.behaviorModifications.setTemplate('SelectList', '<%= Record.Name %>|<%=Record.Type%>');
-						const tmpRecords = [
-							{GUIDAnimal:'0xHAXXXX', Type:'Triceratops'},
-							{GUIDAnimal:'0xDavison', Name:'Davison', Type:'Dog'},
-							{GUIDAnimal:'0xMartino', Name:'Martin', Type:'Dog'},
-							{Name:'Chino', Type:'Cat'}
-						];
-						_MockSessionValidUser.UserRoleIndex = 2;
-						libSuperTest('http://localhost:9081/')
-						.put('1.0/FableTest/Upserts')
-						.set('x-trusted-session', JSON.stringify(_MockSessionValidUser))
-						.send(tmpRecords)
-						.end(
-							function(pError, pResponse)
-							{
-								// Expect response to be the record we just created.
-								const tmpResult = JSON.parse(pResponse.text);
-								console.log(JSON.stringify(tmpResult,null,4));
-								Expect(tmpResult[0].Value).to.equal('Jason|Triceratops');
-								Expect(tmpResult[1].Value).to.equal('Davison|Dog');
-								Expect(tmpResult[2].Value).to.equal('Martin|Dog');
-								Expect(tmpResult[3].Value).to.equal('Chino|Cat');
+								Expect(tmpResult.Error).to.not.exist;
+								Expect(tmpResult.ErrorCode).to.not.exist;
 								fDone();
 							}
 						);

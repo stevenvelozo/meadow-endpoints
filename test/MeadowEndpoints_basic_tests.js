@@ -22,6 +22,9 @@ var tmpFableSettings = 	(
 
 	"UnauthorizedRequestDelay": 10,
 
+	MeadowAuthenticationMode: 'LoggedIn',
+	MeadowAuthorizationMode: 'SimpleOwnership',
+
 	APIServerPort: 9080,
 
 	MySQL:

@@ -19,6 +19,8 @@ var MeadowAuthorizers = function()
 			return {new: createNew};
 		}
 
+		const _AuthorizationMode = pMeadow.fable.settings.MeadowAuthorizationMode || 'Disabled';
+
 		// An object to hold modifications to specific authorizers.
 		var _AuthorizerFunctions = {};
 
@@ -44,12 +46,14 @@ var MeadowAuthorizers = function()
 			_AuthorizerFunctions[pAuthorizerHash] = fAuthorizer;
 		};
 
-
-		// Map in the default authorizers
-		setAuthorizer('Allow', require(__dirname+'/authorizers/Meadow-Authorizer-Allow.js'));
-		setAuthorizer('Deny', require(__dirname+'/authorizers/Meadow-Authorizer-Deny.js'));
-		setAuthorizer('Mine', require(__dirname+'/authorizers/Meadow-Authorizer-Mine.js'));
-		setAuthorizer('MyCustomer', require(__dirname+'/authorizers/Meadow-Authorizer-MyCustomer.js'));
+		if (_AuthorizationMode === 'SimpleOwnership')
+		{
+			// Map in the authorizers for simple ownership mode
+			setAuthorizer('Allow', require(__dirname+'/authorizers/Meadow-Authorizer-Allow.js'));
+			setAuthorizer('Deny', require(__dirname+'/authorizers/Meadow-Authorizer-Deny.js'));
+			setAuthorizer('Mine', require(__dirname+'/authorizers/Meadow-Authorizer-Mine.js'));
+			setAuthorizer('MyCustomer', require(__dirname+'/authorizers/Meadow-Authorizer-MyCustomer.js'));
+		}
 
 
 		/**
@@ -65,6 +69,13 @@ var MeadowAuthorizers = function()
 				pRequest.MeadowAuthorization = true;
 			}
 
+			// authorize all behaviors if authorization is disabled
+			if (_AuthorizationMode === 'Disabled')
+			{
+				return fComplete();
+			}
+
+			//FIXME: Get rid of this...
 			if (pRequest.Satchel &&
 				pRequest.Satchel.AuthorizeOverride)
 				return fComplete(false);
@@ -125,9 +136,14 @@ var MeadowAuthorizers = function()
 				pRequest.MeadowAuthorization = true;
 			}
 
+			// authorize all behaviors if authorization is disabled
+			if (_AuthorizationMode === 'Disabled')
+			{
+				return fComplete();
+			}
+
 			// Attach authorizer hash in case the invoked authorizer needs the endpoint context
 			pRequest.EndpointHash = pRequestHash;
-
 
 			// See if there is an authorizer collection for the role of the user
 			var tmpRoleAuthorizer = pRequest.DAL.schemaFull.authorizer[pRequest.DAL.getRoleName(pRequest.UserSession.UserRoleIndex)];

@@ -28,7 +28,9 @@ var MeadowEndpoints = function()
 		var libAsync = require('async');
 		var libRestRouteParse = require('./Restify-RouteParser.js');
 
-		var _CommonServices = require('./Meadow-CommonServices.js').new(pMeadow);
+		const _AuthenticationMode = _Fable.settings.MeadowAuthenticationMode || 'Disabled';
+
+		var _CommonServices = require('./Meadow-CommonServices.js').new(pMeadow, _AuthenticationMode);
 
 		// This holds any changed behaviors.
 		var _BehaviorModifications = require('./Meadow-BehaviorModifications.js').new(pMeadow);
@@ -37,7 +39,7 @@ var MeadowEndpoints = function()
 		var _Authorizers = require('./Meadow-Authorizers.js').new(pMeadow);
 
 		// This checks that the user is authenticated.  In the future, it will be overloadable.
-		var _Authenticator = require('./Meadow-Authenticator.js');
+		var _Authenticator = require('./Meadow-Authenticator.js')(_AuthenticationMode);
 
 		// The default endpoints
 		var _Endpoints = (

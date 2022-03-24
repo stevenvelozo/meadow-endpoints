@@ -1,21 +1,31 @@
 /**
- * Check that a user is logged in
+ * Check that a user is logged in, if enabled
  *
- * @method checkAuthentication
+ * @method getAuthenticator
  */
-var checkAuthentication = function(pRequest, pResponse, fNext)
+const getAuthenticator = (pAuthenticatorMode) =>
 {
-	if (!pRequest.UserSession.LoggedIn)
+	if (pAuthenticatorMode === 'Disabled')
 	{
-		pRequest.EndpointAuthenticated = false;
+		return (pRequest, pResponse, fNext) =>
+		{
+			pRequest.EndpointAuthenticated = true;
+			fNext();
+		};
 	}
-	else
+	return (pRequest, pResponse, fNext) =>
 	{
-		pRequest.EndpointAuthenticated = true;
-	}
+		if (!pRequest.UserSession.LoggedIn)
+		{
+			pRequest.EndpointAuthenticated = false;
+		}
+		else
+		{
+			pRequest.EndpointAuthenticated = true;
+		}
 
-	// This doesn't call next in chain because SendError does that for us.
-	fNext();
+		fNext();
+	}
 };
 
-module.exports = checkAuthentication;
+module.exports = getAuthenticator;
