@@ -16,4 +16,33 @@ The design philosophy is not to cover every possible use case, but to cover the 
 
 To best use this library, it should be in conjunction with [stricture](https://github.com/stevenvelozo/stricture) and [orator](https://github.com/stevenvelozo/orator).
 
-Multiple organizations have been using these libraries in medium to high load production environments for over a year.
+
+### Docker Development Environment
+
+1. Run this command to build this image:
+```
+docker build ./ -t retold/meadow-endpoints:local
+```
+
+alternatively you can use npm to run this
+
+```
+npm run docker-dev-build-image
+```
+
+2. Run this command to build the local container:
+```
+docker run -it --name meadow-endpoints-dev -p 127.0.0.1:12343:8080 -v "$PWD/.config:/home/coder/.config"  -v "$PWD:/home/coder/meadow-endpoints" -u "$(id -u):$(id -g)" -e "DOCKER_USER=$USER" retold/meadow-endpoints:local
+```
+
+alternatively you can use npm to run this
+
+```
+npm run docker-dev-run
+```
+
+3. Go to http://localhost:12343/ in a web browser
+
+4. The password is "retold"
+
+5. Right now you (may) need to delete the `node_modules` folders and regenerate it for Linux.
