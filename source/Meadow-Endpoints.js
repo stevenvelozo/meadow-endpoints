@@ -7,9 +7,6 @@
 * @module Meadow
 */
 
-//Meadow needs to connect some general route handlers, this ensures it is done lazily, and only once.
-var _AttachedRequestHandlers = false;
-
 /**
 * Meadow Data Broker Library
 *
@@ -31,7 +28,9 @@ var MeadowEndpoints = function()
 		var libAsync = require('async');
 		var libRestRouteParse = require('./Restify-RouteParser.js');
 
-		var _CommonServices = require('./Meadow-CommonServices.js').new(pMeadow);
+		const _AuthenticationMode = _Fable.settings.MeadowAuthenticationMode || 'Disabled';
+
+		var _CommonServices = require('./Meadow-CommonServices.js').new(pMeadow, _AuthenticationMode);
 
 		// This holds any changed behaviors.
 		var _BehaviorModifications = require('./Meadow-BehaviorModifications.js').new(pMeadow);
@@ -40,7 +39,7 @@ var MeadowEndpoints = function()
 		var _Authorizers = require('./Meadow-Authorizers.js').new(pMeadow);
 
 		// This checks that the user is authenticated.  In the future, it will be overloadable.
-		var _Authenticator = require('./Meadow-Authenticator.js');
+		var _Authenticator = require('./Meadow-Authenticator.js')(_AuthenticationMode);
 
 		// The default endpoints
 		var _Endpoints = (
@@ -303,14 +302,17 @@ var MeadowEndpoints = function()
 
 			const tmpEndpointPrefix = `/${tmpEndpointVersion}/${tmpEndpointName}`;
 
-			if (!_AttachedRequestHandlers)
+			if (!pRestServer._AttachedMeadowEndpointsRequestHandlers)
 			{
-				_AttachedRequestHandlers = true;
+				pRestServer._AttachedMeadowEndpointsRequestHandlers = true;
 				// Connect the common services to the route
 				pRestServer.use(wireCommonServices);
 
 				// Build formattedParams route parameters
 				pRestServer.use(formatRouteParams);
+
+				// Marshall session data in, if needed / configured
+				pRestServer.use(require('./Meadow-MarshallSessionData')(_Fable));
 			}
 
 			// These special schema services must come in the route table before the READ because they

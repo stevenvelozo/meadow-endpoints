@@ -8,7 +8,7 @@
 */
 var MeadowCommonServices = function()
 {
-	function createNew(pMeadow)
+	function createNew(pMeadow, pAuthenticationMode)
 	{
 		// If a valid fable object isn't passed in, return a constructor
 		if ((typeof(pMeadow) !== 'object') || !('fable' in pMeadow))
@@ -17,6 +17,7 @@ var MeadowCommonServices = function()
 		}
 
 		var _Meadow = pMeadow;
+		const _AuthenticationMode = pAuthenticationMode;
 		var _Log = _Meadow.fable.log;
 
 		var libRestify = require('restify');
@@ -106,21 +107,25 @@ var MeadowCommonServices = function()
 			}
 
 			// Check that the user has a valid ID.
-			var tmpIDUser = pRequest.UserSession.UserID;
-			if (tmpIDUser < 1)
+			if (_AuthenticationMode !== 'Disabled')
 			{
-				_Log.warn('Invalid session when attempting to get a secured resource - IDUser is not valid.', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:'APISecurity'}, pRequest);
-				sendNotAuthorized('You must be authenticated to access this resource.', pRequest, pResponse, fNext);
-				return false;
-			}
+				//TODO: do we need this code anymore?
+				const tmpIDUser = pRequest.UserSession.UserID;
+				if (tmpIDUser < 1)
+				{
+					_Log.warn('Invalid session when attempting to get a secured resource - IDUser is not valid.', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:'APISecurity'}, pRequest);
+					sendNotAuthorized('You must be authenticated to access this resource.', pRequest, pResponse, fNext);
+					return false;
+				}
 
-			// Check that the authentication level is valid.
-			if (pRequest.UserSession.UserRoleIndex < pRequest.EndpointAuthorizationRequirement)
-			{
-				_Log.warn('Invalid permission level when attempting to get a secured resource.', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:'APISecurity', RequiredUserLevel:pRequest.EndpointAuthorizationRequirement, 				ActualUserLevel:pRequest.UserSession.UserRoleIndex}, pRequest);
-				// TODO: Send the proper http status code
-				sendNotAuthorized('You must be appropriately authenticated to access this resource.', pRequest, pResponse, fNext);
-				return false;
+				// Check that the authentication level is valid.
+				if (pRequest.UserSession.UserRoleIndex < pRequest.EndpointAuthorizationRequirement)
+				{
+					_Log.warn('Invalid permission level when attempting to get a secured resource.', {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:'APISecurity', RequiredUserLevel:pRequest.EndpointAuthorizationRequirement, 				ActualUserLevel:pRequest.UserSession.UserRoleIndex}, pRequest);
+					// TODO: Send the proper http status code
+					sendNotAuthorized('You must be appropriately authenticated to access this resource.', pRequest, pResponse, fNext);
+					return false;
+				}
 			}
 
 			return true;
