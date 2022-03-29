@@ -33,7 +33,7 @@ var tmpFableSettings = 	(
 			Server: "localhost",
 			Port: 3306,
 			User: process.env.DEV_MYSQL_USER || "root",
-			Password: process.env.DEV_MYSQL_PASS || "",
+			Password: process.env.DEV_MYSQL_PASS || "123456789",
 			Database: "FableTest",
 			ConnectionPoolLimit: 20
 		},

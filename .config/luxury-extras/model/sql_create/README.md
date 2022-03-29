@@ -1,0 +1,1 @@
+This is where the MYSQL Create statement for the data model will generate.
