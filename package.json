@@ -57,6 +57,6 @@
     "meadow": "~1.0.32",
     "meadow-filter": "^1.0.1",
     "orator": "~2.0.2",
-    "underscore": "1.9.1"
+    "underscore": "1.12.1"
   }
 }
