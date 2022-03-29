@@ -1,0 +1,260 @@
+{
+    "Scope": "BookPrice",
+    "DefaultIdentifier": "IDBookPrice",
+    "Domain": "Default",
+    "Schema": [
+        {
+            "Column": "IDBookPrice",
+            "Type": "AutoIdentity"
+        },
+        {
+            "Column": "GUIDBookPrice",
+            "Type": "AutoGUID"
+        },
+        {
+            "Column": "CreateDate",
+            "Type": "CreateDate"
+        },
+        {
+            "Column": "CreatingIDUser",
+            "Type": "CreateIDUser"
+        },
+        {
+            "Column": "UpdateDate",
+            "Type": "UpdateDate"
+        },
+        {
+            "Column": "UpdatingIDUser",
+            "Type": "UpdateIDUser"
+        },
+        {
+            "Column": "Deleted",
+            "Type": "Deleted"
+        },
+        {
+            "Column": "DeleteDate",
+            "Type": "DeleteDate"
+        },
+        {
+            "Column": "DeletingIDUser",
+            "Type": "DeleteIDUser"
+        },
+        {
+            "Column": "Price",
+            "Type": "Decimal"
+        },
+        {
+            "Column": "StartDate",
+            "Type": "DateTime"
+        },
+        {
+            "Column": "EndDate",
+            "Type": "DateTime"
+        },
+        {
+            "Column": "Discountable",
+            "Type": "Boolean"
+        },
+        {
+            "Column": "CouponCode",
+            "Type": "String"
+        },
+        {
+            "Column": "IDBook",
+            "Type": "Integer"
+        }
+    ],
+    "DefaultObject": {
+        "IDBookPrice": 0,
+        "GUIDBookPrice": "0x0000000000000000",
+        "CreateDate": null,
+        "CreatingIDUser": 0,
+        "UpdateDate": null,
+        "UpdatingIDUser": 0,
+        "Deleted": false,
+        "DeleteDate": null,
+        "DeletingIDUser": 0,
+        "Price": 0,
+        "StartDate": null,
+        "EndDate": null,
+        "Discountable": false,
+        "CouponCode": "",
+        "IDBook": 0
+    },
+    "JsonSchema": {
+        "title": "BookPrice",
+        "type": "object",
+        "properties": {
+            "IDBookPrice": {
+                "type": "integer"
+            },
+            "GUIDBookPrice": {
+                "type": "string"
+            },
+            "CreateDate": {
+                "type": "string"
+            },
+            "CreatingIDUser": {
+                "type": "integer"
+            },
+            "UpdateDate": {
+                "type": "string"
+            },
+            "UpdatingIDUser": {
+                "type": "integer"
+            },
+            "Deleted": {
+                "type": "boolean"
+            },
+            "DeleteDate": {
+                "type": "string"
+            },
+            "DeletingIDUser": {
+                "type": "integer"
+            },
+            "Price": {
+                "type": "number"
+            },
+            "StartDate": {
+                "type": "string"
+            },
+            "EndDate": {
+                "type": "string"
+            },
+            "Discountable": {
+                "type": "boolean"
+            },
+            "CouponCode": {
+                "type": "string"
+            },
+            "IDBook": {
+                "type": "integer"
+            }
+        },
+        "required": [
+            "IDBookPrice"
+        ]
+    },
+    "Authorization": {
+        "__DefaultAPISecurity": {
+            "Create": "Deny",
+            "Read": "Deny",
+            "Reads": "Deny",
+            "ReadsBy": "Deny",
+            "ReadMax": "Deny",
+            "ReadSelectList": "Deny",
+            "Update": "Deny",
+            "Delete": "Deny",
+            "Count": "Deny",
+            "CountBy": "Deny",
+            "Schema": "Deny",
+            "Validate": "Deny",
+            "New": "Deny"
+        },
+        "Unauthenticated": {
+            "Create": "Deny",
+            "Read": "Deny",
+            "Reads": "Deny",
+            "ReadsBy": "Deny",
+            "ReadMax": "Deny",
+            "ReadSelectList": "Deny",
+            "Update": "Deny",
+            "Delete": "Deny",
+            "Count": "Deny",
+            "CountBy": "Deny",
+            "Schema": "Deny",
+            "Validate": "Deny",
+            "New": "Deny"
+        },
+        "Readonly": {
+            "Create": "Deny",
+            "Read": "Allow",
+            "Reads": "Allow",
+            "ReadsBy": "Allow",
+            "ReadMax": "Allow",
+            "ReadSelectList": "Allow",
+            "Update": "Deny",
+            "Delete": "Deny",
+            "Count": "Allow",
+            "CountBy": "Allow",
+            "Schema": "Allow",
+            "Validate": "Allow",
+            "New": "Deny"
+        },
+        "User": {
+            "Create": "Allow",
+            "Read": "MyCustomer",
+            "Reads": "MyCustomer",
+            "ReadsBy": "MyCustomer",
+            "ReadMax": "MyCustomer",
+            "ReadSelectList": "MyCustomer",
+            "Update": "Mine",
+            "Delete": "Mine",
+            "Count": "MyCustomer",
+            "CountBy": "MyCustomer",
+            "Schema": "MyCustomer",
+            "Validate": "MyCustomer",
+            "New": "MyCustomer"
+        },
+        "Manager": {
+            "Create": "Allow",
+            "Read": "MyCustomer",
+            "Reads": "MyCustomer",
+            "ReadsBy": "MyCustomer",
+            "ReadMax": "MyCustomer",
+            "ReadSelectList": "MyCustomer",
+            "Update": "Mine",
+            "Delete": "Mine",
+            "Count": "MyCustomer",
+            "CountBy": "MyCustomer",
+            "Schema": "MyCustomer",
+            "Validate": "MyCustomer",
+            "New": "MyCustomer"
+        },
+        "Director": {
+            "Create": "Allow",
+            "Read": "MyCustomer",
+            "Reads": "MyCustomer",
+            "ReadsBy": "MyCustomer",
+            "ReadMax": "MyCustomer",
+            "ReadSelectList": "MyCustomer",
+            "Update": "MyCustomer",
+            "Delete": "MyCustomer",
+            "Count": "MyCustomer",
+            "CountBy": "MyCustomer",
+            "Schema": "MyCustomer",
+            "Validate": "MyCustomer",
+            "New": "MyCustomer"
+        },
+        "Executive": {
+            "Create": "Allow",
+            "Read": "MyCustomer",
+            "Reads": "MyCustomer",
+            "ReadsBy": "MyCustomer",
+            "ReadMax": "MyCustomer",
+            "ReadSelectList": "MyCustomer",
+            "Update": "MyCustomer",
+            "Delete": "MyCustomer",
+            "Count": "MyCustomer",
+            "CountBy": "MyCustomer",
+            "Schema": "MyCustomer",
+            "Validate": "MyCustomer",
+            "New": "MyCustomer"
+        },
+        "Administrator": {
+            "Create": "Allow",
+            "Read": "Allow",
+            "Reads": "Allow",
+            "ReadsBy": "Allow",
+            "ReadMax": "Allow",
+            "ReadSelectList": "Allow",
+            "Update": "Allow",
+            "Delete": "Allow",
+            "Count": "Allow",
+            "CountBy": "Allow",
+            "Schema": "Allow",
+            "Validate": "Allow",
+            "New": "Allow"
+        }
+    }
+}
