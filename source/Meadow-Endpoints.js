@@ -433,8 +433,13 @@ var MeadowEndpoints = function()
 				return tmpCallback('Endpoint \'' + pMethod + '\' does not exist!'); //might be better as an exception
 			}
 
-			//TODO: should switch depending on type
+			// TODO: should switch depending on type
+			// TODO: should we keep this around, just make a deep copy of 'pOptions'
 			var pRequest = {params: pData, formattedParams: pData, body: pData};
+			if (typeof(pOptions) === 'object' && typeof(pOptions.header) === 'function') {
+				// carry over header function
+				pRequest.header = pOptions.header.bind(pOptions);
+			}
 			var pResponse = {};
 
 			libAsync.waterfall([
