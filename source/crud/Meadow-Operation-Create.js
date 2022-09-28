@@ -95,7 +95,7 @@ var doCreate = function(pRecord, pRequest, pResponse, fCallback)
 				pRequest.RecordCreateErrorMessage = pError;
 				// Also push the record to the created record stack with an error message
 				pRequest.CreatedRecords.push(pRecord);
-				pRequest.CommonServices.log.error('Error creating record:'+pError, {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-'+pRequest.MeadowOperation}, pRequest);
+				pRequest.CommonServices.log.error('Error creating record:'+pError, {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-'+pRequest.MeadowOperation, Stack: pError.stack }, pRequest);
 			}
 
 			return fCallback();
