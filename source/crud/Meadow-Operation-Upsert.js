@@ -96,7 +96,7 @@ var doUpsert = function(pRecordToUpsert, pRequest, pResponse, fCallback)
 				pRequest.RecordUpsertError = true;
 				pRequest.RecordUpsertErrorMessage = pError;
 				pRequest.UpsertedRecords.push(pRecordToUpsert);
-				pRequest.CommonServices.log.error('Error upserting record:'+pError, {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-'+pRequest.MeadowOperation}, pRequest);
+				pRequest.CommonServices.log.error('Error upserting record:'+pError, {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-'+pRequest.MeadowOperation, Stack: pError.stack }, pRequest);
 			}
 
 			return fCallback();

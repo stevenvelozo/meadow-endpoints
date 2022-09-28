@@ -135,7 +135,7 @@ var doUpdate = function(pRecordToModify, pRequest, pResponse, fCallback, pOption
 				pRequest.RecordUpdateError = true;
 				pRequest.RecordUpdateErrorMessage = pError;
 				pRequest.UpdatedRecords.push(pRecordToModify);
-				pRequest.CommonServices.log.error('Error updating record:'+pError, {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-'+pRequest.MeadowOperation}, pRequest);
+				pRequest.CommonServices.log.error('Error updating record:'+pError, {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-'+pRequest.MeadowOperation, Stack: pError.stack }, pRequest);
 			}
 
 			return fCallback();
