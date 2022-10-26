@@ -549,6 +549,18 @@ var MeadowEndpoints = function()
 		/**
 		 * EndpointAuthenticators
 		 *
+		 * @property endpointAuthorizers
+		 * @type object
+		 */
+		Object.defineProperty(tmpNewMeadowEndpointObject, 'endpointAuthorizers',
+			{
+				get: function() { return _Authorizers; },
+				enumerable: true
+			});
+
+		/**
+		 * EndpointAuthenticators
+		 *
 		 * @property endpointAuthenticators
 		 * @type object
 		 */

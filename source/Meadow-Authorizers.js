@@ -46,6 +46,14 @@ var MeadowAuthorizers = function()
 			_AuthorizerFunctions[pAuthorizerHash] = fAuthorizer;
 		};
 
+		/**
+		* Get a specific authorizer.
+		*/
+		var getAuthorizer = function(pAuthorizerHash)
+		{
+			return _AuthorizerFunctions[pAuthorizerHash];
+		};
+
 		if (_AuthorizationMode === 'SimpleOwnership')
 		{
 			// Map in the authorizers for simple ownership mode
@@ -54,7 +62,6 @@ var MeadowAuthorizers = function()
 			setAuthorizer('Mine', require(__dirname+'/authorizers/Meadow-Authorizer-Mine.js'));
 			setAuthorizer('MyCustomer', require(__dirname+'/authorizers/Meadow-Authorizer-MyCustomer.js'));
 		}
-
 
 		/**
 		* This method runs a authorizer at a specific hash, and returns true.
@@ -191,6 +198,7 @@ var MeadowAuthorizers = function()
 		var tmpNewMeadowAuthorizer = (
 		{
 			setAuthorizer: setAuthorizer,
+			getAuthorizer: getAuthorizer,
 			authorize: authorize,
 			authorizeRequest: authorizeRequest,
 
