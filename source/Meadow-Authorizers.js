@@ -44,6 +44,14 @@ var MeadowAuthorizers = function()
 			_AuthorizerFunctions[pAuthorizerHash] = fAuthorizer;
 		};
 
+		/**
+		* Get a specific authorizer.
+		*/
+		var getAuthorizer = function(pAuthorizerHash)
+		{
+			return _AuthorizerFunctions[pAuthorizerHash];
+		};
+
 
 		// Map in the default authorizers
 		setAuthorizer('Allow', require(__dirname+'/authorizers/Meadow-Authorizer-Allow.js'));
@@ -175,6 +183,7 @@ var MeadowAuthorizers = function()
 		var tmpNewMeadowAuthorizer = (
 		{
 			setAuthorizer: setAuthorizer,
+			getAuthorizer: getAuthorizer,
 			authorize: authorize,
 			authorizeRequest: authorizeRequest,
 

@@ -466,6 +466,28 @@ suite
 				);
 				test
 				(
+					'read: define a custom authorization behavior',
+					function(fDone)
+					{
+						const defaultAuthorizer = _MeadowEndpoints.endpointAuthorizers.getAuthorizer('Allow');
+						_MeadowEndpoints.endpointAuthorizers.setAuthorizer('Allow', function(req, next) { req.MeadowAuthorization = false; return next(); });
+						_Orator.webServer.get('/CustomHotRodRoute/:IDRecord', _MeadowEndpoints.endpointAuthenticators.Read, _MeadowEndpoints.wireState, _MeadowEndpoints.endpoints.Read);
+						libSuperTest('http://localhost:9080/')
+						.get('CustomHotRodRoute/2')
+						.end(
+							function (pError, pResponse)
+							{
+								_MeadowEndpoints.endpointAuthorizers.setAuthorizer('Allow', defaultAuthorizer);
+								//TODO: it's weird that we don't get an error here for access denied...
+								var tmpResult = JSON.parse(pResponse.text);
+								Expect(tmpResult.Error).to.equal('UNAUTHORIZED ACCESS IS NOT ALLOWED');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
 					'read: define a custom route and get a record with it',
 					function(fDone)
 					{
@@ -498,6 +520,32 @@ suite
 								Expect(pResponse.text).to.contain('UNAUTHORIZED ACCESS IS NOT ALLOWED');
 								// Reset authorization
 								_Meadow.schemaFull.authorizer.Manager.Read = 'Allow';
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'read: get a specific record which resolved to Deny authorization, but with a Deny authorizer that just allows',
+					function(fDone)
+					{
+						_Meadow.schemaFull.authorizer.Manager = {};
+						_Meadow.schemaFull.authorizer.Manager.Read = 'Deny';
+						const defaultAuthorizer = _MeadowEndpoints.endpointAuthorizers.getAuthorizer('Deny');
+						_MeadowEndpoints.endpointAuthorizers.setAuthorizer('Deny', function(req, next) { req.MeadowAuthorization = true; return next(); });
+
+						libSuperTest('http://localhost:9080/')
+						.get('1.0/FableTest/2')
+						.end(
+							function (pError, pResponse)
+							{
+								// Reset authorization
+								_Meadow.schemaFull.authorizer.Manager.Read = 'Allow';
+								_MeadowEndpoints.endpointAuthorizers.setAuthorizer('Deny', defaultAuthorizer);
+
+								const responseBody = JSON.parse(pResponse.text);
+								Expect(responseBody.IDAnimal).to.equal(2);
 								fDone();
 							}
 						);
