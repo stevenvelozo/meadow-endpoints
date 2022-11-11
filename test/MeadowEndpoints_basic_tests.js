@@ -1542,6 +1542,35 @@ suite
 
 				test
 				(
+					'invoke: setup method is called',
+					function(fDone)
+					{
+						_MockSessionValidUser.UserRoleIndex = 2;
+						let setupCallCount = 0;
+						let passedRequest, passedResponse, passedOriginalRequest;
+						_MeadowEndpoints.setInvokeSetupCallback((req, res, origReq) =>
+						{
+							++setupCallCount;
+							passedRequest = req;
+							passedResponse = res;
+							passedOriginalRequest = origReq;
+						});
+						const originalRequest = {UserSession: _MockSessionValidUser};
+						_MeadowEndpoints.invokeEndpoint('Read', {IDRecord: 2}, originalRequest,
+							function(pError, pResponse)
+							{
+								Expect(setupCallCount).to.equal(1);
+								Expect(passedOriginalRequest).to.equal(originalRequest);
+								Expect(passedRequest).to.be.an('object');
+								Expect(passedResponse).to.be.an('object');
+
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
 					'invoke create: create a record',
 					function(fDone)
 					{

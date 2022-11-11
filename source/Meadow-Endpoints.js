@@ -420,6 +420,17 @@ var MeadowEndpoints = function()
 			return fCallback();
 		};
 
+		var _InvokeSetupCallback;
+		var getInvokeSetupCallback = function()
+		{
+			return _InvokeSetupCallback;
+		};
+
+		var setInvokeSetupCallback = function(fCallback)
+		{
+			_InvokeSetupCallback = fCallback;
+		};
+
 		/**
 		* Invoke a meadow endpoint programmatically
 		*
@@ -472,6 +483,10 @@ var MeadowEndpoints = function()
 					//internal invoke mark as authenticated (because this is not called via webservice)
 					pRequest.EndpointAuthenticated = true;
 
+					if (_InvokeSetupCallback && typeof(_InvokeSetupCallback) == 'function')
+					{
+						_InvokeSetupCallback(pRequest, pResponse, typeof(pOptions) === 'object' && pOptions);
+					}
 					return fStageComplete();
 				},
 				function(fStageComplete)
@@ -516,6 +531,8 @@ var MeadowEndpoints = function()
 			// Expose the DAL
 			DAL: _Meadow,
 
+			getInvokeSetupCallback: getInvokeSetupCallback,
+			setInvokeSetupCallback: setInvokeSetupCallback,
 			invokeEndpoint: invokeEndpoint,
 
 			// Factory
