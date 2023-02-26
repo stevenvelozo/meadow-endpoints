@@ -1008,6 +1008,39 @@ suite
 				);
 				test
 				(
+					'delete: undelete a record after deleting it',
+					function(fDone)
+					{
+						// Delete animal 4
+						var tmpRecord = {IDAnimal:4};
+						libSuperTest('http://localhost:9080/')
+						.del('1.0/FableTest')
+						.send(tmpRecord)
+						.end(
+							function(pError, pResponse)
+							{
+								// Expect response to be the count of deleted records.
+								var tmpResult = JSON.parse(pResponse.text);
+								Expect(tmpResult.Count).to.equal(1);
+
+								// Now undelete the record
+								libSuperTest('http://localhost:9080/')
+								.get('1.0/FableTest/Undelete/4')
+								.end(
+									function(pError, pResponse)
+									{
+										// Expect response to be the count of deleted records.
+										var tmpResult = JSON.parse(pResponse.text);
+										Expect(tmpResult.Count).to.equal(1);
+										return fDone();
+									}
+								);
+							}
+						);
+					}
+				);
+				test
+				(
 					'delete: delete a record with a bad parameter',
 					function(fDone)
 					{

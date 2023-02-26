@@ -1,13 +1,14 @@
 {
   "name": "meadow-endpoints",
-  "version": "3.0.6",
+  "version": "3.0.7",
   "description": "Automatic API endpoints for Meadow data.",
   "main": "source/Meadow-Endpoints.js",
   "scripts": {
     "start": "node source/Meadow-Endpoints.js",
     "coverage": "nyc npm run test && nyc report --reporter=lcov",
     "test": "./node_modules/.bin/mocha --exit -u tdd -R spec",
-    "docker-dev-build-image": "docker build ./ -t retold/meadow-endpoints:local",
+    "build": "./node_modules/.bin/gulp build",
+    "docker-dev-build-image": "docker build ./ -f Dockerfile_LUXURYCode -t retold/meadow-endpoints:local",
     "docker-dev-run": "docker run -it -d --name meadow-endpoints-dev -p 127.0.0.1:12343:8080 -p 12305:3306 -v \"$PWD/.config:/home/coder/.config\"  -v \"$PWD:/home/coder/meadow-endpoints\" -u \"$(id -u):$(id -g)\" -e \"DOCKER_USER=$USER\" retold/meadow-endpoints:local"
   },
   "mocha": {
