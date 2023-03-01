@@ -18,17 +18,6 @@ const streamRecordsToResponse = require('./Meadow-StreamRecordArray');
 
 var doAPIUpsertEndpoint = function(pRequest, pResponse, fNext)
 {
-	// This state is the requirement for the UserRoleIndex value in the UserSession object... processed by default as >=
-	// The default here is that any authenticated user can use this endpoint.
-	pRequest.EndpointAuthorizationRequirement = pRequest.EndpointAuthorizationLevels.Update;
-
-	// INJECT: Pre authorization (for instance to change the authorization level)
-	if (pRequest.CommonServices.authorizeEndpoint(pRequest, pResponse, fNext) === false)
-	{
-		// If this endpoint fails, it's sent an error automatically.
-		return;
-	}
-
 	// Configure the request for the generic upsert operation
 	pRequest.CreatedRecords = [];
 	pRequest.UpdatedRecords = [];

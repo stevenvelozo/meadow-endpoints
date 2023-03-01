@@ -9,9 +9,29 @@
 * @module Meadow
 */
 
-const libAsync = require('async');
+const libAsyncEachSeries = require('async/eachSeries');
 const JSONStream = require('JSONStream');
-const libUnderscore = require('underscore');
+
+// Would be better to get fable into this context, but it isn't here yet.
+const chunk = (pInput, pChunkSize, pChunkCache) =>
+{
+	let tmpInputArray = [...pInput];
+	// Note lodash defaults to 1, underscore defaults to 0
+	let tmpChunkSize = (typeof(pChunkSize) == 'number') ? pChunkSize : 0;
+	let tmpChunkCache = (typeof(pChunkCache) != 'undefined') ? pChunkCache : [];
+
+	if (tmpChunkSize <= 0)
+	{
+		return tmpChunkCache;
+	}
+
+	while (tmpInputArray.length)
+	{
+		tmpChunkCache.push(tmpInputArray.splice(0, tmpChunkSize));
+	}
+
+	return tmpChunkCache;
+};
 
 module.exports = (pResponse, pRecords, fCallback) =>
 {
@@ -32,7 +52,7 @@ module.exports = (pResponse, pRecords, fCallback) =>
 	recordJsonMarshaller.pipe(pResponse);
 
 	// we write the records in chunks; doing one per loop is very inefficient, doing all is the same as not doing this at all
-	libAsync.eachSeries(libUnderscore.chunk(pRecords, 1000), (pRecordChunk, fNext) =>
+	libAsyncEachSeries(chunk(pRecords, 1000), (pRecordChunk, fNext) =>
 	{
 		pRecordChunk.forEach(recordJsonMarshaller.write);
 		setImmediate(fNext);

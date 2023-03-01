@@ -11,26 +11,18 @@
 */
 var doAPISchemaEndpoint = function(pRequest, pResponse, fNext)
 {
-	// This state is the requirement for the UserRoleIndex value in the UserSession object... processed by default as >=
-	// The default here is that any authenticated user can use this endpoint.
-	pRequest.EndpointAuthorizationRequirement = pRequest.EndpointAuthorizationLevels.Schema;
-	
-	// INJECT: Pre authorization (for instance to change the authorization level)
-
-	if (pRequest.CommonServices.authorizeEndpoint(pRequest, pResponse, fNext) === false)
-	{
-		// If this endpoint fails, it's sent an error automatically.
-		return;
-	}
+	let tmpSessionData = this.getSessionData(pRequest);
 
 	// INJECT: Pre endpoint operation
 
-	var tmpSchema = pRequest.DAL.jsonSchema;
+	var tmpSchema = this.DAL.jsonSchema;
 
 	// INJECT: After the schema is grabbed, let the user alter it
 
-	pRequest.CommonServices.log.info('Delivered a JSON schema for '+pRequest.DAL.scope, {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-Schema'}, pRequest);
 	pResponse.send(tmpSchema);
+
+	this.log.info(`Delivered JSON schema for ${this.DAL.scope}`, {SessionID:tmpSessionData.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:this.DAL.scope+'-Schema'}, pRequest);
+
 	return fNext();
 };
 

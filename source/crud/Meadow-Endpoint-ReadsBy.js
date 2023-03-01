@@ -14,20 +14,6 @@ const streamRecordsToResponse = require('./Meadow-StreamRecordArray');
 */
 var doAPIReadsByEndpoint = function(pRequest, pResponse, fNext)
 {
-	// This state is the requirement for the UserRoleIndex value in the UserSession object... processed by default as >=
-	// The default here is that any authenticated user can use this endpoint.
-	pRequest.EndpointAuthorizationRequirement = pRequest.EndpointAuthorizationLevels.Reads;
-
-	// INJECT: Pre authorization (for instance to change the authorization level)
-
-	if (pRequest.CommonServices.authorizeEndpoint(pRequest, pResponse, fNext) === false)
-	{
-		// If this endpoint fails, it's sent an error automatically.
-		return;
-	}
-
-	// INJECT: Pre endpoint operation
-
 	libAsync.waterfall(
 		[
 			// 1. Construct the Query
@@ -50,7 +36,7 @@ var doAPIReadsByEndpoint = function(pRequest, pResponse, fNext)
 				else
 				{
 					//maximum number of records to return by default on Read queries. Override via "MeadowDefaultMaxCap" fable setting.
-					tmpCap = pRequest.DEFAULT_MAX_CAP;
+					tmpCap = (this.settings['MeadowDefaultMaxCap']) || 250;
 				}
 				pRequest.Query.setCap(tmpCap).setBegin(tmpBegin);
 

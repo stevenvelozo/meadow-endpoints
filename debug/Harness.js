@@ -6,8 +6,15 @@
 * @author      Steven Velozo <steven@velozo.com>
 */
 
-var libSuperTest = require('supertest');
+var libFable = require('fable');
 
+var libOrator = require('orator');
+const libOratorServiceServerRestify = require('orator-serviceserver-restify');
+
+var libMeadow = require('meadow');
+var libMeadowEndpoints = require('../source/Meadow-Endpoints.js');
+
+var libSuperTest = require('supertest');
 var libMySQL = require('mysql2');
 
 ////////// Code can go here for easy debugging //////////
@@ -18,19 +25,20 @@ var _HarnessBehavior = () =>
 		{Name:'Rover',Type:'Car'},
 		{GUIDAnimal:'0xDavison', Type:'Frog'}
 	];
-	_MockSessionValidUser.UserRoleIndex = 2;
-	libSuperTest('http://localhost:8080/')
-	.put('1.0/FableTest/Upserts')
-	.send(tmpRecords)
-	.end(
-		function(pError, pResponse)
-		{
-			// Expect response to be the record we just created.
-			var tmpResult = JSON.parse(pResponse.text);
-			console.log(JSON.stringify(tmpResult,null,4));
-		}
-	);
 
+	/*
+	libSuperTest('http://localhost:8080/')
+		.put('1.0/FableTest/Upserts')
+		.send(tmpRecords)
+		.end(
+			function(pError, pResponse)
+			{
+				// Expect response to be the record we just created.
+				var tmpResult = JSON.parse(pResponse.text);
+				console.log(JSON.stringify(tmpResult,null,4));
+			}
+		);
+		*/
 };
 
 var tmpFableSettings = 	(
@@ -38,9 +46,9 @@ var tmpFableSettings = 	(
 	Product: 'MockOratorAlternate',
 	ProductVersion: '0.0.0',
 
-	"UnauthorizedRequestDelay": 1000,
+	"UnauthorizedRequestDelay": 100,
 
-	APIServerPort: 8080,
+	APIServerPort: 8086,
 
 	MySQL:
 		{
@@ -54,8 +62,9 @@ var tmpFableSettings = 	(
 		}
 });
 
-var libFable = require('fable').new(tmpFableSettings);
-tmpFableSettings = libFable.settings;
+var libFable = require('fable')
+const _Fable = new libFable(tmpFableSettings);
+tmpFableSettings = _Fable.settings;
 
 var _MockSessionValidUser = (
 	{
@@ -66,35 +75,23 @@ var _MockSessionValidUser = (
 		LoggedIn: true,
 		DeviceID: 'TEST-HARNESS'
 	});
-var ValidAuthentication = function(pRequest, pResponse, fNext)
-{
-	pRequest.UserSession = _MockSessionValidUser;
-	fNext();
-}
 
-var _Meadow;
-var _MeadowEndpoints;
-
-var _AnimalSchema = require('./test/Animal.json');
-
-// Now that we have some test data, wire up the endpoints!
+var _AnimalSchema = require('../test/Animal.json');
 
 // Load up a Meadow (pointing at the Animal database)
-_Meadow = require('meadow')
-				.new(libFable, 'FableTest')
+let _Meadow = libMeadow.new(_Fable, 'FableTest')
 				.setProvider('MySQL')
 				.setSchema(_AnimalSchema.Schema)
 				.setJsonSchema(_AnimalSchema.JsonSchema)
 				.setDefaultIdentifier(_AnimalSchema.DefaultIdentifier)
 				.setDefault(_AnimalSchema.DefaultObject)
 				.setAuthorizer(_AnimalSchema.Authorization);
+// Instantiate the meadow endpoints
+let _MeadowEndpoints = require('../source/Meadow-Endpoints.js').new(_Meadow);
 
-// Instantiate the endpoints
-_MeadowEndpoints = require('./source/Meadow-Endpoints.js').new(_Meadow);
-var _Orator = require('orator').new(tmpFableSettings);
-_Orator.enabledModules.CORS = true;
-_Orator.enabledModules.FullResponse = true;
-_Orator.enabledModules.Body = false;
+// Instantiate the service server
+var _Orator = new libOrator(_Fable, libOratorServiceServerRestify);
+_Orator.initializeServiceServer();
 
 var _SQLConnectionPool = libMySQL.createPool
 (
@@ -108,10 +105,8 @@ var _SQLConnectionPool = libMySQL.createPool
 	}
 );
 
-// Start the web server
-// Wire up an "always logged in" user in the request chain, so session is set right.
-_Orator.webServer.use(ValidAuthentication);
 // Wire the endpoints up
-_MeadowEndpoints.connectRoutes(_Orator.webServer);
+_MeadowEndpoints.connectRoutes(_Orator.serviceServer);
 
+// Now start the web server.
 _Orator.startWebServer(_HarnessBehavior);

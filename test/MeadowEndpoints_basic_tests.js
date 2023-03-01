@@ -40,18 +40,19 @@ var tmpFableSettings = 	(
 	ConfigFile: __dirname + "/../MeadowTest-Settings.json"
 });
 
-var libFable = require('fable').new(tmpFableSettings);
-tmpFableSettings = libFable.settings;
+var libFable = require('fable');
+let _Fable = new libFable(tmpFableSettings)
+tmpFableSettings = _Fable.settings;
 
-libFable.MeadowMySQLConnectionPool = libMySQL.createPool
+_Fable.MeadowMySQLConnectionPool = libMySQL.createPool
 	(
 		{
-			connectionLimit: libFable.settings.MySQL.ConnectionPoolLimit,
-			host: libFable.settings.MySQL.Server,
-			port: libFable.settings.MySQL.Port,
-			user: libFable.settings.MySQL.User,
-			password: libFable.settings.MySQL.Password,
-			database: libFable.settings.MySQL.Database,
+			connectionLimit: _Fable.settings.MySQL.ConnectionPoolLimit,
+			host: _Fable.settings.MySQL.Server,
+			port: _Fable.settings.MySQL.Port,
+			user: _Fable.settings.MySQL.User,
+			password: _Fable.settings.MySQL.Password,
+			database: _Fable.settings.MySQL.Database,
 			namedPlaceholders: true
 		}
 	);
@@ -81,7 +82,7 @@ var _AnimalSchema = require('./Animal.json');
 
 // Load up a Meadow (pointing at the Animal database)
 _Meadow = require('meadow')
-				.new(libFable, 'FableTest')
+				.new(_Fable, 'FableTest')
 				.setProvider('MySQL')
 				.setSchema(_AnimalSchema.Schema)
 				.setJsonSchema(_AnimalSchema.JsonSchema)
@@ -246,7 +247,7 @@ suite
 					'instantiate a behavior modification object',
 					function()
 					{
-						var tmpBehaviorMods = require('../source/Meadow-BehaviorModifications.js').new(libFable);
+						var tmpBehaviorMods = require('../source/Meadow-BehaviorModifications.js').new(_Fable);
 						Expect(tmpBehaviorMods).to.be.an('object');
 					}
 				);
@@ -255,7 +256,7 @@ suite
 					'exercise the templates api',
 					function()
 					{
-						var tmpBehaviorMods = require('../source/Meadow-BehaviorModifications.js').new(libFable);
+						var tmpBehaviorMods = require('../source/Meadow-BehaviorModifications.js').new(_Fable);
 
 						var tmpCrossBehaviorState = 0;
 
@@ -271,7 +272,7 @@ suite
 					'exercise the behavior modification api',
 					function()
 					{
-						var tmpBehaviorMods = require('../source/Meadow-BehaviorModifications.js').new(libFable);
+						var tmpBehaviorMods = require('../source/Meadow-BehaviorModifications.js').new(_Fable);
 						Expect(tmpBehaviorMods.getTemplateFunction('NoTemplatesHere')).to.equal(false, 'empty template hashes on empty sets should return false');
 						Expect(tmpBehaviorMods.getTemplate('NoTemplatesHere')).to.equal(false,'emtpy template sets should be false');
 						tmpBehaviorMods.setTemplate('AnimalFormatter', '<p>An animal (id <%= Number %> is here</p>');
@@ -288,7 +289,7 @@ suite
 					'exercise the security modification api',
 					function()
 					{
-						var tmpAuthorizers = require('../source/Meadow-Authorizers.js').new(libFable);
+						var tmpAuthorizers = require('../source/Meadow-Authorizers.js').new(_Fable);
 						tmpAuthorizers.setAuthorizer('AlwaysAuthorize',
 							function(pRequest, fComplete)
 							{
@@ -336,7 +337,7 @@ suite
 					'exercise the security modification authenticators',
 					function()
 					{
-						var tmpAuthorizers = require('../source/Meadow-Authorizers.js').new(libFable);
+						var tmpAuthorizers = require('../source/Meadow-Authorizers.js').new(_Fable);
 						var tmpMockFullRequest =
 						{
 							UserSession:

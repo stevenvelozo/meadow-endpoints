@@ -2,8 +2,6 @@
 
 Automagic REST endpoints for basic CRUD operations on the Retold framework.
 
-[![Coverage Status](https://coveralls.io/repos/stevenvelozo/meadow-endpoints/badge.svg?branch=master)](https://coveralls.io/r/stevenvelozo/meadow-endpoints?branch=master) [![Build Status](https://travis-ci.org/stevenvelozo/meadow-endpoints.svg?branch=master)](https://travis-ci.org/stevenvelozo/meadow-endpoints) [![Dependency Status](https://david-dm.org/stevenvelozo/meadow-endpoints.svg)](https://david-dm.org/stevenvelozo/meadow-endpoints) [![devDependency Status](https://david-dm.org/stevenvelozo/meadow-endpoints/dev-status.svg)](https://david-dm.org/stevenvelozo/meadow-endpoints#info=devDependencies)
-
 This library generates REST endpoints in a consistent manner.  Endpoints have the following features:
 
 * Authentication
@@ -20,22 +18,12 @@ To best use this library, it should be in conjunction with [stricture](https://g
 ### Docker Development Environment
 
 1. Run this command to build this image:
-```
-docker build ./ -t retold/meadow-endpoints:local
-```
-
-alternatively you can use npm to run this
 
 ```
 npm run docker-dev-build-image
 ```
 
-2. Run this command to build the local container:
-```
-docker run -it --name meadow-endpoints-dev -p 127.0.0.1:12343:8080 -v "$PWD/.config:/home/coder/.config"  -v "$PWD:/home/coder/meadow-endpoints" -u "$(id -u):$(id -g)" -e "DOCKER_USER=$USER" retold/meadow-endpoints:local
-```
-
-alternatively you can use npm to run this
+2. Run this command to create and run the local container:
 
 ```
 npm run docker-dev-run
@@ -45,4 +33,50 @@ npm run docker-dev-run
 
 4. The password is "retold"
 
-5. Right now you (may) need to delete the `node_modules` folders and regenerate it for Linux.
+5. Right now you (may) need to delete the `node_modules` folders and regenerate it for Linux, depending on your OS.
+
+
+
+## Pattern Description to Expand
+
+```
+const libMeadowEndpointsControllerBase = require('meadow-endpoints').ControllerBase;
+
+class MySpecialLogController inherits libMeadowEndpointsControllerBase.LogControllerBase
+{
+	constructor(pMeadowEndpoints, pOptions)
+	{
+		super(pMeadowEndpoints, pOptions);
+	}
+
+	// Overload info to do something special
+	info(pLogText, ...pLogObjects)
+	{
+		super(pLogText, ...pLogObjects);
+		console.log('### THIS CONTROLLER DO MAGIC STUFF WITH'+pLogText);
+	}
+}
+
+class MyMeadowEndpointsController
+{
+	constructor(pMeadowEndpoints, pOptions)
+	{
+		super(pMeadowEndpoints, pOptions);
+
+		this._LogController = new mySpecialLogController(pMeadowEndpoints, pOptions);
+
+		this.initializeDefaultUnsetControllers(pMeadowEndpoints, pControllerOptions);
+	}
+}
+
+module.exports = MyMeadowEndpointsController;
+```
+
+```
+let libMySpecialController = require('TheCodeAbove.js');
+
+let tmpMeadow = new Meadow('INITIALIZE THE DAL');
+
+let tmpMeadowEndpoints = new MeadowEndpoints(tmpMeadow, { Controller: libMySpecialController });
+
+```

@@ -14,38 +14,14 @@ var libAsync = require('async');
 */
 var doAPICountByEndpoint = function(pRequest, pResponse, fNext)
 {
-	// This state is the requirement for the UserRoleIndex value in the UserSession object... processed by default as >=
-	// The default here is that any authenticated user can use this endpoint.
-	pRequest.EndpointAuthorizationRequirement = pRequest.EndpointAuthorizationLevels.Count;
-
-	// INJECT: Pre authorization (for instance to change the authorization level)
-
-	if (pRequest.CommonServices.authorizeEndpoint(pRequest, pResponse, fNext) === false)
-	{
-		// If this endpoint fails, it's sent an error automatically.
-		return;
-	}
-
 	libAsync.waterfall(
 		[
 			// 1. Create the query
 			function (fStageComplete)
 			{
+				// NOTE: Removed capability for comma separated 
 				pRequest.Query = pRequest.DAL.query;
-
-				var tmpByField =  pRequest.params.ByField;
-				var tmpByValue =  pRequest.formattedParams.ByValue;
-				// TODO: Validate theat the ByField exists in the current database
-
-				if (tmpByValue.constructor === Array)
-				{
-					pRequest.Query.addFilter(tmpByField, tmpByValue, 'IN', 'AND', 'RequestByField');
-				}
-				else
-				{
-					// The count tries to match the Reads, since they are called together.
-					pRequest.Query.addFilter(tmpByField, tmpByValue, '=', 'AND', 'RequestByField');
-				}
+				pRequest.Query.addFilter(pRequest.params.ByField, pRequest.params.ByValue, '=', 'AND', 'RequestByField');
 
 				return fStageComplete(false);
 			},
