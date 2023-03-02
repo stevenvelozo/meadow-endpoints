@@ -5,7 +5,7 @@
 * @author Steven Velozo <steven@velozo.com>
 */
 
-const libMeadowEndpointsControllerBase = require('./Controller/Meadow-Endpoints-Controller-Base.js');
+const libMeadowEndpointsControllerBase = require('./controller/Meadow-Endpoints-Controller-Base.js');
 
 class MeadowEndpoints
 {
@@ -16,26 +16,26 @@ class MeadowEndpoints
 		this.DAL = this._Meadow;
 
 		this._Controller = false;
-		this._ControllerOptions = pControllerOptions;
+		this._ControllerOptions = (typeof(pControllerOptions) == 'object') ? pControllerOptions : {};
 
 		if (typeof(pMeadow) != 'object')
 		{
 			throw new Error('Meadow endpoints requires a valid Meadow DAL object as the first parameter of the constructor.');
 		}
 
-		if ((typeof(pControllerOptions) == 'object') && pControllerOptions.hasOwnProperty('ControllerInstance'))
+		if (this._ControllerOptions.hasOwnProperty('ControllerInstance'))
 		{
 			// Passed in already instantiated controller instance
-			this._Controller = pControllerOptions.ControllerInstance;
+			this._Controller = this._ControllerOptions.ControllerInstance;
 		}
-		else if ((typeof(pControllerOptions) == 'object') && pControllerOptions.hasOwnProperty('ControllerClass'))
+		else if (this._ControllerOptions.hasOwnProperty('ControllerClass'))
 		{
 			// Passed in controller class, ready to initialize
-			this._Controller = new pControllerOptions.ControllerClass(this, pControllerOptions);
+			this._Controller = new this._ControllerOptions.ControllerClass(this);
 		}
 		else
 		{
-			this._Controller = new libMeadowEndpointsControllerBase(this, pControllerOptions);
+			this._Controller = new libMeadowEndpointsControllerBase(this);
 		}
 
 		// Pull version from the settings; default to 1.0
@@ -63,40 +63,40 @@ class MeadowEndpoints
 		// The default endpoints
 		this._Endpoints = (
 		{
-			Create: require('./crud/Meadow-Endpoint-Create.js'),
-			Creates: require('./crud/Meadow-Endpoint-BulkCreate.js'),
+			Create: require('./endpoints/create/Meadow-Endpoint-Create.js'),
+			Creates: require('./endpoints/create/Meadow-Endpoint-BulkCreate.js'),
 
-			Read: require('./crud/Meadow-Endpoint-Read.js'),
-			ReadMax: require('./crud/Meadow-Endpoint-ReadMax.js'),
+			Read: require('./endpoints/read/Meadow-Endpoint-Read.js'),
+			ReadMax: require('./endpoints/read/Meadow-Endpoint-ReadMax.js'),
 
-			Reads: require('./crud/Meadow-Endpoint-Reads.js'),
-			ReadsBy: require('./crud/Meadow-Endpoint-ReadsBy.js'),
+			Reads: require('./endpoints/read/Meadow-Endpoint-Reads.js'),
+			ReadsBy: require('./endpoints/read/Meadow-Endpoint-ReadsBy.js'),
 
-			ReadSelectList: require('./crud/Meadow-Endpoint-ReadSelectList.js'),
-			ReadLiteList: require('./crud/Meadow-Endpoint-ReadLiteList.js'),
-			ReadDistinctList: require('./crud/Meadow-Endpoint-ReadDistinctList.js'),
+			ReadSelectList: require('./endpoints/read/Meadow-Endpoint-ReadSelectList.js'),
+			ReadLiteList: require('./endpoints/read/Meadow-Endpoint-ReadLiteList.js'),
+			ReadDistinctList: require('./endpoints/read/Meadow-Endpoint-ReadDistinctList.js'),
 
-			Update: require('./crud/Meadow-Endpoint-Update.js'),
-			Updates: require('./crud/Meadow-Endpoint-BulkUpdate.js'),
+			Update: require('./endpoints/update/Meadow-Endpoint-Update.js'),
+			Updates: require('./endpoints/update/Meadow-Endpoint-BulkUpdate.js'),
 
-			Upsert: require('./crud/Meadow-Endpoint-Upsert.js'),
-			Upserts: require('./crud/Meadow-Endpoint-BulkUpsert.js'),
+			Upsert: require('./endpoints/upsert/Meadow-Endpoint-Upsert.js'),
+			Upserts: require('./endpoints/upsert/Meadow-Endpoint-BulkUpsert.js'),
 
-			Delete: require('./crud/Meadow-Endpoint-Delete.js'),
-			Undelete: require('./crud/Meadow-Endpoint-Undelete.js'),
+			Delete: require('./endpoints/delete/Meadow-Endpoint-Delete.js'),
+			Undelete: require('./endpoints/delete/Meadow-Endpoint-Undelete.js'),
 
-			Count: require('./crud/Meadow-Endpoint-Count.js'),
-			CountBy: require('./crud/Meadow-Endpoint-CountBy.js'),
+			Count: require('./endpoints/count/Meadow-Endpoint-Count.js'),
+			CountBy: require('./endpoints/count/Meadow-Endpoint-CountBy.js'),
 
 			// Get the JSONSchema spec schema
 			/* http://json-schema.org/examples.html
 			 * http://json-schema.org/latest/json-schema-core.html
 			 */
-			Schema: require('./schema/Meadow-Endpoint-Schema.js'),
+			Schema: require('./endpoints/schema/Meadow-Endpoint-Schema.js'),
 			// Validate a passed-in JSON object for if it matches the schema
-			Validate: require('./schema/Meadow-Endpoint-Validate.js'),
+			Validate: require('./endpoints/schema/Meadow-Endpoint-Validate.js'),
 			// Get an empty initialized JSON object for this.
-			New: require('./schema/Meadow-Endpoint-New.js')
+			New: require('./endpoints/schema/Meadow-Endpoint-New.js')
 		});
 	}
 
@@ -115,7 +115,7 @@ class MeadowEndpoints
 		return this;
 	}
 
-	connectRoute(pServiceServer, pRequestMethod, pRoutePartial, pEndpointProcessor, pBehaviorName)
+	connectRoute(pServiceServer, pRequestMethod, pRoutePartial, pEndpointProcessingFunction, pBehaviorName)
 	{
 		let tmpRoute = `${this.EndpointPrefix}${pRoutePartial}`;
 		let tmpBehaviorName = (typeof(pBehaviorName) == 'string') ? pBehaviorName : 'an unnamed custom behavior'
@@ -124,11 +124,11 @@ class MeadowEndpoints
 
 		try
 		{
-			(pServiceServer[pRequestMethod])(tmpRoute, pEndpointProcessor.bind(this._Controller));
+			(pServiceServer[pRequestMethod])(tmpRoute, pEndpointProcessingFunction.bind(this._Controller));
 		}
 		catch (pServiceServerRouteConnectError)
 		{
-			this._Controller.log.error(`...error mapping ${pBehaviorName} to method ${pRequestMethod} for scope ${this.DAL.scope} to route [${tmpRoute}]: ${pServiceServerRouteConnectError}`, pServiceServerRouteConnectError);
+			this._Controller.log.error(`...error mapping ${pBehaviorName} to method ${pRequestMethod} for scope ${this.DAL.scope} to route [${tmpRoute}]: ${pServiceServerRouteConnectError}`, pServiceServerRouteConnectError.stack);
 		}
 		return true;
 	}
@@ -220,4 +220,4 @@ function autoConstruct(pMeadow, pControllerOptions)
 module.exports = MeadowEndpoints;
 module.exports.new = autoConstruct;
 
-module.exports.ControllerBase = libMeadowEndpointsControllerBase;
+module.exports.BaseController = libMeadowEndpointsControllerBase;

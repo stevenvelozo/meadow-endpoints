@@ -1,15 +1,21 @@
 const libAsyncWaterfall = require('async/waterfall');
 
+const libBaseLogController = require('./components/Meadow-Endpoints-Controller-Log.js')
+
 const libBaseErrorController = require('./components/Meadow-Endpoints-Controller-Error.js');
 const libBaseBehaviorInjectionController = require('./components/Meadow-Endpoints-Controller-BehaviorInjection.js');
 
-const libBaseAuthenticationController = require('./components/Meadow-Endpoints-Controller-Authentication.js');
-const libBaseAuthorizationController = require('./components/Meadow-Endpoints-Controller-Authorization.js');
+const libMeadowEndpointsFilterParser = require('./utility/Meadow-Endpoints-Filter-Parser.js');
+const libMeadowEndpointsSessionMarshaler = require('./utility/Meadow-Endpoints-Session-Marshaler.js');
+const libMeadowEndpointsStreamRecordArray = require('./utility/Meadow-Endpoints-Stream-RecordArray.js');
 
 class MeadowEndpointControllerBase
 {
-	constructor(pMeadowEndpoints, pControllerOptions)
+	constructor(pMeadowEndpoints)
 	{
+		this.DAL = pMeadowEndpoints.DAL;
+		this.ControllerOptions = pMeadowEndpoints._ControllerOptions
+
 		// Application Services
 		this._Settings = false;
 		this._LogController = false;
@@ -18,27 +24,27 @@ class MeadowEndpointControllerBase
 		this._BehaviorInjectionController = false;
 		this._ErrorController = false;
 
-		// Security
-		this._AuthenticationController = false;
-		this._AuthorizationController = false;
-
-		this.DAL = pMeadowEndpoints.DAL;
-
+		// Internal async utility functions
 		this.waterfall = this.DAL.fable.Utility.waterfall;
 		this.extend = this.DAL.fable.Utility.extend;
 
 		if ((typeof(pControllerOptions) != 'object') || pControllerOptions.hasOwnProperty('ControllerClass'))
 		{
-			this.initializeDefaultUnsetControllers(pMeadowEndpoints);
+			this.initializeDefaultUnsetControllers(this);
 		}
+
+		// Behavior functions
+		this._FilterParser = new libMeadowEndpointsFilterParser(this);
+		this._SessionMarshaler = new libMeadowEndpointsSessionMarshaler(this);
+		this._StreamRecordArray = new libMeadowEndpointsStreamRecordArray(this);
 	}
 
-	initializeDefaultUnsetControllers(pMeadowEndpoints, pControllerOptions)
+	initializeDefaultUnsetControllers(pController)
 	{
 		// Application Services
 		if (!this._Settings)
 		{
-			this._Settings = pMeadowEndpoints.DAL.fable.settings;
+			this._Settings = pController.DAL.fable.settings;
 		}
 		if (!this._Settings.hasOwnProperty('MeadowEndpointsDefaultSessionObject'))
 		{
@@ -55,26 +61,48 @@ class MeadowEndpointControllerBase
 		}
 		if (!this._LogController)
 		{
-			this._LogController = pMeadowEndpoints.DAL.fable.log;
+			this._LogController = new libBaseLogController(pController);
 		}
-
 		if (!this._BehaviorInjectionController)
 		{
-			this._BehaviorInjectionController = new libBaseBehaviorInjectionController(pMeadowEndpoints, pControllerOptions);
+			this._BehaviorInjectionController = new libBaseBehaviorInjectionController(pController);
 		}
 		if (!this._ErrorController)
 		{
-			this._ErrorController = new libBaseErrorController(pMeadowEndpoints, pControllerOptions);
+			this._ErrorController = new libBaseErrorController(pController);
 		}
+	}
 
-		if (!this._AuthenticationController)
-		{
-			this._AuthenticationController = new libBaseAuthenticationController(pMeadowEndpoints, pControllerOptions);
-		}
-		if (!this._AuthorizationController)
-		{
-			this._AuthorizationController = new libBaseAuthorizationController(pMeadowEndpoints, pControllerOptions);
-		}
+	initializeRequestState(pRequest, pVerb)
+	{
+		let tmpRequestState = {};
+
+		tmpRequestState.Verb = (typeof(pVerb) == 'string') ? pVerb : 'Unnamed_Custom_Behavior';
+		tmpRequestState.SessionData = this.getSessionData(pRequest);
+
+		return tmpRequestState;
+	}
+
+	// Override this to provide an alternate ending function that is run with every endpoint.
+	_BeginDataRequestFunction(pRequest, pResponse, fNext)
+	{
+		return fNext();
+	}
+
+	beginMeadowRequest(pRequest, pResponse, fNext)
+	{
+		this._BeginDataRequestFunction(pRequest, pResponse, fNext);
+	}
+
+	// Override this to provide an alternate ending function that is run with every endpoint.
+	_EndDataRequestFunction(pRequest, pResponse, fNext)
+	{
+		return fNext();
+	}
+
+	endMeadowRequest(pRequest, pResponse, fNext)
+	{
+		this._EndDataRequestFunction(pRequest, pResponse, fNext);
 	}
 
 	// Application Services
@@ -87,59 +115,32 @@ class MeadowEndpointControllerBase
 	// Logic and Behavior
 	get BehaviorInjection() {return this._BehaviorInjectionController; }
 	set BehaviorInjection(pBehaviorInjectionController) { this._BehaviorInjectionController = pBehaviorInjectionController; }
-	get Error() {return this._ErrorController; }
-	set Error(pErrorController) { this._ErrorController = pErrorController; }
 
-	// Security
-	get Authentication() {return this._AuthenticationController; }
-	set Authentication(pAuthenticationController) { this._AuthenticationController = pAuthenticationController; }
-	get Authorization() {return this._AuthorizationController; }
-	set Authorization(pAuthorizationController) { this._AuthorizationController = pAuthorizationController; }
+	get ErrorHandler() {return this._ErrorController; }
+	set ErrorHandler(pErrorController) { this._ErrorController = pErrorController; }
+
+	parseFilter(pFilterString, pQuery)
+	{
+		return this._FilterParser.parseFilter(pFilterString, pQuery);
+	}
+
+	doStreamRecordArray(pResponse, pRecords, fCallback)
+	{
+		return this._StreamRecordArray.streamRecordArray(pResponse, pRecords, fCallback);
+	}
 
 	getSessionData(pRequest)
 	{
-		let tmpSession = Object.assign({}, this._Settings.MeadowEndpointsDefaultSessionObject);
-
-		switch (this._Settings.MeadowEndpointsSessionDataSource || 'Request')
-		{
-			default:
-				this._LogController.warn(`Unknown session source configured: ${_SessionDataSource} - defaulting to Request for backward compatibility`);
-			case 'Request':
-				// noop - already set by orator-session
-				tmpSession = this.extend(tmpSession, pRequest.UserSession);
-				break;
-			case 'None':
-				break;
-			case 'Header':
-				try
-				{
-					const tmpHeaderSessionString = pRequest.headers['x-trusted-session'];
-					if (!tmpHeaderSessionString)
-					{
-						break;
-					}
-					tmpHeaderSession = JSON.parse(tmpHeaderSessionString);
-					tmpSession = this.extend(tmpSession, pRequest.tmpHeaderSession);
-				}
-				catch (pError)
-				{
-					this._LogController.error(`Meadow Endpoints attempted to process a Header Session String with value [${tmpHeaderSessionString}] and failed -- likely culprit is bad JSON.`)
-				}
-				break;
-		}
-
-		// Do we keep this here for backwards compatibility?
-		pRequest.UserSession = tmpSession;
-
-		return tmpSession;
+		return this._SessionMarshaler.getSessionData(pRequest);
 	}
 }
 
 module.exports = MeadowEndpointControllerBase;
 
 // Export the base classes for the controller components, for inheritance
-module.exports.ErrorControllerBase = libBaseErrorController;
-module.exports.BehaviorInjectionControllerBase = libBaseBehaviorInjectionController;
+module.exports.BaseErrorController = libBaseErrorController;
+module.exports.BaseBehaviorInjectionController = libBaseBehaviorInjectionController;
 
-module.exports.AuthenticationControllerBase = libBaseAuthenticationController;
-module.exports.AuthorizationControllerBase = libBaseAuthorizationController;
+module.exports.BaseFilterParser = libMeadowEndpointsFilterParser;
+module.exports.BaseSessionMarshaler = libMeadowEndpointsSessionMarshaler;
+module.exports.BaseStreamRecordArray = libMeadowEndpointsStreamRecordArray;

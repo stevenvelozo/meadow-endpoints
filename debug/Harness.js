@@ -6,16 +6,16 @@
 * @author      Steven Velozo <steven@velozo.com>
 */
 
-var libFable = require('fable');
+const libFable = require('fable');
 
-var libOrator = require('orator');
+const libOrator = require('orator');
 const libOratorServiceServerRestify = require('orator-serviceserver-restify');
 
-var libMeadow = require('meadow');
-var libMeadowEndpoints = require('../source/Meadow-Endpoints.js');
+const libMeadow = require('meadow');
+const libMeadowEndpoints = require('../source/Meadow-Endpoints.js');
 
-var libSuperTest = require('supertest');
-var libMySQL = require('mysql2');
+const libSuperTest = require('supertest');
+const libMySQL = require('mysql2');
 
 ////////// Code can go here for easy debugging //////////
 var _HarnessBehavior = () =>
@@ -41,9 +41,9 @@ var _HarnessBehavior = () =>
 		*/
 };
 
-var tmpFableSettings = 	(
+const tmpApplicationSettings = 	(
 {
-	Product: 'MockOratorAlternate',
+	Product: 'MockEndpointServer',
 	ProductVersion: '0.0.0',
 
 	"UnauthorizedRequestDelay": 100,
@@ -56,54 +56,46 @@ var tmpFableSettings = 	(
 			Server: "localhost",
 			Port: 3306,
 			User: "root",
-			Password: "",
+			Password: "123456789",
+//			Password: "",
 			Database: "FableTest",
 			ConnectionPoolLimit: 20
 		}
 });
 
-var libFable = require('fable')
-const _Fable = new libFable(tmpFableSettings);
-tmpFableSettings = _Fable.settings;
-
-var _MockSessionValidUser = (
+// Construct a fable.
+const _Fable = new libFable(tmpApplicationSettings);
+// Connect to SQL, put the connection in the magic location
+_Fable.MeadowMySQLConnectionPool = libMySQL.createPool
+(
 	{
-		SessionID: '0000-VALID',
-		UserID: 37,
-		UserRole: 'User',
-		UserRoleIndex: 1,
-		LoggedIn: true,
-		DeviceID: 'TEST-HARNESS'
-	});
-
-var _AnimalSchema = require('../test/Animal.json');
+		connectionLimit: _Fable.settings.MySQL.ConnectionPoolLimit,
+		host: _Fable.settings.MySQL.Server,
+		port: _Fable.settings.MySQL.Port,
+		user: _Fable.settings.MySQL.User,
+		password: _Fable.settings.MySQL.Password,
+		database: _Fable.settings.MySQL.Database,
+		namedPlaceholders: true
+	}
+);
 
 // Load up a Meadow (pointing at the Animal database)
-let _Meadow = libMeadow.new(_Fable, 'FableTest')
+const _AnimalSchema = require('../test/Animal.json');
+const _Meadow = libMeadow.new(_Fable, 'FableTest')
 				.setProvider('MySQL')
 				.setSchema(_AnimalSchema.Schema)
 				.setJsonSchema(_AnimalSchema.JsonSchema)
 				.setDefaultIdentifier(_AnimalSchema.DefaultIdentifier)
 				.setDefault(_AnimalSchema.DefaultObject)
 				.setAuthorizer(_AnimalSchema.Authorization);
-// Instantiate the meadow endpoints
-let _MeadowEndpoints = require('../source/Meadow-Endpoints.js').new(_Meadow);
 
-// Instantiate the service server
-var _Orator = new libOrator(_Fable, libOratorServiceServerRestify);
+// Instantiate the meadow endpoints with the DAL object constructed above
+const _MeadowEndpoints = new libMeadowEndpoints(_Meadow);
+
+// Instantiate the service server, using restify
+const _Orator = new libOrator(_Fable, libOratorServiceServerRestify);
+// Prepare the service server for mapping endpoints
 _Orator.initializeServiceServer();
-
-var _SQLConnectionPool = libMySQL.createPool
-(
-	{
-		connectionLimit: tmpFableSettings.MySQL.ConnectionPoolLimit,
-		host: tmpFableSettings.MySQL.Server,
-		port: tmpFableSettings.MySQL.Port,
-		user: tmpFableSettings.MySQL.User,
-		password: tmpFableSettings.MySQL.Password,
-		database: tmpFableSettings.MySQL.Database
-	}
-);
 
 // Wire the endpoints up
 _MeadowEndpoints.connectRoutes(_Orator.serviceServer);

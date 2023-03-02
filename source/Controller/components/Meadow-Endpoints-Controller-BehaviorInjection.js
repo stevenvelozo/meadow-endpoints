@@ -1,14 +1,11 @@
 class MeadowEndpointsControllerBehaviorInjectionBase
 {
-	constructor(pMeadowEndpoints, pControllerOptions)
+    constructor(pController)
 	{
-		// Application Services
-		this._Settings = false;
-		this._LogController = false;
+        this._Controller = pController;
 
-        this.DAL = pMeadowEndpoints.DAL;
-
-		this.template = this.DAL.fable.Utility.template;
+        // The template compilation function
+		this.template = this._Controller.DAL.fable.Utility.template;
 
 		// An object to hold modifications to specific behaviors.
 		this._BehaviorFunctions = {};
@@ -23,15 +20,15 @@ class MeadowEndpointsControllerBehaviorInjectionBase
 	*
 	* The anatomy of a behavior function is as follows:
 	*
-	* var someBehavior = function(pRequest, fComplete)
+	* var someBehavior = function(pRequest, fCallback)
 	* {
 	*      // Do some stuff with pRequest...
 	*      if (pRequest.UserSession.UserRoleIndex < 5)
-	*          pRequest.Query.addFilter('Customer', pRequest.UserSession.IDCustomer);
-	*      return fComplete(false);
+	*          tmpRequestState.Query.addFilter('Customer', pRequest.UserSession.IDCustomer);
+	*      return fCallback(false);
 	* }
 	*
-	* It is important to note that the fComplete function expects false if no error, or a string message if there is one.
+	* It is important to note that the fCallback function expects false if no error, or a string message if there is one.
 	*/
 	setBehavior(pBehaviorHash, fBehavior)
 	{
@@ -43,13 +40,35 @@ class MeadowEndpointsControllerBehaviorInjectionBase
 	* Or it returns false if there was no behavior there.
 	* Behaviors should expect their state to be in the pRequest object, per the example in setBehavior
 	*/
-	runBehavior(pBehaviorHash, pRequest, fComplete)
+	runBehavior(pBehaviorHash, pRequest, fCallback)
 	{
 		// Run an injected behavior (if it exists)
 		if (this._BehaviorFunctions.hasOwnProperty(pBehaviorHash))
 		{
-			return this._BehaviorFunctions[pBehaviorHash](pRequest, fComplete);
+			// Call the behavior with the scoped [this] of the Meadow behavior
+			// NOTE: If you define a behavior with lambda arrow syntax, it will *not* respect the call
+			return this._BehaviorFunctions[pBehaviorHash](pRequest, fCallback);
 		}
+
+		return fCallback();
+	}
+
+	/**
+	* This method runs a behavior at a specific hash, and returns true.
+	* Or it returns false if there was no behavior there.
+	* Behaviors should expect their state to be in the pRequest object, per the example in setBehavior
+	*/
+	runBehaviorWithContext(pBehaviorHash, pRequest, pController, fCallback)
+	{
+		// Run an injected behavior (if it exists)
+		if (this._BehaviorFunctions.hasOwnProperty(pBehaviorHash))
+		{
+			// Call the behavior with the scoped [this] of the Meadow behavior
+			// NOTE: If you define a behavior with lambda arrow syntax, it will *not* respect the call
+			return this._BehaviorFunctions[pBehaviorHash].call(pController, pRequest, fCallback);
+		}
+
+		return fCallback();
 	}
 
 	/**

@@ -1,31 +1,34 @@
 class MeadowEndpointsControllerErrorBase
 {
-	constructor(pMeadowEndpoints, pControllerOptions)
+    constructor(pController)
 	{
-		// Application Services
-		this._Settings = false;
-		this._LogController = false;
-
-        this._MeadowEndpoints = pMeadowEndpoints;
+        this._Controller = pController;
     }
 
     // Get the error object
     getError(pMessage, pStatusCode)
     {
-    	let tmpError = new Error(pMessage);
+		let tmpError = new Error(pMessage);
 
     	// Default the error status code to 400 if none is passed
-    	tmpError.StatusCode = (typeof(pStatusCode) == 'number') ? pStatusCode : 400;
+		tmpError.StatusCode = (typeof(pStatusCode) == 'number') ? pStatusCode : 400;
 
         return tmpError;
     }
 
     // Send an error object
-	sendError(pError, pRequest, pResponse, fNext)
+	sendError(pRequest, pRequestState, pResponse, pError, fCallback)
 	{
+		this._Controller.log.logRequestError(pRequest, pError);
+
 		// TODO: Detect if we've already sent headers?
-		pResponse.status(pError.StatusCode);
-		pResponse.send({Error:pError.message});
+		if (!this._Controller.ControllerOptions.SendErrorStatusCodes)
+		{
+			pResponse.status(pError.StatusCode);
+		}
+		pResponse.send({Error:pError.message, Code:pError.code , StatusCode:pError.StatusCode, Stack:pError.stack});
+
+		fCallback(pError);
 	}
 }
 
