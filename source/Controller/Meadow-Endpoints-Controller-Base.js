@@ -26,6 +26,7 @@ class MeadowEndpointControllerBase
 
 		// Internal async utility functions
 		this.waterfall = this.DAL.fable.Utility.waterfall;
+		this.eachLimit = this.DAL.fable.Utility.eachLimit;
 		this.extend = this.DAL.fable.Utility.extend;
 
 		if ((typeof(pControllerOptions) != 'object') || pControllerOptions.hasOwnProperty('ControllerClass'))
@@ -51,10 +52,10 @@ class MeadowEndpointControllerBase
 			this._Settings.MeadowEndpointsDefaultSessionObject = (
 				{
 					CustomerID: 0,
-					SessionID: '',
-					DeviceID: '',
+					SessionID: '0x0000',
+					DeviceID: 'Unset',
 					UserID: 0,
-					UserRole: '',
+					UserRole: 'None',
 					UserRoleIndex: 0,
 					LoggedIn: false
 				});
@@ -81,6 +82,20 @@ class MeadowEndpointControllerBase
 		tmpRequestState.SessionData = this.getSessionData(pRequest);
 
 		return tmpRequestState;
+	}
+
+	// Clone the session data and verb to a new request state object
+	cloneAsyncSafeRequestState(pRequestState, pNewVerb)
+	{
+		let tmpSafeRequestState = (
+			{
+				ParentRequestState: pRequestState,
+				SessionData: pRequestState.SessionData
+			});
+
+		tmpSafeRequestState.Verb = (typeof(pNewVerb) == 'string') ? pNewVerb : pRequestState.Verb;
+
+		return tmpSafeRequestState;
 	}
 
 	// Override this to provide an alternate ending function that is run with every endpoint.

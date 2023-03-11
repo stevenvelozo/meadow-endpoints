@@ -3,15 +3,12 @@
 */
 const doAPIEndpointNew = function(pRequest, pResponse, fNext)
 {
-	// The hash for the endpoint (used for authorization and authentication)
-	let tmpRequestState = initializeRequestState(pRequest, 'New');
+	let tmpRequestState = this.initializeRequestState(pRequest, 'New');
+	let fBehaviorInjector = (pBehaviorHash) => { return (fStageComplete) => { this.BehaviorInjection.runBehavior(pBehaviorHash, this, pRequest, tmpRequestState, fStageComplete); }; };
 
 	this.waterfall(
 		[
-			(fStageComplete) =>
-			{
-				this.BehaviorInjection.runBehaviorWithContext(`Schema-PreOperation`, pRequest, tmpRequestState, this, fStageComplete);
-			},
+			fBehaviorInjector(`New-PreOperation`),
 			(fStageComplete) =>
 			{
 				// If during the PreOperation this was set, we can
@@ -21,38 +18,19 @@ const doAPIEndpointNew = function(pRequest, pResponse, fNext)
 				}
 				return fStageComplete();
 			},
+			fBehaviorInjector(`New-PostOperation`),
 			(fStageComplete) =>
 			{
-				this.BehaviorInjection.runBehaviorWithContext(`Schema-PostOperation`, pRequest, tmpRequestState.EmptyEntityRecord, this, fStageComplete);
-			},
-			(fStageComplete) =>
-			{
-				pResponse.send(pRequest.JSONSchema);
-				this.log.requestCompletedSuccessfully(pRequest, `Delivered JSONSchema for ${this.DAL.scope}`);
+				pResponse.send(tmpRequestState.EmptyEntityRecord);
+				this.log.requestCompletedSuccessfully(pRequest, tmpRequestState, `Delivered New ${this.DAL.scope} Record`);
 				return fStageComplete();
 			}
 		],
 		(pError) =>
 		{
-			if (pError)
-			{
-				return this.ErrorHandler.sendError(pRequest, tmpRequestState, pResponse, pError, fNext);
-			}
-
-			return fNext();
+			return this.ErrorHandler.handleErrorIfSet(pRequest, tmpRequestState, pResponse, pError, fNext);
 		}
 	);
-
-	let tmp
-
-
-	// Standard logging -- right now requires pRequest to have a UserSession object on it
-	this.logRequestComplete(pRequest, `Delivered an empty new ${this.DAL.scope}`, _Session);
-
-	pResponse.send(tmpEmptyObject);
-
-
-	return fNext();
 };
 
 module.exports = doAPIEndpointNew;

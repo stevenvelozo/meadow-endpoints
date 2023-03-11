@@ -5,12 +5,13 @@ var doUpsert = require('./Meadow-Operation-Upsert.js');
 
 var doAPIEndpointUpsert = function(pRequest, pResponse, fNext)
 {
-	let tmpRequestState = initializeRequestState(pRequest, 'Upsert');
+	let tmpRequestState = this.initializeRequestState(pRequest, 'Upsert');
+	let fBehaviorInjector = (pBehaviorHash) => { return (fStageComplete) => { this.BehaviorInjection.runBehavior(pBehaviorHash, this, pRequest, tmpRequestState, fStageComplete); }; };
 
 	// Configure the request for the generic create & update operations
-	pRequest.CreatedRecords = [];
-	pRequest.UpdatedRecords = [];
-	pRequest.UpsertedRecords = [];
+	tmpRequestState.CreatedRecords = [];
+	tmpRequestState.UpdatedRecords = [];
+	tmpRequestState.UpsertedRecords = [];
 
 	this.waterfall(
 		[
@@ -22,36 +23,34 @@ var doAPIEndpointUpsert = function(pRequest, pResponse, fNext)
 					return fStageComplete(this.ErrorHandler.getError('Record upsert failure - a valid record is required.', 500));
 				}
 
-				tmpRequestState.Record = pRequest.body;
+				tmpRequestState.RecordToUpsert = pRequest.body;
 
-				return fStageComplete(null);
+				return fStageComplete();
 			},
 			(fStageComplete) =>
 			{
-				//4. Do the upsert operation
-				doUpsert(pRequest.body, pRequest, pResponse, fStageComplete);
+				doUpsert.call(this, tmpRequestState.RecordToUpsert, pRequest, tmpRequestState, pResponse, fStageComplete);
 			},
 			(fStageComplete) =>
 			{
-				//5. Respond with the new record
-
-				// If there was an error, respond with that instead
 				if (tmpRequestState.RecordUpsertError)
 				{
 					return fStageComplete(tmpRequestState.RecordUpsertErrorMessage);
 				}
+				if (tmpRequestState.UpsertedRecords.length < 1)
+				{
+					return fStageComplete(this.ErrorHandler.getError('Record upsert unknown failure - no record back from Upsert operation.', 500));
+				}
+
+				tmpRequestState.Record = tmpRequestState.UpsertedRecords[0];
 
 				pResponse.send(tmpRequestState.Record);
-				return fStageComplete(null);
+
+				return fStageComplete();
 			}
 		], (pError) =>
 		{
-			if (pError)
-			{
-				return this.ErrorHandler.sendError(pRequest, tmpRequestState, pResponse, pError, fNext);
-			}
-
-			return fNext();
+			return this.ErrorHandler.handleErrorIfSet(pRequest, tmpRequestState, pResponse, pError, fNext);
 		});
 };
 

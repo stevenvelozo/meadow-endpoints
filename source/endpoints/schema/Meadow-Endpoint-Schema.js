@@ -3,43 +3,32 @@
 */
 const doAPIEndpointSchema = function (pRequest, pResponse, fNext)
 {
-	// The hash for the endpoint (used for authorization and authentication)
-	let tmpRequestState = initializeRequestState(pRequest, 'Schema');
+	let tmpRequestState = this.initializeRequestState(pRequest, 'Schema');
+	let fBehaviorInjector = (pBehaviorHash) => { return (fStageComplete) => { this.BehaviorInjection.runBehavior(pBehaviorHash, this, pRequest, tmpRequestState, fStageComplete); }; };
 
 	this.waterfall(
 		[
+			fBehaviorInjector(`Schema-PreOperation`),
 			(fStageComplete) =>
 			{
-				this.BehaviorInjection.runBehaviorWithContext(`Schema-PreOperation`, pRequest, tmpRequestState, this, fStageComplete);
-			},
-			(fStageComplete) =>
-			{
-				// If during the PreOperation this was set, we can
+				// If during the PreOperation this was set, we won't overwrite
 				if (!pRequest.JSONSchema)
 				{
-					tmpRequestState.JSONSchema = this.DAL.jsonSchema;
+					tmpRequestState.JSONSchema = this.extend({}, this.DAL.jsonSchema);
 				}
 				return fStageComplete();
 			},
-			(fStageComplete) =>
-			{
-				this.BehaviorInjection.runBehaviorWithContext(`Schema-PostOperation`, pRequest, tmpRequestState, this, fStageComplete);
-			},
+			fBehaviorInjector(`Schema-PostOperation`),
 			(fStageComplete) =>
 			{
 				pResponse.send(tmpRequestState.JSONSchema);
-				this.log.requestCompletedSuccessfully(pRequest, `Delivered JSONSchema for ${this.DAL.scope}`);
+				this.log.requestCompletedSuccessfully(pRequest, tmpRequestState, `Delivered JSONSchema for ${this.DAL.scope}`);
 				return fStageComplete();
 			}
 		],
 		(pError) =>
 		{
-			if (pError)
-			{
-				return this.ErrorHandler.sendError(pRequest, tmpRequestState, pResponse, pError, fNext);
-			}
-
-			return fNext();
+			return this.ErrorHandler.handleErrorIfSet(pRequest, tmpRequestState, pResponse, pError, fNext);
 		}
 	);
 };

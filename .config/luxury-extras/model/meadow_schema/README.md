@@ -1,1 +1,0 @@
-This is where the meadow schema for each table of the data model will generate.

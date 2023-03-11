@@ -3,20 +3,17 @@
 */
 const doAPIEndpointRead = function(pRequest, pResponse, fNext)
 {
-	// The hash for the endpoint (used for authorization and authentication)
-	let tmpRequestState = initializeRequestState(pRequest, 'Read');
+	let tmpRequestState = this.initializeRequestState(pRequest, 'Read');
+	let fBehaviorInjector = (pBehaviorHash) => { return (fStageComplete) => { this.BehaviorInjection.runBehavior(pBehaviorHash, this, pRequest, tmpRequestState, fStageComplete); }; };
 
 	this.waterfall(
 		[
 			(fStageComplete) =>
 			{
 				tmpRequestState.Query = this.DAL.query;
-				fStageComplete();
+				return fStageComplete();
 			},
-			(fStageComplete) =>
-			{
-				this.BehaviorInjection.runBehaviorWithContext(`Read-PreOperation`, pRequest, tmpRequestState, this, fStageComplete);
-			},
+			fBehaviorInjector(`Read-PreOperation`),
 			(fStageComplete) =>
 			{
 				if (!pRequest.params.IDRecord && pRequest.params.GUIDRecord)
@@ -37,49 +34,37 @@ const doAPIEndpointRead = function(pRequest, pResponse, fNext)
 				}
 				return fStageComplete();
 			},
-			(fStageComplete) =>
-			{
-				this.BehaviorInjection.runBehaviorWithContext(`Read-QueryConfiguration`, pRequest, tmpRequestState, this, fStageComplete);
-			},
+			fBehaviorInjector(`Read-QueryConfiguration`),
 			(fStageComplete) =>
 			{
 				try
 				{
-					this.DAL.doRead(tmpRequestState.Query, fStageComplete);
+					this.DAL.doRead(tmpRequestState.Query, (pError, pQuery, pRecord) =>
+					{
+						if (!pRecord)
+						{
+							return fStageComplete(this.ErrorHandler.getError('Record not Found', 404));
+						}
+						tmpRequestState.Record = pRecord;
+						return fStageComplete();
+					});
 				}
-				catch
+				catch (pQueryError)
 				{
-					return fStageComplete(this.ErrorHandler.getError('Query error', 500));
+					return fStageComplete(pQueryError);
 				}
 			},
-			(pQuery, pRecord, fStageComplete) =>
-			{
-				if (!pRecord)
-				{
-					return fStageComplete(this.ErrorHandler.getError('Record not Found', 404));
-				}
-				tmpRequestState.Record = pRecord;
-				return fStageComplete();
-			},
+			fBehaviorInjector(`Read-PostOperation`),
 			(fStageComplete) =>
 			{
-				this.BehaviorInjection.runBehaviorWithContext(`Read-PostOperation`, pRequest, tmpRequestState, this, fStageComplete);
-			},
-			(fStageComplete) =>
-			{
-				this.log.requestCompletedSuccessfully(pRequest, `Read Record Where ${tmpRequestState.RecordSearchCriteria}`);
 				pResponse.send(tmpRequestState.Record);
-				fStageComplete();
+				this.log.requestCompletedSuccessfully(pRequest, tmpRequestState, `Read Record Where ${tmpRequestState.RecordSearchCriteria}`);
+				return fStageComplete();
 			}
 		],
 		(pError) =>
 		{
-			if (pError)
-			{
-				return this.ErrorHandler.sendError(pRequest, tmpRequestState, pResponse, pError, fNext);
-			}
-
-			return fNext();
+			return this.ErrorHandler.handleErrorIfSet(pRequest, tmpRequestState, pResponse, pError, fNext);
 		}
 	);
 };

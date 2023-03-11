@@ -5,44 +5,54 @@ const doCreate = require('./Meadow-Operation-Create.js');
 
 const doAPIEndpointCreate = function(pRequest, pResponse, fNext)
 {
-	let tmpRequestState = initializeRequestState(pRequest, 'Create');
+	let tmpRequestState = this.initializeRequestState(pRequest, 'Create');
+	let fBehaviorInjector = (pBehaviorHash) => { return (fStageComplete) => { this.BehaviorInjection.runBehavior(pBehaviorHash, this, pRequest, tmpRequestState, fStageComplete); }; };
 
-		this.waterfall(
-		[
-			(fStageComplete) =>
-			{
-				if (typeof(pRequest.body) !== 'object')
-				{
-					return fStageComplete(this.ErrorHandler.getError('Record create failure - a valid record is required.', 500));
-				}
-
-				return fStageComplete();
-			},
-			(fStageComplete) =>
-			{
-				doCreate(pRequest.body, pRequest, pResponse, fStageComplete);
-			},
-			(fStageComplete) =>
-			{
-				// If there was an error, respond with that instead
-				if (tmpRequestState.RecordCreateError)
-				{
-					return fStageComplete(tmpRequestState.RecordCreateErrorMessage);
-				}
-
-				pResponse.send(tmpRequestState.Record);
-
-				return fStageComplete();
-			}
-		], (pError) =>
+	this.waterfall(
+	[
+		(fStageComplete) =>
 		{
-			if (pError)
+			if (typeof(pRequest.body) !== 'object')
 			{
-				return this.ErrorHandler.sendError(pRequest, tmpRequestState, pResponse, pError, fNext);
+				return fStageComplete(this.ErrorHandler.getError('Record create failure - a valid record is required.', 500));
 			}
 
-			return fNext();
-		});
+			return fStageComplete();
+		},
+		(fStageComplete) =>
+		{
+			doCreate.call(this, pRequest.body, pRequest, tmpRequestState, pResponse, fStageComplete);
+		},
+		(fStageComplete) =>
+		{
+			if (tmpRequestState.RecordCreateError)
+			{
+				return fStageComplete(tmpRequestState.RecordCreateErrorObject);
+			}
+			if (tmpRequestState.CreatedRecords.length < 1)
+			{
+				return fStageComplete(this.ErrorHandler.getError('Unknown record create failure - no created records returned.', 500));
+			}
+
+			tmpRequestState.Record = tmpRequestState.CreatedRecords[0];
+
+			return fStageComplete();
+		},
+		(fStageComplete) =>
+		{
+			pResponse.send(tmpRequestState.Record);
+			return fStageComplete();
+		},
+		(fStageComplete) =>
+		{
+			this.log.requestCompletedSuccessfully(pRequest, tmpRequestState, `Created a ${this.DAL.scope} record ID ${tmpRequestState.Record[this.DAL.defaultIdentifier]}`);
+			return fStageComplete();
+		}
+	],
+	(pError) =>
+	{
+		return this.ErrorHandler.handleErrorIfSet(pRequest, tmpRequestState, pResponse, pError, fNext);
+	});
 };
 
 module.exports = doAPIEndpointCreate;

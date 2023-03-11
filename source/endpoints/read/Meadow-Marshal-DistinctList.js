@@ -1,7 +1,7 @@
 /**
-* Meadow Operation - Marshal an array of records into a lite list
+* Meadow Operation - Marshal an array of records into a distinct list
 */
-const marshalDistinctList = (pRecords, pRequest, pFieldList) =>
+const marshalDistinctList = function(pRecords, pRequest, pFieldList)
 {
 	if (pRecords.length < 1)
 		return [];

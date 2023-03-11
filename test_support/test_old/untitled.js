@@ -6,48 +6,35 @@
 * @author      Steven Velozo <steven@velozo.com>
 */
 
-//const libImporter = require('../test_support/bookstore-import-books.js'); libImporter(()=>{});
-const libServer = require('../test_support/bookstore-serve-meadow-endpoint-apis.js'); libServer(()=>{{}});
 
-/*
-const libFable = require('fable');
-
-const libOrator = require('orator');
-const libOratorServiceServerRestify = require('orator-serviceserver-restify');
-
-const libMeadow = require('meadow');
-const libMeadowEndpoints = require('../source/Meadow-Endpoints.js');
-
-const libSuperTest = require('supertest');
-const libMySQL = require('mysql2');
 
 ////////// Code can go here for easy debugging //////////
-const _HarnessBehavior = () =>
+
+
+const tmpApplicationSettings = 	(
 {
-	let tmpRecords = [
-		{GUIDAnimal:'0xHAXXXX', Name:'Jason', Type:'Triceratops'},
-		{Name:'Rover',Type:'Car'},
-		{GUIDAnimal:'0xDavison', Type:'Frog'}
-	];
+	Product: 'MockEndpointServer',
+	ProductVersion: '0.0.0',
 
-	return true;
+	"UnauthorizedRequestDelay": 100,
 
-	libSuperTest('http://localhost:8080/')
-		.put('1.0/FableTest/Upserts')
-		.send(tmpRecords)
-		.end(
-			function(pError, pResponse)
-			{
-				// Expect response to be the record we just created.
-				var tmpResult = JSON.parse(pResponse.text);
-				console.log(JSON.stringify(tmpResult,null,4));
-			}
-		);
-};
+	APIServerPort: 8086,
+
+	MySQL:
+		{
+			// This is queued up for Travis defaults.
+			Server: "localhost",
+			Port: 3306,
+			User: "root",
+			Password: "123456789",
+//			Password: "",
+			Database: "FableTest",
+			ConnectionPoolLimit: 20
+		}
+});
 
 // Construct a fable.
-const _Fable = new libFable(require(`./Harness-Configuration.json`));
-
+const _Fable = new libFable(tmpApplicationSettings);
 // Connect to SQL, put the connection in the magic location
 _Fable.MeadowMySQLConnectionPool = libMySQL.createPool
 (
@@ -63,7 +50,7 @@ _Fable.MeadowMySQLConnectionPool = libMySQL.createPool
 );
 
 // Load up a Meadow (pointing at the Animal database)
-const _AnimalSchema = require('./Animal.json');
+const _AnimalSchema = require('../test/Animal.json');
 const _Meadow = libMeadow.new(_Fable, 'FableTest')
 	.setProvider('MySQL')
 	.setSchema(_AnimalSchema.Schema)
@@ -99,4 +86,3 @@ _MeadowEndpoints.connectRoutes(_Orator.serviceServer);
 
 // Now start the web server.
 _Orator.startWebServer(_HarnessBehavior);
-*/

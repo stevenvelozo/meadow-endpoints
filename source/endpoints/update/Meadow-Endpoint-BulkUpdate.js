@@ -5,45 +5,45 @@ const doUpdate = require('./Meadow-Operation-Update.js');
 
 const doAPIEndpointUpdate = function(pRequest, pResponse, fNext)
 {
-	// Configure the request for the generic update operation
-	pRequest.UpdatedRecords = [];
-	let tmpRequestState = initializeRequestState(pRequest, 'UpdateBulk');
+	let tmpRequestState = this.initializeRequestState(pRequest, 'UpdateBulk');
+	let fBehaviorInjector = (pBehaviorHash) => { return (fStageComplete) => { this.BehaviorInjection.runBehavior(pBehaviorHash, this, pRequest, tmpRequestState, fStageComplete); }; };
+
+	tmpRequestState.UpdatedRecords = [];
 
 	this.waterfall(
 		[
 			(fStageComplete) =>
 			{
-				//1. Validate request body to ensure it is a valid record
 				if (!Array.isArray(pRequest.body))
 				{
 					return fStageComplete(this.ErrorHandler.getError('Record update failure - a valid record is required.', 500));
 				}
 
-				pRequest.BulkRecords = pRequest.body;
+				tmpRequestState.BulkRecords = pRequest.body;
 
-				return fStageComplete(null);
+				return fStageComplete();
 			},
 			(fStageComplete) =>
 			{
-				libAsync.eachSeries(pRequest.BulkRecords,
+				this.eachLimit(tmpRequestState.BulkRecords, 1,
 					(pRecord, fCallback) =>
 					{
-						doUpdate(pRecord, pRequest, pResponse, fCallback);
+						doUpdate.call(this, pRecord, pRequest, tmpRequestState, pResponse, fCallback);
 					}, fStageComplete);
 			},
 			(fStageComplete) =>
 			{
-				//5. Respond with the new record
-				return this.streamRecordsToResponse(pResponse, pRequest.UpdatedRecords, fStageComplete);
-			}
-		], (pError) =>
-		{
-			if (pError)
+				return this.doStreamRecordArray(pResponse, tmpRequestState.UpdatedRecords, fStageComplete);
+			},
+			(fStageComplete) =>
 			{
-				return this.ErrorHandler.sendError(pRequest, tmpRequestState, pResponse, pError, fNext);
+				this.log.requestCompletedSuccessfully(pRequest, tmpRequestState, `Bulk updated ${tmpRequestState.UpdatedRecords.length} records`);
+				return fStageComplete();
 			}
-
-			return fNext();
+		],
+		(pError) =>
+		{
+			return this.ErrorHandler.handleErrorIfSet(pRequest, tmpRequestState, pResponse, pError, fNext);
 		});
 };
 

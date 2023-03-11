@@ -4,10 +4,10 @@
 const doCreate = require('../create/Meadow-Operation-Create.js');
 const doUpdate = require('../update/Meadow-Operation-Update.js');
 
-const doUpsert = function(pRecordToUpsert, pRequest, pResponse, fCallback)
+const doUpsert = function(pRecordToUpsert, pRequest, pRequestState, pResponse, fCallback)
 {
-	let tmpRequestState = initializeRequestState(pRequest, 'Upsert');
-
+	let tmpRequestState = this.cloneAsyncSafeRequestState(pRequestState, 'Upsert');
+	let fBehaviorInjector = (pBehaviorHash) => { return (fStageComplete) => { this.BehaviorInjection.runBehavior(pBehaviorHash, this, pRequest, tmpRequestState, fStageComplete); }; };
 
 	this.waterfall(
 		[
@@ -19,55 +19,66 @@ const doUpsert = function(pRecordToUpsert, pRequest, pResponse, fCallback)
 				tmpRequestState.Record = pRecordToUpsert;
 
 				// This operation will be create only if there is no GUID or ID in the record bundle
-				pRequest.UpsertCreateOnly = true;
+				tmpRequestState.UpsertCreateOnly = true;
 
 				// See if there is a default identifier or default GUIdentifier
-				if ((typeof(pRecordToUpsert[this.DAL.defaultGUIdentifier]) !== 'undefined') && pRecordToUpsert[this.DAL.defaultGUIdentifier].length > 0)
+				if ((typeof(tmpRequestState.Record[this.DAL.defaultGUIdentifier]) !== 'undefined') && tmpRequestState.Record[this.DAL.defaultGUIdentifier].length > 0)
 				{
-					tmpRequestState.Query.addFilter(this.DAL.defaultGUIdentifier, pRecordToUpsert[this.DAL.defaultGUIdentifier]);
-					pRequest.UpsertCreateOnly = false;
+					tmpRequestState.Query.addFilter(this.DAL.defaultGUIdentifier, tmpRequestState.Record[this.DAL.defaultGUIdentifier]);
+					tmpRequestState.UpsertCreateOnly = false;
 				}
-				if ((typeof(pRecordToUpsert[this.DAL.defaultIdentifier]) !== 'undefined') && (pRecordToUpsert[this.DAL.defaultIdentifier] > 0))
+				if ((typeof(tmpRequestState.Record[this.DAL.defaultIdentifier]) !== 'undefined') && (tmpRequestState.Record[this.DAL.defaultIdentifier] > 0))
 				{
-					tmpRequestState.Query.addFilter(this.DAL.defaultIdentifier, pRecordToUpsert[this.DAL.defaultIdentifier]);
-					pRequest.UpsertCreateOnly = false;
+					tmpRequestState.Query.addFilter(this.DAL.defaultIdentifier, tmpRequestState.Record[this.DAL.defaultIdentifier]);
+					tmpRequestState.UpsertCreateOnly = false;
 				}
 
-				if (pRequest.UpsertCreateOnly)
+				return fStageComplete();
+			},
+			(fStageComplete) =>
+			{
+				if (tmpRequestState.UpsertCreateOnly)
 				{
-					// Just create the record
-					doCreate(pRecordToUpsert, pRequest, pResponse, fStageComplete);
+					tmpRequestState.Operation = 'Create';
+					doCreate.call(this, tmpRequestState.Record, pRequest, tmpRequestState, pResponse, fStageComplete);
 				}
 				else
 				{
-					// Load the record to see if it exists
 					this.DAL.doRead(tmpRequestState.Query,
 						(pError, pQuery, pRecord) =>
 						{
 							if (pError)
 							{
-								// Return the error, because there was an error.
-								return fStageComplete(pError);
+								if (typeof(pError) == 'string')
+								{
+									return fStageComplete(this.ErrorHandler.getError(pError, 500));
+								}
+								else
+								{
+									return fStageComplete(pError);
+								}
 							}
-							else if (!pError && !pRecord)
+							else if (!pRecord)
 							{
 								// Record not found -- do a create.
-								doCreate(pRecordToUpsert, pRequest, pResponse, fStageComplete);
+								tmpRequestState.Operation = 'Create';
+								doCreate.call(this, tmpRequestState.Record, pRequest, tmpRequestState, pResponse, fStageComplete);
 							}
 							else
 							{
 								// Set the default ID in the passed-in record if it doesn't exist..
-								if (!pRecordToUpsert.hasOwnProperty(this.DAL.defaultIdentifier))
+								if (!tmpRequestState.Record.hasOwnProperty(this.DAL.defaultIdentifier))
 								{
-									pRecordToUpsert[this.DAL.defaultIdentifier] = pRecord[this.DAL.defaultIdentifier];
+									tmpRequestState.Record[this.DAL.defaultIdentifier] = pRecord[this.DAL.defaultIdentifier];
 								}
 								// If the found record does not match the passed ID --- what the heck?!
-								if (pRecordToUpsert[this.DAL.defaultIdentifier] != pRecord[this.DAL.defaultIdentifier])
+								if (tmpRequestState.Record[this.DAL.defaultIdentifier] != pRecord[this.DAL.defaultIdentifier])
 								{
-									return fStageComplete('Default identifier does not match GUID record.');
+									return fStageComplete(this.ErrorHandler.getError('Record IDs do not match', 500));
 								}
 								// Record found -- do an update.  Use the cached record, though.
-								doUpdate(pRecordToUpsert, pRequest, pResponse, fStageComplete, pRecord);
+								tmpRequestState.Operation = 'Update';
+								doUpdate.call(this, tmpRequestState.Record, pRequest, tmpRequestState, pResponse, fStageComplete, pRecord);
 							}
 						});
 				}
@@ -75,8 +86,38 @@ const doUpsert = function(pRecordToUpsert, pRequest, pResponse, fCallback)
 			(fStageComplete) =>
 			{
 				// Now stuff the record into the upserted array
-				pRequest.UpsertedRecords.push(tmpRequestState.Record);
-				fStageComplete(null);
+				if (tmpRequestState.Operation == 'Update')
+				{
+					if (tmpRequestState.RecordUpdateError)
+					{
+						return fStageComplete(tmpRequestState.RecordUpdateErrorObject);
+					}
+					if (tmpRequestState.UpdatedRecords.length < 1)
+					{
+						return fStageComplete(this.ErrorHandler.getError('Unknown record update failure - no updated records returned.', 500));
+					}
+		
+					tmpRequestState.Record = tmpRequestState.UpdatedRecords[0];
+				}
+				else if (tmpRequestState.Operation == 'Create')
+				{
+					if (tmpRequestState.RecordCreateError)
+					{
+						return fStageComplete(tmpRequestState.RecordCreateErrorObject);
+					}
+					if (tmpRequestState.CreatedRecords.length < 1)
+					{
+						return fStageComplete(this.ErrorHandler.getError('Unknown record create failure - no created records returned.', 500));
+					}
+		
+					tmpRequestState.Record = tmpRequestState.CreatedRecords[0];
+				}
+				else
+				{
+					return fStageComplete(this.ErrorHandler.getError('Unkknown record upsert failure = no records returned from doUpsert.', 500));
+				}
+				tmpRequestState.ParentRequestState.UpsertedRecords.push(tmpRequestState.Record);
+				return fStageComplete();
 			}
 		], (pError) =>
 		{

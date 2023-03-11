@@ -1,11 +1,11 @@
 /**
 * Meadow Operation - Update a record
 */
-
-const doUpdate = function(pRecordToModify, pRequest, pResponse, fCallback, pOptionalCachedUpdatingRecord)
+const doUpdate = function(pRecordToModify, pRequest, pRequestState, pResponse, fCallback, pOptionalCachedUpdatingRecord)
 {
-	// pOptionalCachedUpdatingRecord allows the caller to pass in a record, so the initial read doesn't need to happen.
-	let tmpRequestState = initializeRequestState(pRequest, 'Update');
+	// This is a virtual operation
+	let tmpRequestState = this.cloneAsyncSafeRequestState(pRequestState, 'doUpdate');
+	let fBehaviorInjector = (pBehaviorHash) => { return (fStageComplete) => { this.BehaviorInjection.runBehavior(pBehaviorHash, this, pRequest, tmpRequestState, fStageComplete); }; };
 
 	// If there is not a default identifier or cached record, fail
 	if ((pRecordToModify[this.DAL.defaultIdentifier] < 1) && (typeof(pOptionalCachedUpdatingRecord) === 'undefined'))
@@ -13,122 +13,103 @@ const doUpdate = function(pRecordToModify, pRequest, pResponse, fCallback, pOpti
 		return fCallback('Record update failure - a valid record ID is required in the passed-in record.');
 	}
 
+	if (!Array.isArray(tmpRequestState.ParentRequestState.UpdatedRecords))
+	{
+		tmpRequestState.ParentRequestState.UpdatedRecords = [];
+	}
+
 	this.waterfall(
-		[
-			(fStageComplete) =>
+	[
+		(fStageComplete) =>
+		{
+			tmpRequestState.RecordToModify = pRecordToModify;
+
+			if (typeof(pOptionalCachedUpdatingRecord) !== 'undefined')
 			{
-				tmpRequestState.Record = pRecordToModify;
-
-				if (typeof(pOptionalCachedUpdatingRecord) !== 'undefined')
-				{
-					// Use the cached updating record instead of reading a record.
-					return fStageComplete(false, pOptionalCachedUpdatingRecord);
-				}
-				else
-				{
-					var tmpRequestState.Query = this.DAL.query;
-
-					// This is not overloadable.
-					tmpRequestState.Query.addFilter(this.DAL.defaultIdentifier, pRecordToModify[this.DAL.defaultIdentifier]);
-
-					// Load the record so we can do security checks on it
-					this.DAL.doRead(tmpRequestState.Query,
-						(pError, pQuery, pRecord) =>
-						{
-							if (!pError && !pRecord)
-							{
-								//short-circuit: Can't update a record that doesn't exist!
-								pError = 'Record not found.';
-							}
-
-							return fStageComplete(pError, pRecord);
-						});
-				}
-			},
-			(pOriginalRecord, fStageComplete) =>
-			{
-				//send the original record to the Authorizer so it can verify ownership/etc
-				// TODO: Because the authorizer looks in the request for the record, we need to fix this somehow to work asynchronously.
-				pRequest.UpdatingRecord = pRecordToModify;
-				tmpRequestState.Record = pOriginalRecord;
-
-				pRequest.Authorizers.authorizeRequest('Update', pRequest, function(err)
-					{
-						tmpRequestState.Record = pRequest.UpdatingRecord;
-						return fStageComplete(err);
-					});
-			},
-			(fStageComplete) =>
-			{
-				//2. INJECT: Record modification before update
-				pRequest.BehaviorModifications.runBehavior('Update-PreOperation', pRequest, fStageComplete);
-			},
-			(fStageComplete) =>
-			{
-				if (pRequest.MeadowAuthorization)
-				{
-					return fStageComplete();
-				}
-
-				// It looks like this record was not authorized.  Send an error.
-				var tmpError = {Code:405,Message:'UNAUTHORIZED ACCESS IS NOT ALLOWED'};
-				tmpError.Scope = this.DAL.scope;
-				tmpError[this.DAL.defaultIdentifier] = tmpRequestState.Record[this.DAL.defaultIdentifier];
-				return fStageComplete(tmpError);
-			},
-			// 3a. INJECT: Query configuration
-			(fStageComplete) =>
+				// Use the cached updating record instead of reading a record.
+				tmpRequestState.OriginalRecord = pOptionalCachedUpdatingRecord;
+				return fStageComplete();
+			}
+			else
 			{
 				tmpRequestState.Query = this.DAL.query;
-				pRequest.BehaviorModifications.runBehavior('Update-QueryConfiguration', pRequest, fStageComplete);
-			},
-			(fStageComplete) =>
-			{
-				//3b. Prepare update query
-				var tmpRequestState.Query = tmpRequestState.Query;
 
-				tmpRequestState.Query.setIDUser(pRequest.UserSession.UserID);
-				tmpRequestState.Query.addRecord(tmpRequestState.Record);
+				tmpRequestState.Query.addFilter(this.DAL.defaultIdentifier, tmpRequestState.RecordToModify[this.DAL.defaultIdentifier]);
 
-				return fStageComplete(null, tmpRequestState.Query);
-			},
-			(pPreparedQuery, fStageComplete) =>
-			{
-				//4. Do the update operation
-				this.DAL.doUpdate(pPreparedQuery,
-					(pError, pQuery, pReadQuery, pRecord) =>
+				// Load the record so we can do security checks on it
+				this.DAL.doRead(tmpRequestState.Query,
+					(pError, pQuery, pRecord) =>
 					{
+						if (pError)
+						{
+							return fStageComplete(pError);
+						}
 						if (!pRecord)
 						{
-							return fStageComplete('Error updating a record.');
+							return fStageComplete(this.ErrorHandler.getError('Record not Found', 404));
 						}
-
 						tmpRequestState.Record = pRecord;
-
-						pRequest.UpdatedRecords.push(pRecord);
-
-						this.log.requestCompletedSuccessfully(pRequest, tmpRequestState, 'Updated a record with ID '+pRecord[this.DAL.defaultIdentifier]+'.');
-
-						return fStageComplete(null);
+						return fStageComplete();
 					});
-			},
-			(fStageComplete) =>
-			{
-				return pRequest.BehaviorModifications.runBehavior('Update-PostOperation', pRequest, fStageComplete);
 			}
-		], (pError) =>
+		},
+		(fStageComplete) =>
 		{
-			if (pError)
-			{
-				pRecordToModify.Error = 'Error updating record:'+pError;
-				tmpRequestState.RecordUpdateError = true;
-				tmpRequestState.RecordUpdateErrorMessage = pError;
-				pRequest.UpdatedRecords.push(pRecordToModify);
-				pRequest.CommonServices.log.error('Error updating record:'+pError, {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:this.DAL.scope+'-'+pRequest.MeadowOperation, Stack: pError.stack }, pRequest);
-			}
+			tmpRequestState.Query = this.DAL.query;
+			return fStageComplete();
+		},
+		(fStageComplete) =>
+		{
+			tmpRequestState.Query.setIDUser(tmpRequestState.SessionData.UserID);
+			tmpRequestState.Query.addRecord(tmpRequestState.RecordToModify);
 
-			return fCallback();
-		});
+			return fStageComplete();
+		},
+		(fStageComplete) =>
+		{
+			this.DAL.doUpdate(tmpRequestState.Query,
+				(pError, pQuery, pReadQuery, pRecord) =>
+				{
+					if (pError)
+					{
+						if (typeof(pError) == 'string')
+						{
+							return fStageComplete(this.ErrorHandler.getError(pError, 500));
+						}
+						else
+						{
+							return fStageComplete(pError);
+						}
+					}
+					if (!pRecord)
+					{
+						return fStageComplete(this.ErrorHandler.getError(`Error in DAL Update: No record returned from persistence engine.`, 500));
+					}
+					tmpRequestState.Record = pRecord;
+					return fStageComplete();
+				});
+		},
+		(fStageComplete) => { return this.BehaviorInjection.runBehavior(`Update-PostOperation`, this, pRequest, tmpRequestState, fStageComplete); },
+		(fStageComplete) =>
+		{
+			tmpRequestState.ParentRequestState.UpdatedRecords.push(tmpRequestState.Record);
+			this.log.requestCompletedSuccessfully(pRequest, tmpRequestState, `Updated record with ID ${tmpRequestState.Record[this.DAL.defaultIdentifier]}`);
+			return fStageComplete();
+		}
+	], (pError) =>
+	{
+		if (pError)
+		{
+			tmpRequestState.Record.Error = pError;
+
+			tmpRequestState.ParentRequestState.RecordUpdateError = true;
+			tmpRequestState.ParentRequestState.RecordUpdateErrorObject = pError;
+
+			tmpRequestState.ParentRequestState.UpdatedRecords.push(tmpRequestState.Record);
+		}
+
+		return fCallback();
+	});
 };
 
 module.exports = doUpdate;

@@ -110,29 +110,29 @@ class MeadowEndpointsFilterParser
         switch(pFilterStanza.Instruction)
         {
             case 'FBV':   // Filter by Value (left-side AND)
-                pQuery.addFilter(pFilterStanza.Field, pFilterStanza.Value, getFilterComparisonOperator(pFilterStanza.Operator), 'AND');
+                pQuery.addFilter(pFilterStanza.Field, pFilterStanza.Value, this.getFilterComparisonOperator(pFilterStanza.Operator), 'AND');
                 break;
 
             case 'FBVOR': // Filter by Value (left-side OR)
-                pQuery.addFilter(pFilterStanza.Field, pFilterStanza.Value, getFilterComparisonOperator(pFilterStanza.Operator), 'OR');
+                pQuery.addFilter(pFilterStanza.Field, pFilterStanza.Value, this.getFilterComparisonOperator(pFilterStanza.Operator), 'OR');
                 break;
 
             case 'FBL':   // Filter by List (left-side AND)
                 // Just split the value by comma for now.  May want to revisit better characters or techniques later.
-                pQuery.addFilter(pFilterStanza.Field, pFilterStanza.Value.split(','), getFilterComparisonOperator(pFilterStanza.Operator), 'AND');
+                pQuery.addFilter(pFilterStanza.Field, pFilterStanza.Value.split(','), this.getFilterComparisonOperator(pFilterStanza.Operator), 'AND');
                 break;
 
             case 'FBLOR': // Filter by List (left-side OR)
                 // Just split the value by comma for now.  May want to revisit better characters or techniques later.
-                pQuery.addFilter(pFilterStanza.Field, pFilterStanza.Value.split(','), getFilterComparisonOperator(pFilterStanza.Operator, 'OR'));
+                pQuery.addFilter(pFilterStanza.Field, pFilterStanza.Value.split(','), this.getFilterComparisonOperator(pFilterStanza.Operator), 'OR');
                 break;
 
             case 'FBD': // Filter by Date (exclude time)
-                pQuery.addFilter(`DATE(${pFilterStanza.Field})`, pFilterStanza.Value.split(','), getFilterComparisonOperator(pFilterStanza.Operator), 'AND', pFilterStanza.Field);
+                pQuery.addFilter(`DATE(${pFilterStanza.Field})`, pFilterStanza.Value.split(','), this.getFilterComparisonOperator(pFilterStanza.Operator), 'AND', pFilterStanza.Field);
                 break;
 
             case 'FBDOR': // Filter by Date (exclude time)
-                pQuery.addFilter(`DATE(${pFilterStanza.Field})`, pFilterStanza.Value.split(','), getFilterComparisonOperator(pFilterStanza.Operator), 'OR', pFilterStanza.Field);
+                pQuery.addFilter(`DATE(${pFilterStanza.Field})`, pFilterStanza.Value.split(','), this.getFilterComparisonOperator(pFilterStanza.Operator), 'OR', pFilterStanza.Field);
                 break;
 
             case 'FSF':   // Filter Sort Field
@@ -188,7 +188,7 @@ class MeadowEndpointsFilterParser
             switch(i % 4)
             {
                 case 0:  // INSTRUCTION
-                    addFilterStanzaToQuery(tmpFilterStanza, pQuery);
+                    this.addFilterStanzaToQuery(tmpFilterStanza, pQuery);
                     //console.log(i+' Instruction: '+tmpFilterTerms[i]);
                     tmpFilterStanza = (
                     {

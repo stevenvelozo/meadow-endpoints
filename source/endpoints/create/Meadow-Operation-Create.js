@@ -1,95 +1,83 @@
 /**
 * Meadow Operation - Create a record function
 */
-const doCreate = function(pRecord, pRequest, pResponse, fCallback)
+const doCreate = function(pRecord, pRequest, pRequestState, pResponse, fCallback)
 {
-	let tmpRequestState = initializeRequestState(pRequest, 'Create');
+	// This is a virtual operation
+	let tmpRequestState = this.cloneAsyncSafeRequestState(pRequestState, 'doCreate');
+	let fBehaviorInjector = (pBehaviorHash) => { return (fStageComplete) => { this.BehaviorInjection.runBehavior(pBehaviorHash, this, pRequest, tmpRequestState, fStageComplete); }; };
 
-		this.waterfall(
-		[
-			(fStageComplete) =>
-			{
-				// Do this for compatibility with injected behaviors
-				tmpRequestState.Record = pRecord;
+	if (!Array.isArray(tmpRequestState.ParentRequestState.CreatedRecords))
+	{
+		tmpRequestState.ParentRequestState.CreatedRecords = [];
+	}
 
-				//Make sure record gets created with a customerID
-				if (!tmpRequestState.Record.hasOwnProperty('IDCustomer') &&
-					this.DAL.jsonSchema.properties.hasOwnProperty('IDCustomer'))
-				{
-					tmpRequestState.Record.IDCustomer = pRequest.UserSession.CustomerID || 0;
-				}
-
-				pRequest.BehaviorModifications.runBehavior('Create-PreOperation', pRequest, fStageComplete);
-			},
-			(fStageComplete) =>
-			{
-				pRequest.Authorizers.authorizeRequest('Create', pRequest, fStageComplete);
-			},
-			(fStageComplete) =>
-			{
-				if (pRequest.MeadowAuthorization)
-				{
-					return fStageComplete();
-				}
-
-				// It looks like this record was not authorized.  Send an error.
-				return fStageComplete({Code:405,Message:'UNAUTHORIZED ACCESS IS NOT ALLOWED'});
-			},
-			(fStageComplete) =>
-			{
-				//3. Prepare create query
-				var tmpRequestState.Query = this.DAL.query;
-
-				tmpRequestState.Query.setIDUser(pRequest.UserSession.UserID);
-				tmpRequestState.Query.addRecord(pRecord);
-
-				return fStageComplete(null, tmpRequestState.Query);
-			},
-			// 3. INJECT: Query configuration
-			(tmpRequestState.Query, fStageComplete) =>
-			{
-				tmpRequestState.Query = tmpRequestState.Query;
-				pRequest.BehaviorModifications.runBehavior('Create-QueryConfiguration', pRequest, fStageComplete);
-			},
-			(fStageComplete) =>
-			{
-				//4. Do the create operation
-				this.DAL.doCreate(tmpRequestState.Query,
-					(pError, pQuery, pReadQuery, pNewRecord) =>
-					{
-						if (!pNewRecord)
-						{
-							return fStageComplete('Error in DAL create: '+pError);
-						}
-
-						tmpRequestState.Record = pNewRecord;
-
-						pRequest.CreatedRecords.push(pNewRecord);
-
-						this.log.requestCompletedSuccessfully(pRequest, tmpRequestState, 'Created a record with ID '+pNewRecord[this.DAL.defaultIdentifier]+'.');
-
-						return fStageComplete(null);
-					});
-			},
-			(fStageComplete) =>
-			{
-				return pRequest.BehaviorModifications.runBehavior('Create-PostOperation', pRequest, fStageComplete);
-			}
-		], (pError) =>
+	this.waterfall(
+	[
+		(fStageComplete) =>
 		{
-			if (pError)
+			tmpRequestState.RecordToCreate = pRecord;
+
+			//Make sure record gets created with a customerID
+			if (!tmpRequestState.RecordToCreate.hasOwnProperty('IDCustomer') && this.DAL.jsonSchema.properties.hasOwnProperty('IDCustomer'))
 			{
-				pRecord.Error = 'Error creating record:'+pError;
-				// Added for singleton operations
-				tmpRequestState.RecordCreateError = true;
-				tmpRequestState.RecordCreateErrorMessage = pError;
-				// Also push the record to the created record stack with an error message
-				pRequest.CreatedRecords.push(pRecord);
-				pRequest.CommonServices.log.error('Error creating record:'+pError, {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:this.DAL.scope+'-'+pRequest.MeadowOperation, Stack: pError.stack }, pRequest);
+				tmpRequestState.RecordToCreate.IDCustomer = tmpRequestState.SessionData.CustomerID || 0;
 			}
 
-			return fCallback();
-		});
+			return fStageComplete();
+		},
+		(fStageComplete) => { this.BehaviorInjection.runBehavior(`Create-PreOperation`, this, pRequest, tmpRequestState, fStageComplete); },
+		(fStageComplete) =>
+		{
+			// Prepare create query
+			tmpRequestState.Query = this.DAL.query;
+			tmpRequestState.Query.setIDUser(tmpRequestState.SessionData.UserID);
+			tmpRequestState.Query.addRecord(tmpRequestState.RecordToCreate);
+			return fStageComplete();
+		},
+		(fStageComplete) => { this.BehaviorInjection.runBehavior(`Create-QueryConfiguration`, this, pRequest, tmpRequestState, fStageComplete); },
+		(fStageComplete) =>
+		{
+			// Do the actual create operation with the DAL
+			this.DAL.doCreate(tmpRequestState.Query,
+				(pError, pQuery, pReadQuery, pNewRecord) =>
+				{
+					if (pError)
+					{
+						return fStageComplete(pError);
+					}
+					if (!pNewRecord)
+					{
+						return fStageComplete(this.ErrorHandler.getError(`Error in DAL Create: No record returned from persistence engine.`, 500));
+					}
+
+					tmpRequestState.Record = pNewRecord;
+
+					return fStageComplete();
+				});
+		},
+		(fStageComplete) => { return this.BehaviorInjection.runBehavior(`Create-PostOperation`, this, pRequest, tmpRequestState, fStageComplete); },
+		(fStageComplete) =>
+		{
+			tmpRequestState.ParentRequestState.CreatedRecords.push(tmpRequestState.Record);
+			this.log.requestCompletedSuccessfully(pRequest, tmpRequestState, `Created a record with ${this.DAL.defaultIdentifier} = ${tmpRequestState.Record[this.DAL.defaultIdentifier]}`);
+			return fStageComplete();
+		}
+	],
+	(pError) =>
+	{
+		if (pError)
+		{
+			tmpRequestState.RecordToCreate.Error = pError;
+
+			tmpRequestState.ParentRequestState.RecordCreateError = true;
+			tmpRequestState.ParentRequestState.RecordCreateErrorObject = pError;
+
+			tmpRequestState.ParentRequestState.CreatedRecords.push(tmpRequestState.RecordToCreate);
+		}
+
+		return fCallback();
+	});
 };
 
 module.exports = doCreate;

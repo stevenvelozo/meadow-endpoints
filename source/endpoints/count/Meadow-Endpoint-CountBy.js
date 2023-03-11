@@ -3,7 +3,8 @@
 */
 const doAPIEndpointCountBy = function(pRequest, pResponse, fNext)
 {
-	let tmpRequestState = initializeRequestState(pRequest, 'CountBy');
+	let tmpRequestState = this.initializeRequestState(pRequest, 'CountBy');
+	let fBehaviorInjector = (pBehaviorHash) => { return (fStageComplete) => { this.BehaviorInjection.runBehavior(pBehaviorHash, this, pRequest, tmpRequestState, fStageComplete); }; };
 
 	this.waterfall(
 		[
@@ -11,20 +12,15 @@ const doAPIEndpointCountBy = function(pRequest, pResponse, fNext)
 			{
 				tmpRequestState.Query = this.DAL.query;
 				tmpRequestState.Query.addFilter(pRequest.params.ByField, pRequest.params.ByValue, '=', 'AND', 'RequestByField');
-
 				return fStageComplete();
 			},
-			(fStageComplete) =>
-			{
-				pRequest.BehaviorModifications.runBehavior('Reads-QueryConfiguration', pRequest, fStageComplete);
-			},
+			fBehaviorInjector(`CountBy-QueryConfiguration`),
 			(fStageComplete) =>
 			{
 				this.DAL.doCount(tmpRequestState.Query,
 					(pError, pQuery, pCount) =>
 					{
 						tmpRequestState.Result = {Count:pCount};
-
 						return fStageComplete(pError);
 					});
 			},
@@ -37,12 +33,7 @@ const doAPIEndpointCountBy = function(pRequest, pResponse, fNext)
 		],
 		(pError) =>
 		{
-			if (pError)
-			{
-				return this.ErrorHandler.sendError(pRequest, tmpRequestState, pResponse, pError, fNext);
-			}
-
-			return fNext();
+			return this.ErrorHandler.handleErrorIfSet(pRequest, tmpRequestState, pResponse, pError, fNext);
 		});
 };
 

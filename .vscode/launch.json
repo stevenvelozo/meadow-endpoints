@@ -6,7 +6,7 @@
     "configurations": [
         {
             "name": "Launch Debug Harness",
-            "type": "pwa-node",
+            "type": "node",
             "request": "launch",
             "outputCapture": "std",
             "skipFiles": [

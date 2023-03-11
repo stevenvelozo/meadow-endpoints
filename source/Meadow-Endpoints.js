@@ -6,6 +6,7 @@
 */
 
 const libMeadowEndpointsControllerBase = require('./controller/Meadow-Endpoints-Controller-Base.js');
+const libMeadow = require('meadow');
 
 class MeadowEndpoints
 {
@@ -98,6 +99,15 @@ class MeadowEndpoints
 			// Get an empty initialized JSON object for this.
 			New: require('./endpoints/schema/Meadow-Endpoint-New.js')
 		});
+	}
+
+	get controller()
+	{
+		return this._Controller;
+	}
+	set controller(pController)
+	{
+		this._Controller = pController;
 	}
 
 	/**
@@ -220,4 +230,5 @@ function autoConstruct(pMeadow, pControllerOptions)
 module.exports = MeadowEndpoints;
 module.exports.new = autoConstruct;
 
+module.exports.Meadow = libMeadow;
 module.exports.BaseController = libMeadowEndpointsControllerBase;

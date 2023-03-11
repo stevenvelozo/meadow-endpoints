@@ -1,7 +1,7 @@
 /**
 * Meadow Operation - Marshal an array of records into a lite list
 */
-const marshalLiteList = (pRecords, pRequest, pFieldList) =>
+const marshalLiteList = function(pRecords, pRequest, pFieldList)
 {
 	if (pRecords.length < 1)
 		return [];
@@ -41,7 +41,7 @@ const marshalLiteList = (pRecords, pRequest, pFieldList) =>
 	{
 		let tmpLiteRecord = (
 			{
-				Value: pRequest.BehaviorModifications.processTemplate('SelectList', {Record:pRecords[i]}, this.DAL.scope+' #<%= Record.'+this.DAL.defaultIdentifier+'%>')
+				Value: this.BehaviorInjection.processTemplate('SelectList', {Record:pRecords[i]}, this.DAL.scope+' #<%= Record.'+this.DAL.defaultIdentifier+'%>')
 			});
 		tmpLiteRecord[this.DAL.defaultIdentifier] = pRecords[i][this.DAL.defaultIdentifier];
 

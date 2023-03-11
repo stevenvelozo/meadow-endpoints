@@ -7,47 +7,46 @@ const marshalLiteList = require('../read/Meadow-Marshal-LiteList.js');
 
 const doAPIEndpointUpserts = function(pRequest, pResponse, fNext)
 {
-	// Configure the request for the generic upsert operation
-	pRequest.CreatedRecords = [];
-	pRequest.UpdatedRecords = [];
-	pRequest.UpsertedRecords = [];
-	let tmpRequestState = initializeRequestState(pRequest, 'UpsertBulk');
+	let tmpRequestState = this.initializeRequestState(pRequest, 'UpsertBulk');
+	let fBehaviorInjector = (pBehaviorHash) => { return (fStageComplete) => { this.BehaviorInjection.runBehavior(pBehaviorHash, this, pRequest, tmpRequestState, fStageComplete); }; };
+
+	tmpRequestState.CreatedRecords = [];
+	tmpRequestState.UpdatedRecords = [];
+	tmpRequestState.UpsertedRecords = [];
 
 	this.waterfall(
 		[
 			(fStageComplete) =>
 			{
-				//1. Validate request body to ensure it is a valid record
 				if (!Array.isArray(pRequest.body))
 				{
-					return fStageComplete(this.ErrorHandler.getError('Record upsert failure - a valid record is required.', 500));
+					return fStageComplete(this.ErrorHandler.getError(`Record bulk upsert failure - a valid array of records is required.`, 500));
 				}
 
-				pRequest.BulkRecords = pRequest.body;
+				tmpRequestState.BulkRecords = pRequest.body;
 
-				return fStageComplete(null);
+				return fStageComplete();
 			},
 			(fStageComplete) =>
 			{
-				libAsync.eachSeries(pRequest.BulkRecords,
+				this.eachLimit(tmpRequestState.BulkRecords, 1,
 					(pRecord, fCallback) =>
 					{
-						doUpsert(pRecord, pRequest, pResponse, fCallback);
+						doUpsert.call(this, pRecord, pRequest, tmpRequestState, pResponse, fCallback);
 					}, fStageComplete);
 			},
 			(fStageComplete) =>
 			{
-				//5. Respond with the new records
-				return this.streamRecordsToResponse(pResponse, marshalLiteList(pRequest.UpsertedRecords, pRequest), fStageComplete);
+				return this.doStreamRecordArray(pResponse, marshalLiteList.call(this, tmpRequestState.UpsertedRecords, pRequest), fStageComplete);
+			},
+			(fStageComplete) =>
+			{
+				this.log.requestCompletedSuccessfully(pRequest, tmpRequestState, `Bulk upsert complete -- ${tmpRequestState.UpsertedRecords} records processed`);
+				return fStageComplete();
 			}
 		], (pError) =>
 		{
-			if (pError)
-			{
-				return this.ErrorHandler.sendError(pRequest, tmpRequestState, pResponse, pError, fNext);
-			}
-
-			return fNext();
+			return this.ErrorHandler.handleErrorIfSet(pRequest, tmpRequestState, pResponse, pError, fNext);
 		});
 };
 module.exports = doAPIEndpointUpserts;

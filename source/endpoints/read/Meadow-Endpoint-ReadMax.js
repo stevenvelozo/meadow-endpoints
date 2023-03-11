@@ -3,63 +3,51 @@
 */
 const doAPIEndpointReadMax = function(pRequest, pResponse, fNext)
 {
+	let tmpRequestState = this.initializeRequestState(pRequest, 'ReadMax');
+	let fBehaviorInjector = (pBehaviorHash) => { return (fStageComplete) => { this.BehaviorInjection.runBehavior(pBehaviorHash, this, pRequest, tmpRequestState, fStageComplete); }; };
+
 	this.waterfall(
 		[
-			// 1. Create the query
 			(fStageComplete) =>
 			{
 				tmpRequestState.Query = this.DAL.query;
-				fStageComplete();
+				return fStageComplete();
 			},
-			// 2. Set the query up with the Column Name
 			(fStageComplete) =>
 			{
-				var tmpColumnName =  pRequest.params.ColumnName;
-				// We use a custon name for this (RequestDefaultIdentifier) in case there is a query with a dot in the default identifier.
-				tmpRequestState.Query.setSort({Column:tmpColumnName, Direction:'Descending'});
+				tmpRequestState.ColumnName =  pRequest.params.ColumnName;
+				tmpRequestState.Query.setSort({Column:tmpRequestState.ColumnName, Direction:'Descending'});
 				tmpRequestState.Query.setCap(1);
 
-				fStageComplete();
+				return fStageComplete();
 			},
-			// 3. INJECT: Query configuration
-			(fStageComplete) =>
-			{
-				pRequest.BehaviorModifications.runBehavior('ReadMax-QueryConfiguration', pRequest, fStageComplete);
-			},
-			// 4. Execute the query
+			fBehaviorInjector(`ReadMax-QueryConfiguration`),
 			(fStageComplete) =>
 			{
 				this.DAL.doRead(tmpRequestState.Query, fStageComplete);
 			},
-			// 5. Post processing of the records
 			(pQuery, pRecord, fStageComplete) =>
 			{
 				if (!pRecord)
 				{
-									this.log.requestCompletedSuccessfully(pRequest, tmpRequestState, 'Record not found');
-					return pResponse.send({});
+					return fStageComplete(this.ErrorHandler.getError('Record not Found', 404));
 				}
 				tmpRequestState.Record = pRecord;
-				fStageComplete();
+				return fStageComplete();
 			},
-			// 6. INJECT: Post process the record, tacking on or altering anything we want to.
 			(fStageComplete) =>
 			{
-				// This will also complete the waterfall operation
-				pRequest.BehaviorModifications.runBehavior('ReadMax-PostOperation', pRequest, fStageComplete);
+				this.BehaviorInjection.runBehavior(`ReadMax-PostOperation`, this, pRequest, tmpRequestState, fStageComplete);
+			},
+			(fStageComplete) =>
+			{
+				this.log.requestCompletedSuccessfully(pRequest, tmpRequestState, `Read max record of ${this.DAL.scope} on ${tmpRequestState.ColumnName}`);
+				pResponse.send(tmpRequestState.Record);
 			}
 		],
-		// 3. Return the results to the user
 		(pError) =>
 		{
-			if (pError)
-			{
-				return fStageComplete(this.ErrorHandler.getError('Error retreiving a record.', 500));
-			}
-
-							this.log.requestCompletedSuccessfully(pRequest, tmpRequestState, 'Read top record of '+pRequest.params.IDRecord+'.');
-			pResponse.send(tmpRequestState.Record);
-			return fNext();
+			return this.ErrorHandler.handleErrorIfSet(pRequest, tmpRequestState, pResponse, pError, fNext);
 		}
 	);
 };

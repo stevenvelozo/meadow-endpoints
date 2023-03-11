@@ -5,35 +5,68 @@ class MeadowEndpointsControllerLogBase
         this._Controller = pController;
     }
 
-    // This is called whenever an endpoint is completed successfully
-	requestCompletedSuccessfully(pRequest, pRequestState, pActionSummary)
+	// This is called for every successful request log line.  Be careful what you add in overloads!
+	prepareLogData(pRequest, pRequestState, pLogData)
 	{
-		this._Controller.log.info(pActionSummary,
+		// TODO: Discuss if these should be configurations
+		if (pRequestState.hasOwnProperty('Record'))
+		{
+			if (pRequestState.Record.hasOwnProperty(this._Controller.DAL.defaultIdentifier))
 			{
-				SessionID: pRequest.SessionData.SessionID,
-				RequestID: pRequest.RequestUUID,
-				RequestURL: pRequest.url,
-				Scope: this._Controller.DAL.scope,
-				Action: `${this._Controller.DAL.scope}-${pRequest.Verb}`,
-				Verb: pRequest.Verb
-			});
+				pLogData[this._Controller.DAL.defaultIdentifier] = pRequestState.Record[this._Controller.DAL.defaultIdentifier];
+			}
+			if (pRequestState.Record.hasOwnProperty(this._Controller.DAL.defaultGUIdentifier))
+			{
+				pLogData[this._Controller.DAL.defaultGUIdentifier] = pRequestState.Record[this._Controller.DAL.defaultGUIdentifier];
+			}
+		}
+		if (pRequestState.hasOwnProperty('UpdatedRecords'))
+		{
+			pLogData.UpdatedRecordCount = pRequestState.UpdatedRecords.length;
+		}
+		if (pRequestState.hasOwnProperty('CreatedRecords'))
+		{
+			pLogData.UpdatedRecordCount = pRequestState.CreatedRecords.length;
+		}
+		if (pRequestState.hasOwnProperty('UpsertedRecords'))
+		{
+			pLogData.UpdatedRecordCount = pRequestState.UpsertedRecords.length;
+		}
+		return pLogData;
 	}
 
     // This is called whenever an endpoint is completed successfully
-	logRequestError(pRequest, pError)
+	requestCompletedSuccessfully(pRequest, pRequestState, pActionSummary)
 	{
-		this._Controller.log.error(pError.message,
+		let tmpLogData = (
 			{
-				SessionID: pRequest.SessionData.SessionID,
+				SessionID: pRequestState.SessionData.SessionID,
 				RequestID: pRequest.RequestUUID,
 				RequestURL: pRequest.url,
 				Scope: this._Controller.DAL.scope,
-				Action: `${this._Controller.DAL.scope}-${pRequest.Verb}`,
-				Verb: pRequest.Verb,
-                Error: pError.message,
-                StatusCode: pError.StatusCode,
-                Stack: pError.stack
+				Action: `${this._Controller.DAL.scope}-${pRequestState.Verb}`,
+				Verb: pRequestState.Verb
 			});
+
+		this._Controller.log.info(pActionSummary, this.prepareLogData(pRequest, pRequestState, tmpLogData));
+	}
+
+    // This is called whenever an endpoint is completed successfully
+	logRequestError(pRequest, pRequestState, pError)
+	{
+		let tmpErrorLogData = (
+			{
+				SessionID: pRequestState.SessionData.SessionID,
+				RequestID: pRequest.RequestUUID,
+				RequestURL: pRequest.url,
+				Scope: this._Controller.DAL.scope,
+				Action: `${this._Controller.DAL.scope}-${pRequestState.Verb}`,
+				Verb: pRequestState.Verb,
+			});
+
+		tmpErrorLogData = this._Controller.ErrorHandler.prepareRequestContextOutputObject(tmpErrorLogData, pRequest, pRequestState, pError);
+
+		this._Controller.log.error(pError.message, this.prepareLogData(pRequest, pRequestState, tmpErrorLogData));
 	}
 
     trace(pLogText, pLogObject)

@@ -3,7 +3,8 @@
 */
 const doAPIEndpointCount = function(pRequest, pResponse, fNext)
 {
-	let tmpRequestState = initializeRequestState(pRequest, 'Count');
+	let tmpRequestState = this.initializeRequestState(pRequest, 'Count');
+	let fBehaviorInjector = (pBehaviorHash) => { return (fStageComplete) => { this.BehaviorInjection.runBehavior(pBehaviorHash, this, pRequest, tmpRequestState, fStageComplete); }; };
 
 	this.waterfall(
 		[
@@ -19,12 +20,9 @@ const doAPIEndpointCount = function(pRequest, pResponse, fNext)
 				{
 					tmpRequestState.Query.setFilter(pRequest.params.Filter);
 				}
-				fStageComplete();
+				return fStageComplete();
 			},
-			(fStageComplete) =>
-			{
-				this.BehaviorInjection.runBehaviorWithContext(`Count-QueryConfiguration`, pRequest, tmpRequestState, this, fStageComplete);
-			},
+			fBehaviorInjector(`Count-QueryConfiguration`),
 			(fStageComplete) =>
 			{
 				this.DAL.doCount(tmpRequestState.Query,
@@ -36,19 +34,14 @@ const doAPIEndpointCount = function(pRequest, pResponse, fNext)
 			},
 			(fStageComplete) =>
 			{
-				this.log.requestCompletedSuccessfully(pRequest, tmpRequestState, 'Delivered recordset count of ' + tmpRequestState.Result.Count + '.');
 				pResponse.send(tmpRequestState.Result);
+				this.log.requestCompletedSuccessfully(pRequest, tmpRequestState, `Delivered recordset count of ${tmpRequestState.Result.Count} for ${this.DAL.scope}.`);
 				return fStageComplete();
 			}
 		],
 		(pError) =>
 		{
-			if (pError)
-			{
-				return this.ErrorHandler.sendError(pRequest, tmpRequestState, pResponse, pError, fNext);
-			}
-
-			return fNext();
+			return this.ErrorHandler.handleErrorIfSet(pRequest, tmpRequestState, pResponse, pError, fNext);
 		}
 	);
 };

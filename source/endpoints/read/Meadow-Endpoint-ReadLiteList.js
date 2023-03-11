@@ -5,6 +5,9 @@ const marshalLiteList = require('./Meadow-Marshal-LiteList.js');
 
 const doAPIEndpointReadLite = function(pRequest, pResponse, fNext)
 {
+	let tmpRequestState = this.initializeRequestState(pRequest, 'ReadsLite');
+	let fBehaviorInjector = (pBehaviorHash) => { return (fStageComplete) => { this.BehaviorInjection.runBehavior(pBehaviorHash, this, pRequest, tmpRequestState, fStageComplete); }; };
+
 	this.waterfall(
 		[
 			// 1a. Get the records
@@ -41,74 +44,40 @@ const doAPIEndpointReadLite = function(pRequest, pResponse, fNext)
 					tmpRequestState.Query.setFilter(pRequest.params.Filter);
 				}
 
-				fStageComplete();
+				return fStageComplete();
 			},
-			// 1b. INJECT: Query configuration
-			(fStageComplete) =>
-			{
-				pRequest.BehaviorModifications.runBehavior('Reads-QueryConfiguration', pRequest, fStageComplete);
-			},
-			// 1b2. INJECT: Query pre-authorization behavior (ex. if authorizer needs fields to be included, it can add them)
-			(fStageComplete) =>
-			{
-				pRequest.BehaviorModifications.runBehavior('Reads-PreAuth', pRequest, fStageComplete);
-			},
-			// 1c. Do the record read
+			fBehaviorInjector(`Reads-QueryConfiguration`),
 			(fStageComplete) =>
 			{
 				this.DAL.doReads(tmpRequestState.Query, fStageComplete);
 			},
-			// 2. Post processing of the records
 			(pQuery, pRecords, fStageComplete) =>
 			{
 				if (pRecords.length < 1)
 				{
 					pRecords = [];
 				}
-
-				tmpRequestState.Records = pRecords;
-
-				// Complete the waterfall operation
-				fStageComplete();
+				tmpRequestState.RawRecords = pRecords;
+				return fStageComplete();
 			},
-			// 2.5: Check if there is an authorizer set for this endpoint and user role combination, and authorize based on that
 			(fStageComplete) =>
 			{
-				// shared permission with reads
-				pRequest.Authorizers.authorizeRequest('Reads', pRequest, fStageComplete);
+				tmpRequestState.Records = marshalLiteList.call(this, tmpRequestState.RawRecords, pRequest, (typeof(pRequest.params.ExtraColumns) === 'string') ? pRequest.params.ExtraColumns.split(',') : []);
+				return fStageComplete();
 			},
-			// 2.6: Check if authorization or post processing denied security access to the record
 			(fStageComplete) =>
 			{
-				if (pRequest.MeadowAuthorization)
-				{
-					return fStageComplete();
-				}
-
-				// It looks like this record was not authorized.  Send an error.
-				return fStageComplete({Code:405,Message:'UNAUTHORIZED ACCESS IS NOT ALLOWED'});
+				return this.doStreamRecordArray(pResponse, tmpRequestState.Records, fNext);
 			},
-			// 3. Marshalling of records into the hash list, using underscore templates.
 			(fStageComplete) =>
 			{
-				// Allow the endpoint to pass in extra columns.
-				// Break it apart by comma separated list
-				fStageComplete(false, marshalLiteList(tmpRequestState.Records, pRequest, (typeof(pRequest.params.ExtraColumns) === 'string') ? pRequest.params.ExtraColumns.split(',') : []));
+				this.log.requestCompletedSuccessfully(pRequest, tmpRequestState, `Read a recordset lite list with ${tmpRequestState.Records.length} results`);
+				return fStageComplete();
 			}
 		],
-		// 3. Return the results to the user
 		(pError, pResultRecords) =>
 		{
-			// Remove 'Records' object from pRequest, instead return template results (pResultRecords) for the records
-			delete pRequest['Records'];
-
-			if (pError)
-			{
-				return this.ErrorHandler.sendError(pRequest, tmpRequestState, pResponse, pError, fNext);
-			}
-
-							this.log.requestCompletedSuccessfully(pRequest, tmpRequestState, 'Read a recordset lite list with '+pResultRecords.length+' results.');
-			return this.streamRecordsToResponse(pResponse, pResultRecords, fNext);
+			return this.ErrorHandler.handleErrorIfSet(pRequest, tmpRequestState, pResponse, pError, fNext);
 		}
 	);
 };

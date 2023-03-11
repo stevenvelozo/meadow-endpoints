@@ -3,7 +3,8 @@
 */
 const doAPIEndpointUndelete = function(pRequest, pResponse, fNext)
 {
-	let tmpRequestState = initializeRequestState(pRequest, 'Delete');
+	let tmpRequestState = this.initializeRequestState(pRequest, 'Undelete');
+	let fBehaviorInjector = (pBehaviorHash) => { return (fStageComplete) => { this.BehaviorInjection.runBehavior(pBehaviorHash, this, pRequest, tmpRequestState, fStageComplete); }; };
 
 		var tmpIDRecord = 0;
 	if (typeof(pRequest.params.IDRecord) === 'string')
@@ -22,45 +23,40 @@ const doAPIEndpointUndelete = function(pRequest, pResponse, fNext)
 	// TODO: Decide if we want to keep this pattern similar to Delete, or, if we want to change it to allow bulk undeletes.
 	if (tmpIDRecord < 1)
 	{
-		return fStageComplete(this.ErrorHandler.getError('Record undelete failure - a valid record ID is required in the passed-in record.', 500));
+		return fStageComplete(this.ErrorHandler.getError('Record undelete failure - a valid record ID is required.', 500));
 	}
 
-	var tmpRecordCount = {};
-	var tmpRequestState.Query;
+	tmpRequestState.RecordCount = {Count:0};
 
 	this.waterfall(
 		[
 			(fStageComplete) =>
 			{
-				tmpRequestState.Query = this.DAL.query;
-
-				// INJECT: Query configuration and population
+				// Validate that the schema has a deleted bit
 				var tmpSchema = this.DAL.schema;
 				var tmpHasDeletedBit = false;
 				for (let i = 0; i < tmpSchema.length; i++)
 				{
 					if (tmpSchema[i].Type == 'Deleted')
 					{
-						// There is a deleted bit on the record!
 						tmpHasDeletedBit = true;
 					}
 				}
 
 				if (!tmpHasDeletedBit)
 				{
-					return fStageComplete("NO_DELETED_BIT");
+					return fStageComplete(this.ErrorHandler.getError('No undelete bit on record.', 500));
 				}
-
 
 				return fStageComplete();
 			},
 			(fStageComplete) =>
 			{
-				// Now see if the record, with this identifier, for this user, has the deleted bit set to 1
+				// Now see if the record, with this identifier, for this user, exists with the deleted bit set to 1
+				tmpRequestState.Query = this.DAL.query;
 				tmpRequestState.Query.addFilter(this.DAL.defaultIdentifier, tmpIDRecord);
 				tmpRequestState.Query.addFilter('Deleted', 1);
-				tmpRequestState.Query.setIDUser(pRequest.UserSession.UserID);
-
+				tmpRequestState.Query.setIDUser(tmpRequestState.SessionData.UserID);
 				return fStageComplete();
 			},
 			(fStageComplete) =>
@@ -71,17 +67,15 @@ const doAPIEndpointUndelete = function(pRequest, pResponse, fNext)
 					{
 						if (!pRecord)
 						{
-							tmpRecordCount = {Count:0};
-							return fStageComplete();
+							return fStageComplete(this.ErrorHandler.getError('Record not found.', 404));
 						}
-
 						tmpRequestState.Record = pRecord;
 						return fStageComplete();
 					});
 			},
 			(fStageComplete) =>
 			{
-				return pRequest.BehaviorModifications.runBehavior('Undelete-PreOperation', pRequest, fStageComplete);
+				return this.BehaviorInjection.runBehavior(`Undelete-PreOperation`, this, pRequest, tmpRequestState, fStageComplete);
 			},
 			(fStageComplete) =>
 			{
@@ -90,27 +84,23 @@ const doAPIEndpointUndelete = function(pRequest, pResponse, fNext)
 					(pError, pQuery, pCount) =>
 					{
 						// MySQL returns the number of rows deleted
-						tmpRecordCount = {Count:pCount};
-
+						tmpRequestState.RecordCount = {Count:pCount};
 						return fStageComplete(pError);
 					});
 			},
 			(fStageComplete) =>
 			{
-				return pRequest.BehaviorModifications.runBehavior('Undelete-PostOperation', pRequest, fStageComplete);
+				return this.BehaviorInjection.runBehavior(`Undelete-PostOperation`, this, pRequest, tmpRequestState, fStageComplete);
+			},
+			(fStageComplete) =>
+			{
+				pResponse.send(tmpRequestState.RecordCount);
+				this.log.requestCompletedSuccessfully(pRequest, tmpRequestState, 'Undeleted '+tmpRequestState.RecordCount.Count+' records with ID '+tmpIDRecord+'.');
+				return fStageComplete();
 			}
 		], (pError) =>
 		{
-			if (pError &&
-				pError !== "NO_RECORD_FOUND")
-			{
-				return this.ErrorHandler.sendError(pRequest, tmpRequestState, pResponse, pError, fNext);
-			}
-
-							this.log.requestCompletedSuccessfully(pRequest, tmpRequestState, 'Undeleted '+tmpRecordCount.Count+' records with ID '+tmpIDRecord+'.');
-			pResponse.send(tmpRecordCount);
-
-			return fNext();
+			return this.ErrorHandler.handleErrorIfSet(pRequest, tmpRequestState, pResponse, pError, fNext);
 		}
 	);
 };

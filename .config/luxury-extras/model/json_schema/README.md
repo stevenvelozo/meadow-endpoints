@@ -1,1 +1,0 @@
-This is where the meadow high-level JSON schema of the data model will generate.

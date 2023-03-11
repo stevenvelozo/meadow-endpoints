@@ -3,42 +3,46 @@
 */
 const doAPIEndpointDelete = function(pRequest, pResponse, fNext)
 {
-	let tmpRequestState = initializeRequestState(pRequest, 'Delete');
+	let tmpRequestState = this.initializeRequestState(pRequest, 'Delete');
+	let fBehaviorInjector = (pBehaviorHash) => { return (fStageComplete) => { this.BehaviorInjection.runBehavior(pBehaviorHash, this, pRequest, tmpRequestState, fStageComplete); }; };
 
-	let tmpIDRecord = 0;
-
-	if (typeof(pRequest.params.IDRecord) === 'string')
-	{
-		tmpIDRecord = pRequest.params.IDRecord;
-	}
-	else if (typeof(pRequest.body[this.DAL.defaultIdentifier]) === 'number')
-	{
-		tmpIDRecord = pRequest.body[this.DAL.defaultIdentifier];
-	}
-	else if (typeof(pRequest.body[this.DAL.defaultIdentifier]) === 'string')
-	{
-		tmpIDRecord = pRequest.body[this.DAL.defaultIdentifier];
-	}
-	// Although the Meadow delete behavior does allow multiple deletes, we require an identifier.
-	// If a developer wants bulk delete, it will require a custom endpoint.
-	if (tmpIDRecord < 1)
-	{
-		return fStageComplete(this.ErrorHandler.getError('Record delete failure - a valid record ID is required in the passed-in record.', 500));
-	}
-
-	let tmpRecordCount = {Count:0};
+	tmpRequestState.IDRecord = 0;
+	tmpRequestState.RecordCount = { Count:0 };
 
 	this.waterfall(
 		[
 			(fStageComplete) =>
 			{
-				tmpRequestState.Query = this.DAL.query;
-
-				// This is not overloadable.`
-				tmpRequestState.Query.addFilter(this.DAL.defaultIdentifier, tmpIDRecord);
-				tmpRequestState.Query.setIDUser(pRequest.UserSession.UserID);
-
+				if (typeof(pRequest.params.IDRecord) === 'string')
+				{
+					tmpRequestState.IDRecord = pRequest.params.IDRecord;
+				}
+				else if (typeof(pRequest.body[this.DAL.defaultIdentifier]) === 'number')
+				{
+					tmpRequestState.IDRecord = pRequest.body[this.DAL.defaultIdentifier];
+				}
+				else if (typeof(pRequest.body[this.DAL.defaultIdentifier]) === 'string')
+				{
+					tmpRequestState.IDRecord = pRequest.body[this.DAL.defaultIdentifier];
+				}
+				// Although the Meadow delete behavior does allow multiple deletes, we require an identifier.
+				// If a developer wants bulk delete, it will require a custom endpoint.
+				if (tmpRequestState.IDRecord < 1)
+				{
+					return fStageComplete(this.ErrorHandler.getError('Record delete failure - a valid record ID is required in the passed-in record.', 500));
+				}
 				return fStageComplete();
+			},
+			(fStageComplete) =>
+			{
+				tmpRequestState.Query = this.DAL.query;
+				tmpRequestState.Query.addFilter(this.DAL.defaultIdentifier, tmpRequestState.IDRecord);
+				tmpRequestState.Query.setIDUser(tmpRequestState.SessionData.UserID);
+				return fStageComplete();
+			},
+			(fStageComplete) =>
+			{
+				return this.BehaviorInjection.runBehavior(`Delete-QueryConfiguration`, this, pRequest, tmpRequestState, fStageComplete);
 			},
 			(fStageComplete) =>
 			{
@@ -48,17 +52,15 @@ const doAPIEndpointDelete = function(pRequest, pResponse, fNext)
 					{
 						if (!pRecord)
 						{
-							// No record was found.
+							return fStageComplete(this.ErrorHandler.getError('Record not found.', 404));
 						}
-
 						tmpRequestState.Record = pRecord;
-
 						return fStageComplete();
 					});
 			},
 			(fStageComplete) =>
 			{
-				return pRequest.BehaviorModifications.runBehavior('Delete-PreOperation', pRequest, fStageComplete);
+				return this.BehaviorInjection.runBehavior(`Delete-PreOperation`, this, pRequest, tmpRequestState, fStageComplete);
 			},
 			(fStageComplete) =>
 			{
@@ -67,28 +69,23 @@ const doAPIEndpointDelete = function(pRequest, pResponse, fNext)
 					(pError, pQuery, pCount) =>
 					{
 						// MySQL returns the number of rows deleted
-						tmpRecordCount.Count = pCount;
+						tmpRequestState.RecordCount.Count = pCount;
 						return fStageComplete(pError);
 					});
 			},
 			(fStageComplete) =>
 			{
-				return pRequest.BehaviorModifications.runBehavior('Delete-PostOperation', pRequest, fStageComplete);
+				return this.BehaviorInjection.runBehavior(`Delete-PostOperation`, this, pRequest, tmpRequestState, fStageComplete);
 			},
 			(fStageComplete) =>
 			{
-				pResponse.send(tmpRecordCount);
-				this.log.requestCompletedSuccessfully(pRequest, tmpRequestState, 'Deleted '+tmpRecordCount.Count+' records with ID '+tmpIDRecord+'.');
+				pResponse.send(tmpRequestState.RecordCount);
+				this.log.requestCompletedSuccessfully(pRequest, tmpRequestState, `Deleted ${tmpRequestState.RecordCount.Count} ${this.DAL.scope} records with ID ${tmpRequestState.IDRecord}`);
 				return fStageComplete();
 			}
 		], (pError) =>
 		{
-			if (pError)
-			{
-				return this.ErrorHandler.sendError(pRequest, tmpRequestState, pResponse, pError, fNext);
-			}
-
-			return fNext();
+			return this.ErrorHandler.handleErrorIfSet(pRequest, tmpRequestState, pResponse, pError, fNext);
 		}
 	);
 };
