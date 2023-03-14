@@ -159,14 +159,14 @@ class MeadowEndpoints
 		}
 		if (this._EnabledBehaviorSets.Validate)
 		{
-			this.connectRoute(pServiceServer, 'post', `/Schema/Validate`, this._Endpoints.Validate, `the internal behavior _Endpoints.Validate`);
+			this.connectRoute(pServiceServer, 'postWithBodyParser', `/Schema/Validate`, this._Endpoints.Validate, `the internal behavior _Endpoints.Validate`);
 		}
 
 		// Standard CRUD and Count endpoints
 		if (this._EnabledBehaviorSets.Create)
 		{
-			this.connectRoute(pServiceServer, 'post', ``, this._Endpoints.Create, `the internal behavior _Endpoints.Create`);
-			this.connectRoute(pServiceServer, 'post', `s`, this._Endpoints.Creates, `the internal behavior _Endpoints.Creates`);
+			this.connectRoute(pServiceServer, 'postWithBodyParser', ``, this._Endpoints.Create, `the internal behavior _Endpoints.Create`);
+			this.connectRoute(pServiceServer, 'postWithBodyParser', `s`, this._Endpoints.Creates, `the internal behavior _Endpoints.Creates`);
 		}
 		if (this._EnabledBehaviorSets.Read)
 		{
@@ -200,10 +200,10 @@ class MeadowEndpoints
 		}
 		if (this._EnabledBehaviorSets.Update)
 		{
-			this.connectRoute(pServiceServer, 'put', ``, this._Endpoints.Update, `the internal behavior _Endpoints.Update`);
-			this.connectRoute(pServiceServer, 'put', `s`, this._Endpoints.Updates, `the internal behavior _Endpoints.Updates`);
-			this.connectRoute(pServiceServer, 'put', `/Upsert`, this._Endpoints.Upsert, `the internal behavior _Endpoints.Upsert`);
-			this.connectRoute(pServiceServer, 'put', `/Upserts`, this._Endpoints.Upserts, `the internal behavior _Endpoints.Upserts`);
+			this.connectRoute(pServiceServer, 'putWithBodyParser', ``, this._Endpoints.Update, `the internal behavior _Endpoints.Update`);
+			this.connectRoute(pServiceServer, 'putWithBodyParser', `s`, this._Endpoints.Updates, `the internal behavior _Endpoints.Updates`);
+			this.connectRoute(pServiceServer, 'putWithBodyParser', `/Upsert`, this._Endpoints.Upsert, `the internal behavior _Endpoints.Upsert`);
+			this.connectRoute(pServiceServer, 'putWithBodyParser', `/Upserts`, this._Endpoints.Upserts, `the internal behavior _Endpoints.Upserts`);
 		}
 		if (this._EnabledBehaviorSets.Delete)
 		{
