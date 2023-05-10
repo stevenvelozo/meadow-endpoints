@@ -62,7 +62,8 @@
     "papaparse": "^5.4.0",
     "supertest": "^6.3.3",
     "vinyl-buffer": "^1.0.1",
-    "vinyl-source-stream": "^2.0.0"
+    "vinyl-source-stream": "^2.0.0",
+    "why-is-node-running": "^2.2.2"
   },
   "dependencies": {
     "async": "2.6.1",
