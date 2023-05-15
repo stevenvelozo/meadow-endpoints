@@ -84,7 +84,7 @@ suite
 							function (pError, pResponse)
 							{
 								var tmpResult = JSON.parse(pResponse.text);
-								Expect(tmpResult.Title).to.equal('The Great Gatsby');
+								Expect(tmpResult.Title).to.equal('The Hunger Games');
 								fDone();
 							}
 						);
@@ -96,7 +96,7 @@ suite
 					function(fDone)
 					{
 						var tmpRecord = {Title:'Batman is Batman'};
-						libSuperTest('http://localhost:9080/')
+						libSuperTest('http://localhost:8086/')
 						.post('1.0/Book')
 						.send(tmpRecord)
 						.end(
@@ -104,8 +104,8 @@ suite
 							{
 								// Expect response to be the record we just created.
 								var tmpResult = JSON.parse(pResponse.text);
-								Expect(tmpResult.Type).to.equal('Mammoth');
-								Expect(tmpResult.CreatingIDUser).to.equal(37);
+								Expect(tmpResult.Title).to.equal('Batman is Batman');
+								Expect(tmpResult.CreatingIDUser).to.equal(1);
 								fDone();
 							}
 						);

@@ -1,6 +1,6 @@
 {
   "name": "meadow-endpoints",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "Automatic API endpoints for Meadow data.",
   "main": "source/Meadow-Endpoints.js",
   "scripts": {
@@ -46,30 +46,30 @@
   },
   "homepage": "https://github.com/stevenvelozo/meadow-endpoints",
   "devDependencies": {
-    "alasql": "^3.1.0",
+    "alasql": "^4.0.0",
     "browserify": "^17.0.0",
     "chai": "4.3.7",
-    "chance": "^1.1.8",
+    "chance": "^1.1.11",
     "gulp": "^4.0.2",
     "gulp-babel": "^8.0.0",
     "gulp-sourcemaps": "^3.0.0",
     "gulp-terser": "^2.1.0",
     "gulp-util": "^3.0.8",
     "mocha": "10.2.0",
-    "mysql2": "^3.1.2",
+    "mysql2": "^3.3.1",
     "nyc": "^15.1.0",
-    "orator-serviceserver-restify": "^1.0.3",
-    "papaparse": "^5.4.0",
+    "orator-serviceserver-restify": "^1.0.4",
+    "papaparse": "^5.4.1",
     "supertest": "^6.3.3",
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0",
     "why-is-node-running": "^2.2.2"
   },
   "dependencies": {
-    "async": "2.6.1",
-    "fable": "^3.0.11",
+    "async": "3.2.4",
+    "fable": "^3.0.37",
     "JSONStream": "^1.3.5",
     "meadow": "^2.0.4",
-    "orator": "^3.0.9"
+    "orator": "^3.0.11"
   }
 }
