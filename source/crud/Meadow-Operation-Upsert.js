@@ -14,6 +14,7 @@ var libAsync = require('async');
 
 var doCreate = require('./Meadow-Operation-Create.js');
 var doUpdate = require('./Meadow-Operation-Update.js');
+const util = require("util");
 
 var doUpsert = function(pRecordToUpsert, pRequest, pResponse, fCallback)
 {
@@ -92,11 +93,29 @@ var doUpsert = function(pRecordToUpsert, pRequest, pResponse, fCallback)
 		{
 			if (pError)
 			{
-				pRecordToUpsert.Error = 'Error upserting record:'+pError;
+				let errorMessage;
+				// attempt to unwrap the error
+				if (pError instanceof Error) {
+					errorMessage = pError.message;
+				} else if (pError && pError.Message) {
+					errorMessage = pError.Message;
+				} else {
+					errorMessage = pError;
+				}
+
+				pRecordToUpsert.Error = 'Error upserting record: '+errorMessage;
 				pRequest.RecordUpsertError = true;
 				pRequest.RecordUpsertErrorMessage = pError;
 				pRequest.UpsertedRecords.push(pRecordToUpsert);
-				pRequest.CommonServices.log.error('Error upserting record:'+pError, {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-'+pRequest.MeadowOperation, Stack: pError.stack }, pRequest);
+				// use nodejs util to pretty print our error message
+				const prettyPrintedError = util.inspect(pError, {
+					maxArrayLength: 10,
+					compact: true,
+					showHidden: true,
+					depth: 3,
+					maxStringLength: 200,
+				});
+				pRequest.CommonServices.log.error('Error upserting record: '+prettyPrintedError, {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:pRequest.DAL.scope+'-'+pRequest.MeadowOperation, Stack: pError.stack }, pRequest);
 			}
 
 			return fCallback();
