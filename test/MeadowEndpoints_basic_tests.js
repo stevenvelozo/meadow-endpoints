@@ -1156,8 +1156,7 @@ suite
 							{
 								// Expect response to be the record we just created.
 								var tmpResult = JSON.parse(pResponse.text);
-								//console.log(JSON.stringify(tmpResult, null, 4))
-								Expect(tmpResult.Valid).to.be.false;
+								Expect(tmpResult.Error).to.equal('Record validate failure - a valid JSON object is required.');
 								fDone();
 							}
 						);
