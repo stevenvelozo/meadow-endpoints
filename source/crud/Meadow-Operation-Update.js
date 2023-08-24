@@ -60,6 +60,7 @@ var doUpdate = function(pRecordToModify, pRequest, pResponse, fCallback, pOption
 				//send the original record to the Authorizer so it can verify ownership/etc
 				// TODO: Because the authorizer looks in the request for the record, we need to fix this somehow to work asynchronously.
 				pRequest.UpdatingRecord = pRecordToModify;
+				pRequest.OriginalRecord = pOriginalRecord;
 				pRequest.Record = pOriginalRecord;
 
 				pRequest.Authorizers.authorizeRequest('Update', pRequest, function(err)
