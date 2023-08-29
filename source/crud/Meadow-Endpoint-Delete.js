@@ -43,7 +43,7 @@ var doAPIDeleteEndpoint = function(pRequest, pResponse, fNext)
 		tmpIDRecord = pRequest.body[pRequest.DAL.defaultIdentifier];
 	}
 	// Although the delete request does allow multiple deletes, we require an identifier.
-	if (tmpIDRecord < 1)
+	if (!parseInt(tmpIDRecord) || tmpIDRecord < 1)
 	{
 		return pRequest.CommonServices.sendError('Record delete failure - a valid record ID is required in the passed-in record.', pRequest, pResponse, fNext);
 	}

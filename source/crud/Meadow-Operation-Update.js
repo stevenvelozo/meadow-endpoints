@@ -18,7 +18,7 @@ var doUpdate = function(pRecordToModify, pRequest, pResponse, fCallback, pOption
 	pRequest.MeadowOperation = (typeof(pRequest.MeadowOperation) === 'string') ? pRequest.MeadowOperation : 'Update';
 
 	// If there is not a default identifier or cached record, fail
-	if ((pRecordToModify[pRequest.DAL.defaultIdentifier] < 1) && (typeof(pOptionalCachedUpdatingRecord) === 'undefined'))
+	if ((!parseInt(pRecordToModify[pRequest.DAL.defaultIdentifier]) || pRecordToModify[pRequest.DAL.defaultIdentifier] < 1) && (typeof(pOptionalCachedUpdatingRecord) === 'undefined'))
 	{
 		return fCallback('Record update failure - a valid record ID is required in the passed-in record.');
 	}

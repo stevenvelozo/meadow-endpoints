@@ -962,6 +962,48 @@ suite
 				);
 				test
 				(
+					'update: update a record with a missing ID',
+					function(fDone)
+					{
+						// Update animal but don't provide ID
+						var tmpRecord = { Type:'Corgi' };
+						libSuperTest('http://localhost:9080/')
+						.del('1.0/FableTest')
+						.send(tmpRecord)
+						.end(
+							function(pError, pResponse)
+							{
+								// Expect response to be the count of deleted records.
+								var tmpResult = JSON.parse(pResponse.text);
+								Expect(tmpResult.Error).to.contain('a valid record ID is required');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'update: update a record with a malformed ID',
+					function(fDone)
+					{
+						// Update animal but don't provide ID
+						var tmpRecord = { IDAnimal: { ID: 3 }, Type:'Corgi' };
+						libSuperTest('http://localhost:9080/')
+						.del('1.0/FableTest')
+						.send(tmpRecord)
+						.end(
+							function(pError, pResponse)
+							{
+								// Expect response to be the count of deleted records.
+								var tmpResult = JSON.parse(pResponse.text);
+								Expect(tmpResult.Error).to.contain('a valid record ID is required');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
 					'update: update a record',
 					function(fDone)
 					{
@@ -1006,7 +1048,28 @@ suite
 				);
 				test
 				(
-					'delete: delete a record with a bad parameter',
+					'delete: delete a record with a missing ID',
+					function(fDone)
+					{
+						// Delete animal but don't provide ID
+						var tmpRecord = { Type: 'Corgi' };
+						libSuperTest('http://localhost:9080/')
+						.del('1.0/FableTest')
+						.send(tmpRecord)
+						.end(
+							function(pError, pResponse)
+							{
+								// Expect response to be the count of deleted records.
+								var tmpResult = JSON.parse(pResponse.text);
+								Expect(tmpResult.Error).to.contain('a valid record ID is required');
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'delete: delete a record with a bad ID',
 					function(fDone)
 					{
 						// Delete animal 3 ("Red")

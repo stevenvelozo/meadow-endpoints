@@ -41,7 +41,7 @@ var doAPIUpdateEndpoint = function(pRequest, pResponse, fNext)
 				{
 					return pRequest.CommonServices.sendError('Record update failure - a valid record is required.', pRequest, pResponse, fNext);
 				}
-				if (pRequest.body[pRequest.DAL.defaultIdentifier] < 1)
+				if (!parseInt(pRequest.body[pRequest.DAL.defaultIdentifier]) || pRequest.body[pRequest.DAL.defaultIdentifier] < 1)
 				{
 					return pRequest.CommonServices.sendError('Record update failure - a valid record ID is required in the passed-in record.', pRequest, pResponse, fNext);
 				}
