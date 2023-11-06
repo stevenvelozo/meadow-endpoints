@@ -123,13 +123,8 @@ const doUpsert = function(pRecordToUpsert, pRequest, pRequestState, pResponse, f
 		{
 			if (pError)
 			{
-				pRecordToUpsert.Error = 'Error upserting record:'+pError;
-				tmpRequestState.RecordUpsertError = true;
-				tmpRequestState.RecordUpsertErrorMessage = pError;
-				pRequest.UpsertedRecords.push(pRecordToUpsert);
-				pRequest.CommonServices.log.error('Error upserting record:'+pError, {SessionID:pRequest.UserSession.SessionID, RequestID:pRequest.RequestUUID, RequestURL:pRequest.url, Action:this.DAL.scope+'-'+pRequest.MeadowOperation, Stack: pError.stack }, pRequest);
+				tmpRequestState.Record.Error = pError;
 			}
-
 			return fCallback();
 		});
 };

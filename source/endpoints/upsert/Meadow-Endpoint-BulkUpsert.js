@@ -13,6 +13,7 @@ const doAPIEndpointUpserts = function(pRequest, pResponse, fNext)
 	tmpRequestState.CreatedRecords = [];
 	tmpRequestState.UpdatedRecords = [];
 	tmpRequestState.UpsertedRecords = [];
+	tmpRequestState.ErrorRecords = [];
 
 	this.waterfall(
 		[
