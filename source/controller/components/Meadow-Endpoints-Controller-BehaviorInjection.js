@@ -1,3 +1,7 @@
+//TODO: This is only being referenced to allow compatibility with service_pieces
+//TODO: There is risk of other incompatibilities until service_pieces is updated
+const libUnderscore = require('underscore');
+
 class MeadowEndpointsControllerBehaviorInjectionBase
 {
     constructor(pController)
@@ -5,7 +9,8 @@ class MeadowEndpointsControllerBehaviorInjectionBase
         this._Controller = pController;
 
         // The template compilation function
-		this.template = this._Controller.DAL.fable.Utility.template;
+		//this.template = this._Controller.DAL.fable.Utility.template;
+		this.template = libUnderscore.template;
 
 		// An object to hold modifications to specific behaviors.
 		this._BehaviorFunctions = {};
