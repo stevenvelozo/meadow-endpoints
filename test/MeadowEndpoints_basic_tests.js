@@ -2496,6 +2496,35 @@ suite
 						);
 					}
 				);
+				test
+				(
+					'problematic bulk upserts',
+					function(fDone)
+					{
+						_MeadowEndpoints.behaviorModifications.setTemplate('SelectList', '<%= Record.Name %>|<%=Record.Type%>');
+						var tmpRecords = [
+							{GUIDAnimal:'0xHAXXXX', TypeOh:'Triceratops'},
+							{GUIDAnimal:'0xDavison', Nameology:'Davison', Type:'Dog'},
+							{GUIDAnimal:'0xMartino', Name:'Martin', Type:'Dog'}, // this one still works
+						];
+						_MockSessionValidUser.UserRoleIndex = 2;
+						libSuperTest('http://localhost:9080/')
+						.put('1.0/FableTest/Upserts')
+						.send(tmpRecords)
+						.end(
+							function(pError, pResponse)
+							{
+								// Expect response to be the record we just created.
+								var tmpResult = JSON.parse(pResponse.text);
+								console.log(JSON.stringify(tmpResult,null,4));
+								Expect(tmpResult[0].Error).to.be.a('string');
+								Expect(tmpResult[1].Error).to.be.a('string');
+								Expect(tmpResult[2].Error).to.not.exist;
+								fDone();
+							}
+						);
+					}
+				);
 			}
 		);
 	}

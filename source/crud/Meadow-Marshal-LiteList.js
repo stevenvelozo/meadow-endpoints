@@ -30,7 +30,8 @@ var marshalLiteList = (pRecords, pRequest, pFieldList) =>
 		{
 			if (pField.indexOf('ID') === 0 ||
 				pField.indexOf('GUID') === 0 ||
-				pField == 'CreatingIDUser') //we should always include owner info
+				pField == 'CreatingIDUser' || // we should always include owner info
+				pField == 'Error') // we should propagate errors through (ex. bulk upsert)
 			{
 				tmpFieldList.push(pField);
 			}
