@@ -11,25 +11,29 @@ const libMeadowEndpointsStreamRecordArray = require('./utility/Meadow-Endpoints-
 
 class MeadowEndpointControllerBase
 {
+    /**
+     * @param {import('../Meadow-Endpoints.js')} pMeadowEndpoints
+     */
 	constructor(pMeadowEndpoints)
 	{
 		this.DAL = pMeadowEndpoints.DAL;
-		this.ControllerOptions = pMeadowEndpoints._ControllerOptions
+		this.ControllerOptions = pMeadowEndpoints._ControllerOptions;
 
 		// Application Services
-		this._Settings = false;
-		this._LogController = false;
+		this._Settings = null;
+		this._LogController = null;
 
 		// Logic and Behavior
-		this._BehaviorInjectionController = false;
-		this._ErrorController = false;
+		this._BehaviorInjectionController = null;
+		this._ErrorController = null;
 
 		// Internal async utility functions
 		this.waterfall = this.DAL.fable.Utility.waterfall;
 		this.eachLimit = this.DAL.fable.Utility.eachLimit;
 		this.extend = this.DAL.fable.Utility.extend;
 
-		if ((typeof(pControllerOptions) != 'object') || pControllerOptions.hasOwnProperty('ControllerClass'))
+		//FIXME: not sure what this is supposed to do, it was broken before
+		//if ((typeof(this.ControllerOptions) != 'object') || this.ControllerOptions.hasOwnProperty('ControllerClass'))
 		{
 			this.initializeDefaultUnsetControllers(this);
 		}
@@ -40,6 +44,9 @@ class MeadowEndpointControllerBase
 		this._StreamRecordArray = new libMeadowEndpointsStreamRecordArray(this);
 	}
 
+    /**
+     * @param {import('./Meadow-Endpoints-Controller-Base.js')} pController
+     */
 	initializeDefaultUnsetControllers(pController)
 	{
 		// Application Services

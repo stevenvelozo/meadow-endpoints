@@ -6,6 +6,9 @@ const JSONStream = require('JSONStream');
 
 class MeadowEndpointsStreamRecordArray
 {
+    /**
+     * @param {import('../Meadow-Endpoints-Controller-Base.js')} pController
+     */
     constructor(pController)
 	{
         this._Controller = pController;
@@ -53,7 +56,7 @@ class MeadowEndpointsStreamRecordArray
 		libAsyncEachSeries(this.chunk(pRecords, 1000), (pRecordChunk, fNext) =>
 		{
 			pRecordChunk.forEach(recordJsonMarshaller.write);
-			setImmediate(fNext);
+			setTimeout(fNext, 0);
 		},
 		(error) =>
 		{

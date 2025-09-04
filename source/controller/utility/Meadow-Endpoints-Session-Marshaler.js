@@ -1,5 +1,8 @@
 class MeadowEndpointsSessionMarshaler
 {
+    /**
+     * @param {import('../Meadow-Endpoints-Controller-Base.js')} pController
+     */
     constructor(pController)
 	{
         this._Controller = pController;
@@ -8,11 +11,12 @@ class MeadowEndpointsSessionMarshaler
     getSessionData(pRequest)
     {
         let tmpSession = Object.assign({}, this._Controller.settings.MeadowEndpointsDefaultSessionObject);
+        let tmpHeaderSessionString;
 
         switch (this._Controller.settings.MeadowEndpointsSessionDataSource || 'Request')
         {
             default:
-                this._LogController.warn(`Unknown session source configured: ${_SessionDataSource} - defaulting to Request for backward compatibility`);
+                this._Controller.log.warn(`Unknown session source configured: ${this._Controller.settings.MeadowEndpointsSessionDataSource} - defaulting to Request for backward compatibility`);
             case 'Request':
                 // noop - already set by orator-session
                 tmpSession = this._Controller.extend(tmpSession, pRequest.UserSession);
@@ -22,17 +26,17 @@ class MeadowEndpointsSessionMarshaler
             case 'Header':
                 try
                 {
-                    const tmpHeaderSessionString = pRequest.headers['x-trusted-session'];
+                    tmpHeaderSessionString = pRequest.headers['x-trusted-session'];
                     if (!tmpHeaderSessionString)
                     {
                         break;
                     }
-                    tmpHeaderSession = JSON.parse(tmpHeaderSessionString);
-                    tmpSession = this._Controller.extend(tmpSession, pRequest.tmpHeaderSession);
+                    const tmpHeaderSession = JSON.parse(tmpHeaderSessionString);
+                    tmpSession = this._Controller.extend(tmpSession, tmpHeaderSession);
                 }
                 catch (pError)
                 {
-                    this._LogController.error(`Meadow Endpoints attempted to process a Header Session String with value [${tmpHeaderSessionString}] and failed -- likely culprit is bad JSON.`)
+                    this._Controller.log.error(`Meadow Endpoints attempted to process a Header Session String with value [${tmpHeaderSessionString}] and failed -- likely culprit is bad JSON.`)
                 }
                 break;
         }

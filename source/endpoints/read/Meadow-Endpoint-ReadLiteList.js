@@ -16,7 +16,9 @@ const doAPIEndpointReadLite = function(pRequest, pResponse, fNext)
 				tmpRequestState.Query = this.DAL.query;
 				// TODO: Limit the query to the columns we need for the templated expression
 
+				/** @type {number | boolean} */
 				var tmpCap = false;
+				/** @type {number | boolean} */
 				var tmpBegin = false;
 				if (typeof(pRequest.params.Begin) === 'string' ||
 					typeof(pRequest.params.Begin) === 'number')

@@ -23,7 +23,7 @@ const doAPIEndpointUndelete = function(pRequest, pResponse, fNext)
 	// TODO: Decide if we want to keep this pattern similar to Delete, or, if we want to change it to allow bulk undeletes.
 	if (tmpIDRecord < 1)
 	{
-		return fStageComplete(this.ErrorHandler.getError('Record undelete failure - a valid record ID is required.', 500));
+		return fNext(this.ErrorHandler.getError('Record undelete failure - a valid record ID is required.', 500));
 	}
 
 	tmpRequestState.RecordCount = {Count:0};

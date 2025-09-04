@@ -101,10 +101,17 @@ class MeadowEndpoints
 		});
 	}
 
+    /**
+     * @return {import('./controller/Meadow-Endpoints-Controller-Base.js')} The controller instance
+     */
 	get controller()
 	{
 		return this._Controller;
 	}
+
+    /**
+     * @param {import('./controller/Meadow-Endpoints-Controller-Base.js')} pController - The controller instance
+     */
 	set controller(pController)
 	{
 		this._Controller = pController;
