@@ -1,0 +1,13 @@
+{
+	"include": ["source/**/*.js"],
+	"compilerOptions":
+	{
+		"allowJs": true,
+		"declaration": true,
+		"emitDeclarationOnly": true,
+		"outDir": "dist",
+		"declarationMap": true,
+		"checkJs": true,
+		"lib": ["ES2020", "dom"]
+	}
+}

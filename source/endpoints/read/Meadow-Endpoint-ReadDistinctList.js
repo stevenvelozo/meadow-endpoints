@@ -16,7 +16,9 @@ const doAPIEndpointReadDistinct = function(pRequest, pResponse, fNext)
 		{
 			tmpRequestState.Query = this.DAL.query.setDistinct(true);
 
+			/** @type {number | boolean} */
 			let tmpCap = false;
+			/** @type {number | boolean} */
 			let tmpBegin = false;
 			if (typeof(pRequest.params.Begin) === 'string' ||
 				typeof(pRequest.params.Begin) === 'number')

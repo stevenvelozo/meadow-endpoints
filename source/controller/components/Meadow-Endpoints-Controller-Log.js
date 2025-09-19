@@ -1,5 +1,8 @@
 class MeadowEndpointsControllerLogBase
 {
+    /**
+     * @param {import('../Meadow-Endpoints-Controller-Base.js')} pController
+     */
     constructor(pController)
 	{
         this._Controller = pController;

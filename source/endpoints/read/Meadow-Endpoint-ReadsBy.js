@@ -13,7 +13,9 @@ const doAPIEndpointReadsBy = function(pRequest, pResponse, fNext)
 			{
 				tmpRequestState.Query = this.DAL.query;
 
+				/** @type {number | boolean} */
 				var tmpCap = false;
+				/** @type {number | boolean} */
 				var tmpBegin = false;
 				if (typeof(pRequest.params.Begin) === 'string' ||
 					typeof(pRequest.params.Begin) === 'number')
