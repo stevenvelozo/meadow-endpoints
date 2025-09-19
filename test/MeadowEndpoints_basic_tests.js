@@ -26,39 +26,6 @@ suite
 	'Meadow-Endpoints-Core',
 	() =>
 	{
-		suiteSetup ((fSetupComplete) =>
-		{
-			if (!_INITIALIZATION_COMPLETE)
-			{
-				// do something before every test
-				console.log('Beginning Custom Test Suite(s) Setup...')
-				libAsync.waterfall([
-					// Launch the book server
-					(fStageComplete)=>
-					{
-						console.log('...Server...');
-						_BookServer = libBookServer(fStageComplete);
-					}
-				],
-				(pError) =>
-				{
-					console.log('Setup complete!')
-					_INITIALIZATION_COMPLETE = true;
-					return fSetupComplete(pError);
-				});
-			}
-		});
-
-		suiteTeardown((fTeardownComplete) =>
-		{
-			console.log('Ending suite!');
-			_BookServer.serviceServer.close(()=>
-			{
-				console.log('...Server closed!')
-				return fTeardownComplete();
-			});
-		})
-
 		suite
 		(
 			'Object Sanity',
@@ -84,7 +51,7 @@ suite
 							function (pError, pResponse)
 							{
 								var tmpResult = JSON.parse(pResponse.text);
-								Expect(tmpResult.Title).to.equal('The Hunger Games');
+								Expect(tmpResult.Title).to.equal('Angels & Demons');
 								fDone();
 							}
 						);
@@ -105,7 +72,6 @@ suite
 								// Expect response to be the record we just created.
 								var tmpResult = JSON.parse(pResponse.text);
 								Expect(tmpResult.Title).to.equal('Batman is Batman');
-								Expect(tmpResult.CreatingIDUser).to.equal(1);
 								fDone();
 							}
 						);

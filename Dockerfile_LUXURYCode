@@ -16,44 +16,6 @@ RUN echo "Building RETOLD development image..."
 RUN echo "...installing vscode extensions..."
 
 # Mocha unit testing in the sidebar
-RUN code-server --install-extension hbenl.vscode-mocha-test-adapter
-RUN code-server --install-extension hbenl.test-adapter-converter
-RUN code-server --install-extension hbenl.vscode-test-explorer
-
-# Magic indentation rainbow
-RUN code-server --install-extension oderwat.indent-rainbow
-RUN code-server --install-extension dbaeumer.vscode-eslint
-
-# Contextual git
-RUN code-server --install-extension eamodio.gitlens
-
-# Other extensions (uncomment them to have them automagic, or run this from a terminal to install in the container):
-
-# SQL Tools
-RUN code-server --install-extension mtxr.sqltools
-RUN code-server --install-extension mtxr.sqltools-driver-mysql
-
-# Microsoft's AI code completion
-# RUN code-server --install-extension  VisualStudioExptTeam.vscodeintellicode
-
-# Live server -- make sure to open up the port on the docker image
-# RUN code-server --install-extension ritwickdey.LiveServer
-
-# Quick link to required modules' documentation
-RUN code-server --install-extension bengreenier.vscode-node-readme
-
-# Switch up fonts
-# RUN code-server --install-extension evan-buss.font-switcher
-
-# Icons
-# RUN code-server --install-extension vscode-icons-team.vscode-icons
-# RUN code-server --install-extension PKief.material-icon-theme
-
-# Hover over CSS colors to see them previewed
-# RUN code-server --install-extension bierner.color-info
-
-# An easy on the eyes color theme
-# RUN code-server --install-extension daylerees.rainglow
 
 RUN echo "...configuring mariadb (mysql) server..."
 RUN sudo sed -i "s|bind-address|#bind-address|g" /etc/mysql/mariadb.conf.d/50-server.cnf
