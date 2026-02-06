@@ -100,7 +100,15 @@ const doUpdate = function(pRecordToModify, pRequest, pRequestState, pResponse, f
 	{
 		if (pError)
 		{
-			tmpRequestState.Record.Error = pError;
+			// Ensure we have a record object to attach the error to
+			if (tmpRequestState.Record)
+			{
+				tmpRequestState.Record.Error = pError;
+			}
+			else
+			{
+				tmpRequestState.Record = { Error: pError };
+			}
 
 			tmpRequestState.ParentRequestState.RecordUpdateError = true;
 			tmpRequestState.ParentRequestState.RecordUpdateErrorObject = pError;

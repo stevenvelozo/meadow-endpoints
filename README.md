@@ -1,82 +1,198 @@
 # Meadow Endpoints
 
-Automagic REST endpoints for basic CRUD operations on the Retold framework.
+> Automagic REST endpoints for CRUD operations on the Retold framework
 
-This library generates REST endpoints in a consistent manner.  Endpoints have the following features:
+Meadow Endpoints generates a full suite of RESTful API routes from your Meadow data entities. Define your data model with Meadow, point Meadow Endpoints at it, and you get Create, Read, Update, Delete, Count, Schema, and Validate endpoints -- with authentication hooks, authorization, dynamic filtering, pagination, and behavior injection for customization. The design philosophy is to cover the 99% via configuration; the last 1% is easily hand-craftable.
 
-* Authentication
-* Resource Authorization
-* CRUD Operations
-* Dynamic Filtering
-* Schema Validation
+## Features
 
-The design philosophy is not to cover every possible use case, but to cover the 99% via configuration.  The last 1% is easily hand-craftable.
+- **Automatic Route Generation** - Full CRUD endpoints from a Meadow entity with zero boilerplate
+- **Behavior Injection** - Pre/post operation hooks for authentication, authorization, and custom logic
+- **Dynamic Filtering** - URL-based filter expressions for flexible querying
+- **Pagination** - Built-in Begin/Cap parameters with configurable default limits
+- **Bulk Operations** - Batch create, update, and upsert endpoints
+- **Schema Endpoints** - Serve JSON Schema, default objects, and validation
+- **Controller Architecture** - Extensible controller system with replaceable error handling, logging, and session management
+- **Fable Integration** - First-class service in the Fable/Orator ecosystem
 
-To best use this library, it should be in conjunction with [stricture](https://github.com/stevenvelozo/stricture) and [orator](https://github.com/stevenvelozo/orator).
+## Quick Start
 
+```javascript
+const libFable = require('fable');
+const libOrator = require('orator');
+const libOratorServiceServerRestify = require('orator-serviceserver-restify');
+const libMeadow = require('meadow');
+const libMeadowEndpoints = require('meadow-endpoints');
 
-### Docker Development Environment
+const _Fable = new libFable({
+	Product: 'MyAPI',
+	ProductVersion: '1.0.0',
+	ServicePort: 8086
+});
 
-1. Run this command to build this image:
+// Set up Orator
+_Fable.serviceManager.addServiceType('Orator', libOrator);
+_Fable.serviceManager.addServiceType('OratorServiceServer', libOratorServiceServerRestify);
+_Fable.serviceManager.instantiateServiceProvider('Orator');
+_Fable.serviceManager.instantiateServiceProvider('OratorServiceServer');
 
-```
-npm run docker-dev-build-image
-```
+// Create a Meadow DAL for "Book"
+const tmpMeadow = libMeadow.new(_Fable, 'Book')
+	.setProvider('MySQL')
+	.setDefaultIdentifier('IDBook')
+	.setSchema([
+		{ Column: 'IDBook', Type: 'AutoIdentity' },
+		{ Column: 'GUIDBook', Type: 'AutoGUID' },
+		{ Column: 'Title', Type: 'String', Size: '255' },
+		{ Column: 'Author', Type: 'String', Size: '128' },
+		{ Column: 'CreateDate', Type: 'CreateDate' },
+		{ Column: 'CreatingIDUser', Type: 'CreateIDUser' },
+		{ Column: 'UpdateDate', Type: 'UpdateDate' },
+		{ Column: 'UpdatingIDUser', Type: 'UpdateIDUser' },
+		{ Column: 'Deleted', Type: 'Deleted' }
+	]);
 
-2. Run this command to create and run the local container:
+// Generate and connect endpoints
+const tmpMeadowEndpoints = new libMeadowEndpoints(tmpMeadow);
+tmpMeadowEndpoints.connectRoutes(_Fable.Orator.serviceServer);
 
-```
-npm run docker-dev-run
-```
-
-3. Go to http://localhost:12343/ in a web browser
-
-4. The password is "retold"
-
-5. Right now you (may) need to delete the `node_modules` folders and regenerate it for Linux, depending on your OS.
-
-
-
-## Pattern Description to Expand
-
-```
-const libMeadowEndpointsControllerBase = require('meadow-endpoints').ControllerBase;
-
-class MySpecialLogController inherits libMeadowEndpointsControllerBase.LogControllerBase
+// Start the server
+_Fable.Orator.startService(() =>
 {
-	constructor(pMeadowEndpoints, pOptions)
-	{
-		super(pMeadowEndpoints, pOptions);
-	}
-
-	// Overload info to do something special
-	info(pLogText, ...pLogObjects)
-	{
-		super(pLogText, ...pLogObjects);
-		console.log('### THIS CONTROLLER DO MAGIC STUFF WITH'+pLogText);
-	}
-}
-
-class MyMeadowEndpointsController
-{
-	constructor(pMeadowEndpoints, pOptions)
-	{
-		super(pMeadowEndpoints, pOptions);
-
-		this._LogController = new mySpecialLogController(pMeadowEndpoints, pOptions);
-
-		this.initializeDefaultUnsetControllers(pMeadowEndpoints, pControllerOptions);
-	}
-}
-
-module.exports = MyMeadowEndpointsController;
+	console.log('API running on port 8086');
+	// GET    /1.0/Book/:IDBook       - Read one
+	// GET    /1.0/Book/s/:Begin/:Cap - Read many
+	// POST   /1.0/Book               - Create
+	// PUT    /1.0/Book               - Update
+	// DELETE /1.0/Book/:IDBook       - Delete
+	// GET    /1.0/Book/s/Count       - Count
+	// GET    /1.0/Book/Schema        - Schema
+});
 ```
 
+## Installation
+
+```bash
+npm install meadow-endpoints
 ```
-let libMySpecialController = require('TheCodeAbove.js');
 
-let tmpMeadow = new Meadow('INITIALIZE THE DAL');
+## How It Works
 
-let tmpMeadowEndpoints = new MeadowEndpoints(tmpMeadow, { Controller: libMySpecialController });
+Meadow Endpoints takes a configured Meadow DAL instance and registers HTTP routes with an Orator service server. Each route follows an async waterfall pattern with behavior injection points for customization.
 
 ```
+Orator (API Server)
+  └── Meadow Endpoints (Route Registration)
+        ├── Controller (Request Lifecycle)
+        │     ├── Session Marshaler
+        │     ├── Behavior Injection
+        │     ├── Error Handler
+        │     └── Log Controller
+        └── Meadow DAL (Data Access)
+              └── Database Provider
+```
+
+## Generated Routes
+
+### CRUD
+
+| Method | Route | Description |
+|--------|-------|-------------|
+| POST | `/{ver}/{entity}` | Create a record |
+| POST | `/{ver}/{entity}/s` | Bulk create |
+| GET | `/{ver}/{entity}/:ID` | Read one record |
+| GET | `/{ver}/{entity}/s/:Begin/:Cap` | Read many with pagination |
+| GET | `/{ver}/{entity}/s/FilteredTo/:Filter` | Read with filter |
+| PUT | `/{ver}/{entity}` | Update a record |
+| PUT | `/{ver}/{entity}/Upsert` | Insert or update |
+| DELETE | `/{ver}/{entity}/:ID` | Delete a record |
+| GET | `/{ver}/{entity}/Undelete/:ID` | Undelete a record |
+| GET | `/{ver}/{entity}/s/Count` | Count records |
+
+### Specialized Read
+
+| Method | Route | Description |
+|--------|-------|-------------|
+| GET | `/{ver}/{entity}/Select` | Select list ({Hash, Value} pairs) |
+| GET | `/{ver}/{entity}/s/Lite` | Lite list (minimal columns) |
+| GET | `/{ver}/{entity}/s/Distinct/:Columns` | Distinct values |
+| GET | `/{ver}/{entity}/Max/:Column` | Maximum value |
+
+### Schema
+
+| Method | Route | Description |
+|--------|-------|-------------|
+| GET | `/{ver}/{entity}/Schema` | JSON Schema |
+| GET | `/{ver}/{entity}/Schema/New` | Empty default record |
+| POST | `/{ver}/{entity}/Schema/Validate` | Validate a record |
+
+## Behavior Injection
+
+Hook into any endpoint's lifecycle for authorization and custom logic:
+
+```javascript
+const tmpEndpoints = new libMeadowEndpoints(tmpMeadow);
+
+// Add customer-scoped reads
+tmpEndpoints.controller.BehaviorInjection.setBehavior('Reads-QueryConfiguration',
+	(pRequest, pRequestState, fCallback) =>
+	{
+		pRequestState.Query.addFilter('IDCustomer', pRequestState.SessionData.CustomerID);
+		return fCallback();
+	});
+```
+
+### Injection Points
+
+| Point | Phase |
+|-------|-------|
+| `Create-PreOperation` / `Create-PostOperation` | Before/after creation |
+| `Create-QueryConfiguration` | After query built, before execution |
+| `Read-PreOperation` / `Read-PostOperation` | Before/after single read |
+| `Reads-QueryConfiguration` / `Reads-PostOperation` | Multi-record reads |
+| `Update-QueryConfiguration` | After update query built |
+| `Delete-PreOperation` / `Delete-PostOperation` | Before/after deletion |
+| `Count-QueryConfiguration` | After count query built |
+
+## Dynamic Filtering
+
+```
+GET /1.0/Book/s/FilteredTo/Title~JavaScript
+GET /1.0/Book/s/FilteredTo/Author=Frank Herbert
+GET /1.0/Book/s/FilteredTo/Price>20
+```
+
+Operators: `=`, `!=`, `>`, `<`, `>=`, `<=`, `~` (contains)
+
+## Configuration
+
+| Setting | Type | Default | Description |
+|---------|------|---------|-------------|
+| `MeadowEndpointVersion` | string | `"1.0"` | API version prefix |
+| `MeadowDefaultMaxCap` | number | `250` | Default pagination limit |
+| `MeadowEndpointsSessionDataSource` | string | `"Request"` | Session data source (`Request`, `Header`, `None`) |
+| `SendErrorStatusCodes` | boolean | `false` | Set HTTP status codes on errors |
+
+## Testing
+
+```bash
+npm test
+```
+
+## Documentation
+
+Detailed documentation is available in the `docs/` folder and can be served locally:
+
+```bash
+npx docsify-cli serve docs
+```
+
+## Related Packages
+
+- [meadow](https://github.com/stevenvelozo/meadow) - Data access layer (required)
+- [meadow-filter](https://github.com/stevenvelozo/meadow-filter) - URL filter expression parser
+- [orator](https://github.com/stevenvelozo/orator) - API server abstraction
+- [orator-serviceserver-restify](https://github.com/stevenvelozo/orator-serviceserver-restify) - Restify service server
+- [stricture](https://github.com/stevenvelozo/stricture) - Schema definition language
+- [foxhound](https://github.com/stevenvelozo/foxhound) - Query DSL for SQL generation
+- [fable](https://github.com/stevenvelozo/fable) - Service provider framework
