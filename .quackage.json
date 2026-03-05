@@ -1,0 +1,9 @@
+{
+	"GulpExecutions": [
+	{
+		"Hash": "default",
+		"Name": "Default standard build.",
+		"BuildFileLabel": "",
+		"BrowsersListRC": "since 2022"
+	}]
+}
