@@ -819,6 +819,45 @@ suite
 							);
 					}
 				);
+				test
+				(
+					'upsert: update by GUID when passed ID is zero',
+					function (fDone)
+					{
+						// First create a record so we have a known GUID
+						_SuperTest
+							.post('1.0/Book')
+							.send({ Title: 'Zero ID Upsert Test', Genre: 'Test' })
+							.end(
+								(pError, pResponse) =>
+								{
+									let tmpCreated = JSON.parse(pResponse.text);
+									let tmpRecord = Array.isArray(tmpCreated) ? tmpCreated[0] : tmpCreated;
+									let tmpGUID = tmpRecord.GUIDBook;
+									let tmpID = tmpRecord.IDBook;
+									Expect(tmpID).to.be.above(0);
+									Expect(tmpGUID).to.be.a('string');
+
+									// Now upsert with ID=0 but the same GUID — should
+									// find the record by GUID and update it, not fail
+									// with "Record IDs do not match".
+									_SuperTest
+										.put('1.0/Book/Upsert')
+										.send({ IDBook: 0, GUIDBook: tmpGUID, Title: 'Zero ID Upsert Updated' })
+										.end(
+											(pUpsertError, pUpsertResponse) =>
+											{
+												Expect(pUpsertResponse.status).to.equal(200);
+												let tmpResult = JSON.parse(pUpsertResponse.text);
+												Expect(tmpResult.IDBook).to.equal(tmpID);
+												Expect(tmpResult.Title).to.equal('Zero ID Upsert Updated');
+												fDone();
+											}
+										);
+								}
+							);
+					}
+				);
 			}
 		);
 

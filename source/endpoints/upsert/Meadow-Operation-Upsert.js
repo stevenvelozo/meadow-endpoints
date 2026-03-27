@@ -66,8 +66,10 @@ const doUpsert = function(pRecordToUpsert, pRequest, pRequestState, pResponse, f
 							}
 							else
 							{
-								// Set the default ID in the passed-in record if it doesn't exist..
-								if (!tmpRequestState.Record.hasOwnProperty(this.DAL.defaultIdentifier))
+								// Set the default ID in the passed-in record if it doesn't exist
+								// or is zero (which is never a valid ID).
+								if (!tmpRequestState.Record.hasOwnProperty(this.DAL.defaultIdentifier)
+									|| !tmpRequestState.Record[this.DAL.defaultIdentifier])
 								{
 									tmpRequestState.Record[this.DAL.defaultIdentifier] = pRecord[this.DAL.defaultIdentifier];
 								}
