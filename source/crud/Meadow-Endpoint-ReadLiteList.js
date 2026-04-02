@@ -111,6 +111,11 @@ var doAPIReadLiteEndpoint = function(pRequest, pResponse, fNext)
 				// It looks like this record was not authorized.  Send an error.
 				return fStageComplete({Code:405,Message:'UNAUTHORIZED ACCESS IS NOT ALLOWED'});
 			},
+			// 2.7: INJECT: Post-operation behavior (e.g. field cleansing)
+			function (fStageComplete)
+			{
+				pRequest.BehaviorModifications.runBehavior('ReadsLite-PostOperation', pRequest, fStageComplete);
+			},
 			// 3. Marshalling of records into the hash list, using underscore templates.
 			function (fStageComplete)
 			{

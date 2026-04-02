@@ -609,6 +609,91 @@ suite
 				);
 				test
 				(
+					'readsLite: ReadsLite-PostOperation behavior fires and can modify records',
+					function(fDone)
+					{
+						_MeadowEndpoints.behaviorModifications.setBehavior('ReadsLite-PostOperation',
+							function(pRequest, fComplete)
+							{
+								// Simulate field cleansing by removing Type from all records
+								pRequest.Records.forEach(function(pRecord)
+								{
+									delete pRecord.Type;
+								});
+								fComplete(false);
+							});
+						libSuperTest('http://localhost:9080/')
+						.get('1.0/FableTests/LiteExtended/Type,Name')
+						.end(
+							function (pError, pResponse)
+							{
+								var tmpResults = JSON.parse(pResponse.text);
+								Expect(tmpResults.length).to.equal(6);
+								// Type was requested via LiteExtended but removed by PostOperation behavior
+								Expect(tmpResults[0]).to.not.have.property('Type');
+								Expect(tmpResults[4]).to.not.have.property('Type');
+								// Name was not removed and should still be present
+								Expect(tmpResults[4].Name).to.equal('Gertrude');
+								// Clean up
+								_MeadowEndpoints.behaviorModifications.setBehavior('ReadsLite-PostOperation', null);
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'readsLite: ReadsLite-PostOperation behavior fires for standard Lite endpoint',
+					function(fDone)
+					{
+						var tmpBehaviorFired = false;
+						_MeadowEndpoints.behaviorModifications.setBehavior('ReadsLite-PostOperation',
+							function(pRequest, fComplete)
+							{
+								tmpBehaviorFired = true;
+								fComplete(false);
+							});
+						libSuperTest('http://localhost:9080/')
+						.get('1.0/FableTests/Lite')
+						.end(
+							function (pError, pResponse)
+							{
+								var tmpResults = JSON.parse(pResponse.text);
+								Expect(tmpResults.length).to.equal(6);
+								Expect(tmpBehaviorFired).to.equal(true);
+								// Clean up
+								_MeadowEndpoints.behaviorModifications.setBehavior('ReadsLite-PostOperation', null);
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
+					'readsLite: ReadsLite-PostOperation error halts response',
+					function(fDone)
+					{
+						_MeadowEndpoints.behaviorModifications.setBehavior('ReadsLite-PostOperation',
+							function(pRequest, fComplete)
+							{
+								fComplete({Code:403,Message:'SENSITIVE FIELD ACCESS DENIED'});
+							});
+						libSuperTest('http://localhost:9080/')
+						.get('1.0/FableTests/LiteExtended/Type,Name')
+						.end(
+							function (pError, pResponse)
+							{
+								var tmpResult = JSON.parse(pResponse.text);
+								Expect(tmpResult).to.have.property('Error');
+								// Clean up
+								_MeadowEndpoints.behaviorModifications.setBehavior('ReadsLite-PostOperation', null);
+								fDone();
+							}
+						);
+					}
+				);
+				test
+				(
 					'readsby: get all records by Type',
 					function(fDone)
 					{
