@@ -154,3 +154,6 @@ out
 
 # Quackage takes care of these for me!
 *.quackage.bak
+
+# Indoctrinate catalog staging cache
+Indoctrinate-Catalog-AppData.json
