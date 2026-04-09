@@ -42,7 +42,7 @@ const doAPIEndpointUpserts = function(pRequest, pResponse, fNext)
 			},
 			(fStageComplete) =>
 			{
-				this.log.requestCompletedSuccessfully(pRequest, tmpRequestState, `Bulk upsert complete -- ${tmpRequestState.UpsertedRecords} records processed`);
+				this.log.requestCompletedSuccessfully(pRequest, tmpRequestState, `Bulk upsert complete -- ${tmpRequestState.UpsertedRecords.length} records processed`);
 				return fStageComplete();
 			}
 		], (pError) =>
