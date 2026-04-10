@@ -4,7 +4,7 @@
     ],
     "SourceContentCatalog": {
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.config/code-server/config.yaml": {
-            "UUID": "2a9bf2cb-94b9-4b98-9cd7-98576067b3e1",
+            "UUID": "bfe14056-ff30-4227-bfec-b92b329fbb6a",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.config/code-server/config.yaml",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.config/code-server/config.yaml",
@@ -42,7 +42,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.config/configstore/update-notifier-npm-check-updates.json": {
-            "UUID": "d58a7692-ffb1-4fff-bce0-dc5314af7e97",
+            "UUID": "8b282b22-03c8-464d-a377-0bd7c5a0823b",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.config/configstore/update-notifier-npm-check-updates.json",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.config/configstore/update-notifier-npm-check-updates.json",
@@ -84,7 +84,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.config/configstore/update-notifier-npm.json": {
-            "UUID": "4aca0125-cdb9-4db1-8d6c-85fd5e26a6d4",
+            "UUID": "f7b44a66-24dc-44e9-9159-50a7607cbc31",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.config/configstore/update-notifier-npm.json",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.config/configstore/update-notifier-npm.json",
@@ -124,7 +124,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.config/luxury-extras/.vscode/launch.json": {
-            "UUID": "bec2cf44-b241-49a1-bb6b-aeef6476bcd8",
+            "UUID": "caa03064-d110-492f-a98a-b8b7f444329a",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.config/luxury-extras/.vscode/launch.json",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.config/luxury-extras/.vscode/launch.json",
@@ -163,7 +163,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.config/luxury-extras/Dockerfile": {
-            "UUID": "5252f87b-08c1-4fd6-9f49-aa58af0ffb11",
+            "UUID": "38079456-9720-44e5-9eee-f4fe685e6baa",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.config/luxury-extras/Dockerfile",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.config/luxury-extras/Dockerfile",
@@ -201,7 +201,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.config/luxury-extras/MySQL/Dockerfile": {
-            "UUID": "c32c777a-7bb9-4fa6-87ba-e82e9de698f0",
+            "UUID": "9acc91e5-4864-4425-9fe5-979f1eb0aa00",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.config/luxury-extras/MySQL/Dockerfile",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.config/luxury-extras/MySQL/Dockerfile",
@@ -240,7 +240,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.config/luxury-extras/MySQL/MySQL-Laden-Entry.sh": {
-            "UUID": "89081c17-0d67-4a8a-a132-729dcd7cc23d",
+            "UUID": "7a38013c-ffff-4448-ab1e-67143e23250a",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.config/luxury-extras/MySQL/MySQL-Laden-Entry.sh",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.config/luxury-extras/MySQL/MySQL-Laden-Entry.sh",
@@ -281,7 +281,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.config/luxury-extras/MySQL/MySQL-Security.sql": {
-            "UUID": "6da62df1-d6ec-4593-abde-095631045a18",
+            "UUID": "d10efd94-2f28-4d8a-a613-2f01ad734451",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.config/luxury-extras/MySQL/MySQL-Security.sql",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.config/luxury-extras/MySQL/MySQL-Security.sql",
@@ -321,7 +321,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.config/vscode-sqltools/runningInfo.json": {
-            "UUID": "af641987-a2f3-45eb-b697-2d1bb340cfed",
+            "UUID": "d49372c4-d421-452a-badf-2e79cc408a65",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.config/vscode-sqltools/runningInfo.json",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.config/vscode-sqltools/runningInfo.json",
@@ -359,7 +359,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.github/workflows/test-master.yml": {
-            "UUID": "5680b9d4-3666-4318-be11-64217aac2a47",
+            "UUID": "1081132b-7ad4-481b-9f01-57da01c35cc1",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.github/workflows/test-master.yml",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.github/workflows/test-master.yml",
@@ -398,7 +398,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.gitignore": {
-            "UUID": "e6cfcc0d-b204-46a8-9e9d-e7c16f6b4fb0",
+            "UUID": "178df290-8958-4470-8108-7c55efd47a84",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.gitignore",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.gitignore",
@@ -433,7 +433,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.npmignore": {
-            "UUID": "725d4aa7-8c52-4871-a9f9-76474e0be060",
+            "UUID": "0b2f7ad6-4502-472d-b379-3d964d60f1fe",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.npmignore",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.npmignore",
@@ -468,7 +468,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.quackage.json": {
-            "UUID": "aa81bea5-6306-4946-a541-410872ed47e2",
+            "UUID": "32c438a6-75ca-4764-bb48-613b44ce2e86",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.quackage.json",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.quackage.json",
@@ -504,7 +504,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.vscode/launch.json": {
-            "UUID": "9f827d25-ea5d-4aa5-9297-58325c5c31bf",
+            "UUID": "f4818853-ad93-4f3e-a536-cf084e9aed50",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.vscode/launch.json",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.vscode/launch.json",
@@ -541,7 +541,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.vscode/settings.json": {
-            "UUID": "6ac12e62-d026-43c5-931d-6e78973b6ee5",
+            "UUID": "3b778065-8ba3-4a4e-b0b6-a79472a3ee69",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.vscode/settings.json",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/.vscode/settings.json",
@@ -578,7 +578,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/CONTRIBUTING.md": {
-            "UUID": "17e4c92b-5934-48df-8430-880bdf2b1be0",
+            "UUID": "a76432be-ffd7-46d0-8be8-02d45aa20109",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/CONTRIBUTING.md",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/CONTRIBUTING.md",
@@ -614,7 +614,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/Dockerfile_LUXURYCode": {
-            "UUID": "eb0d76b2-33ef-454b-965a-eaba180f71dc",
+            "UUID": "4543dd0b-0e3d-4e58-8cbc-30344dcfcb04",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/Dockerfile_LUXURYCode",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/Dockerfile_LUXURYCode",
@@ -651,7 +651,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/LICENSE": {
-            "UUID": "cc635927-02bb-4af6-ba3f-9816470c7d77",
+            "UUID": "a5b575b7-b1a5-47ae-8c35-c4a96990b733",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/LICENSE",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/LICENSE",
@@ -687,7 +687,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/README.md": {
-            "UUID": "f58e19d2-7ead-45ff-ba0e-e601c886e9b1",
+            "UUID": "4a1abf68-ca20-47e0-9533-fe5ee9c59a6c",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/README.md",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/README.md",
@@ -723,7 +723,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/debug/Animal.json": {
-            "UUID": "a7e844a7-81ae-4c47-bafa-0d7ebfdfbb45",
+            "UUID": "8bb95fe1-a269-42d8-8911-d51b28499cde",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/debug/Animal.json",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/debug/Animal.json",
@@ -760,7 +760,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/debug/Harness-Configuration.json": {
-            "UUID": "a01d4d74-7563-4bd2-be3a-521968cc2b59",
+            "UUID": "80785ca3-694c-4c51-922c-84806722c9ab",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/debug/Harness-Configuration.json",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/debug/Harness-Configuration.json",
@@ -798,7 +798,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/debug/Harness.js": {
-            "UUID": "de062c7a-6b48-4139-aa2e-656f26c917cb",
+            "UUID": "08ba4ae5-e571-4a31-aef4-09e25f084ebe",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/debug/Harness.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/debug/Harness.js",
@@ -835,7 +835,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/debug/KillHarness.sh": {
-            "UUID": "8e9ca5ae-34f4-4dcd-81a4-1fc054580231",
+            "UUID": "56d65cc5-2ad9-436f-a502-e75f8afa5730",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/debug/KillHarness.sh",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/debug/KillHarness.sh",
@@ -872,7 +872,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/dist/indoctrinate_content_staging/Indoctrinate-Catalog-AppData.json": {
-            "UUID": "7339bc7e-a213-4c52-a7fe-f44a11bfdc6e",
+            "UUID": "48354333-925f-4474-a151-435b04ebcbc3",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/dist/indoctrinate_content_staging/Indoctrinate-Catalog-AppData.json",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/dist/indoctrinate_content_staging/Indoctrinate-Catalog-AppData.json",
@@ -906,13 +906,13 @@
             "FSTAT": {
                 "Size": 522,
                 "Created": "2026-03-10T01:07:34.778Z",
-                "Modified": "2026-04-10T01:49:52.984Z",
-                "Accessed": "2026-04-09T23:28:36.783Z",
+                "Modified": "2026-04-10T02:05:35.240Z",
+                "Accessed": "2026-04-10T01:54:37.716Z",
                 "Mode": 33188
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/dist/meadow-endpoints.js": {
-            "UUID": "40ad843f-574c-40f8-a0e7-5b054239dc94",
+            "UUID": "240adab9-4f1e-4b7d-a132-bedeb1323731",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/dist/meadow-endpoints.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/dist/meadow-endpoints.js",
@@ -950,7 +950,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/dist/meadow-endpoints.js.map": {
-            "UUID": "467c2744-c458-447f-81a7-dcd3f498cdf3",
+            "UUID": "89d14427-2356-4d0e-90a8-062ec6651969",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/dist/meadow-endpoints.js.map",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/dist/meadow-endpoints.js.map",
@@ -989,7 +989,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/dist/meadow-endpoints.min.js": {
-            "UUID": "44f61585-3dbe-426b-809f-63979b3e8207",
+            "UUID": "5a8f5be6-45a9-468f-96b4-112cb86b1609",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/dist/meadow-endpoints.min.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/dist/meadow-endpoints.min.js",
@@ -1028,7 +1028,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/dist/meadow-endpoints.min.js.map": {
-            "UUID": "88476287-5bb6-4699-8745-74fcfdc45856",
+            "UUID": "79be178b-d259-43a8-a242-22913fb71a84",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/dist/meadow-endpoints.min.js.map",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/dist/meadow-endpoints.min.js.map",
@@ -1068,7 +1068,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/.nojekyll": {
-            "UUID": "98b1a59b-08de-43a2-aa52-58c30a1fa0d7",
+            "UUID": "e97a2567-2c53-43e8-8a01-46b16fd02e7b",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/.nojekyll",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/.nojekyll",
@@ -1097,13 +1097,13 @@
             ],
             "FSTAT": {
                 "Created": "2026-03-10T01:07:34.788Z",
-                "Modified": "2026-04-09T23:23:35.699Z",
+                "Modified": "2026-04-10T01:49:53.092Z",
                 "Accessed": "2026-03-10T01:07:34.788Z",
                 "Mode": 33188
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/README.md": {
-            "UUID": "32f80860-ba69-4c47-8379-d52f7ba6c136",
+            "UUID": "22d6d709-274c-48c0-865f-cf9c80821d44",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/README.md",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/README.md",
@@ -1140,7 +1140,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/_sidebar.md": {
-            "UUID": "9ebd0cdf-c43b-4810-b2e3-737ed1807677",
+            "UUID": "6ee4a619-f960-4fec-9a41-e1c1e39157e4",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/_sidebar.md",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/_sidebar.md",
@@ -1176,8 +1176,45 @@
                 "Mode": 33188
             }
         },
+        "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/_version.json": {
+            "UUID": "cebfca91-78d8-4f20-ab22-ac829bafaca0",
+            "Type": "URI",
+            "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/_version.json",
+            "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/_version.json",
+            "Location": "/Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs",
+            "Name": "_version.json",
+            "MimeType": "application/json",
+            "Nature": "application",
+            "Format": "json",
+            "Schema": "Default",
+            "Content": false,
+            "Labels": [
+                "__LABELSET_TYPE",
+                "FILE",
+                "__LABELSET_ADDRESS",
+                "docs",
+                "__LABELSET_NAME",
+                "version",
+                "__LABELSET_EXTENSION",
+                ".json",
+                "__LABELSET_FILENAME",
+                "_version.json",
+                "__LABELSET_FULLPATH",
+                "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/_version.json",
+                "__LABELSET_FORMAT",
+                "json",
+                "Default"
+            ],
+            "FSTAT": {
+                "Size": 182,
+                "Created": "2026-04-10T01:49:53.032Z",
+                "Modified": "2026-04-10T01:49:53.032Z",
+                "Accessed": "2026-04-10T01:49:53.096Z",
+                "Mode": 33188
+            }
+        },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/crud/README.md": {
-            "UUID": "3f8fe4db-37f0-4f55-bfbd-84476310d1aa",
+            "UUID": "6add5759-7e10-4272-ae9c-6cd35e063243",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/crud/README.md",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/crud/README.md",
@@ -1215,7 +1252,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/crud/count.md": {
-            "UUID": "06fd9991-1f47-4f0e-b3dc-1113a57427d6",
+            "UUID": "3bed5d87-db81-4a97-b490-ca67d409ff58",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/crud/count.md",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/crud/count.md",
@@ -1253,7 +1290,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/crud/create.md": {
-            "UUID": "c62e4841-29ad-4da0-a65c-85d16aa3cba1",
+            "UUID": "cec13d5d-03b1-481d-8ca1-d29fdf71b4bc",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/crud/create.md",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/crud/create.md",
@@ -1291,7 +1328,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/crud/delete.md": {
-            "UUID": "a5194f51-85dd-4c2f-ae19-a7b7b86af6c6",
+            "UUID": "62276376-8db2-4c3b-9eef-bde0aa0884bf",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/crud/delete.md",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/crud/delete.md",
@@ -1329,7 +1366,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/crud/read.md": {
-            "UUID": "a8a3c5ad-0b4f-4aaf-a5ca-3bf73358199e",
+            "UUID": "940c76bf-fd88-4855-a9d3-98ec65721a35",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/crud/read.md",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/crud/read.md",
@@ -1367,7 +1404,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/crud/schema.md": {
-            "UUID": "a6559049-110b-4949-bd90-eac0ccc02f2a",
+            "UUID": "86fc8692-7cb7-469f-abbe-fcf0eae233f0",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/crud/schema.md",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/crud/schema.md",
@@ -1405,7 +1442,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/crud/update.md": {
-            "UUID": "45fdc8da-8011-49ca-a7bb-59d02954af02",
+            "UUID": "a0715f08-4801-4bf5-a634-3b6fbf36f72d",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/crud/update.md",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/crud/update.md",
@@ -1443,7 +1480,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/css/docuserve.css": {
-            "UUID": "b97c3732-8d42-4d7d-b253-42deefb9a71c",
+            "UUID": "25759aaf-fb00-41c0-9ce1-0d69b2f1e232",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/css/docuserve.css",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/css/docuserve.css",
@@ -1475,13 +1512,13 @@
             "FSTAT": {
                 "Size": 1263,
                 "Created": "2026-03-10T01:07:34.789Z",
-                "Modified": "2026-04-09T23:23:35.694Z",
-                "Accessed": "2026-04-09T23:23:36.655Z",
+                "Modified": "2026-04-10T01:49:53.087Z",
+                "Accessed": "2026-04-10T01:49:54.556Z",
                 "Mode": 33188
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/index.html": {
-            "UUID": "4ed53a46-ec90-4292-8e53-ed678e7cfb56",
+            "UUID": "20c11379-e218-40eb-a521-701a7da126b7",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/index.html",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/index.html",
@@ -1510,15 +1547,15 @@
                 "Default"
             ],
             "FSTAT": {
-                "Size": 1652,
+                "Size": 1721,
                 "Created": "2026-03-10T01:07:34.789Z",
-                "Modified": "2026-04-09T23:23:35.694Z",
-                "Accessed": "2026-04-09T23:23:36.655Z",
+                "Modified": "2026-04-10T01:49:53.092Z",
+                "Accessed": "2026-04-10T01:49:53.635Z",
                 "Mode": 33188
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/retold-catalog.json": {
-            "UUID": "dcbf8428-21c2-4ffa-86fd-ebea7b8a0eea",
+            "UUID": "7f489a00-3cbf-4017-870f-0708e45eb556",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/retold-catalog.json",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/retold-catalog.json",
@@ -1550,13 +1587,13 @@
             "FSTAT": {
                 "Size": 3534,
                 "Created": "2026-03-10T01:07:34.789Z",
-                "Modified": "2026-04-10T01:49:52.764Z",
-                "Accessed": "2026-04-09T23:28:36.796Z",
+                "Modified": "2026-04-10T02:05:35.029Z",
+                "Accessed": "2026-04-10T01:49:53.635Z",
                 "Mode": 33188
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/retold-keyword-index.json": {
-            "UUID": "b8c6c670-b3e7-477a-99bf-18a49874bdb6",
+            "UUID": "fd16f128-be40-493c-be3e-3353ce16931d",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/retold-keyword-index.json",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/docs/retold-keyword-index.json",
@@ -1589,13 +1626,13 @@
             "FSTAT": {
                 "Size": 99993,
                 "Created": "2026-03-10T01:07:34.789Z",
-                "Modified": "2026-04-09T23:23:35.644Z",
-                "Accessed": "2026-04-09T23:28:36.785Z",
+                "Modified": "2026-04-10T01:49:53.010Z",
+                "Accessed": "2026-04-10T01:54:37.720Z",
                 "Mode": 33188
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/gulpfile.js": {
-            "UUID": "494405a3-3588-4a14-9f83-181b68cb6cfa",
+            "UUID": "a113bd2f-cd94-49b2-835e-bf303dc99af7",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/gulpfile.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/gulpfile.js",
@@ -1631,7 +1668,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/package-lock.json": {
-            "UUID": "6397f648-a527-4e47-a4ae-de33e96b2987",
+            "UUID": "e7282d8b-71f8-45d2-b80b-88c79bbaa939",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/package-lock.json",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/package-lock.json",
@@ -1668,7 +1705,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/package.json": {
-            "UUID": "78fc9f41-ea46-4071-ac7f-30b83049c004",
+            "UUID": "0f8ca29b-901d-4222-9336-3cbf4ff42b38",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/package.json",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/package.json",
@@ -1777,7 +1814,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/Meadow-Endpoints-Browser-Shim.js": {
-            "UUID": "c37b596d-a31d-4199-96d8-e9ea37a0a407",
+            "UUID": "fc041e51-0ded-4245-ae39-340d0e59204e",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/Meadow-Endpoints-Browser-Shim.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/Meadow-Endpoints-Browser-Shim.js",
@@ -1817,7 +1854,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/Meadow-Endpoints.js": {
-            "UUID": "e366acf3-3060-43d1-90fd-21d8ded82940",
+            "UUID": "34cb92f3-f288-4d07-9814-e3344c653d14",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/Meadow-Endpoints.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/Meadow-Endpoints.js",
@@ -1855,7 +1892,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/controller/Meadow-Endpoints-Controller-Base.js": {
-            "UUID": "fefdf337-12e3-43a0-aa38-c83cefc1a57d",
+            "UUID": "14273c77-d68f-4cd9-88f4-69e43d3a9662",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/controller/Meadow-Endpoints-Controller-Base.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/controller/Meadow-Endpoints-Controller-Base.js",
@@ -1896,7 +1933,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/controller/components/Meadow-Endpoints-Controller-BehaviorInjection.js": {
-            "UUID": "21877eb1-7be4-438c-a7a5-8e917d55f96f",
+            "UUID": "e73885c9-b237-4efd-bd64-75730494d41f",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/controller/components/Meadow-Endpoints-Controller-BehaviorInjection.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/controller/components/Meadow-Endpoints-Controller-BehaviorInjection.js",
@@ -1938,7 +1975,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/controller/components/Meadow-Endpoints-Controller-Error-StatusCodes.txt": {
-            "UUID": "cd7daf28-a43b-41eb-8b5e-2752a525b651",
+            "UUID": "b29a2673-32d3-4d81-b3ac-87bfc20b4057",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/controller/components/Meadow-Endpoints-Controller-Error-StatusCodes.txt",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/controller/components/Meadow-Endpoints-Controller-Error-StatusCodes.txt",
@@ -1981,7 +2018,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/controller/components/Meadow-Endpoints-Controller-Error.js": {
-            "UUID": "ad701f16-c74c-4ae3-8897-1a11545c7b3b",
+            "UUID": "8904453a-b85f-43b0-a1a0-f6a814cee72f",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/controller/components/Meadow-Endpoints-Controller-Error.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/controller/components/Meadow-Endpoints-Controller-Error.js",
@@ -2023,7 +2060,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/controller/components/Meadow-Endpoints-Controller-Log.js": {
-            "UUID": "febfc3a3-e7ab-43ad-acc1-940449dac4ed",
+            "UUID": "38e99496-93b5-4465-bd0d-2c65c4870b0b",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/controller/components/Meadow-Endpoints-Controller-Log.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/controller/components/Meadow-Endpoints-Controller-Log.js",
@@ -2065,7 +2102,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/controller/utility/Meadow-Endpoints-Filter-Parser.js": {
-            "UUID": "f0edf6ef-0b2b-48d4-a0b2-6eda04ec3ef2",
+            "UUID": "e3a34797-f50e-465a-bbf5-bd1d3dd67805",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/controller/utility/Meadow-Endpoints-Filter-Parser.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/controller/utility/Meadow-Endpoints-Filter-Parser.js",
@@ -2107,7 +2144,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/controller/utility/Meadow-Endpoints-Session-Marshaler.js": {
-            "UUID": "0c454878-8c97-4344-81f1-b92b6500c373",
+            "UUID": "749fa188-3fa8-4ded-9781-86918f6022dd",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/controller/utility/Meadow-Endpoints-Session-Marshaler.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/controller/utility/Meadow-Endpoints-Session-Marshaler.js",
@@ -2149,7 +2186,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/controller/utility/Meadow-Endpoints-Stream-RecordArray.js": {
-            "UUID": "a85c15ee-f6e5-4764-80a3-90f272b4c675",
+            "UUID": "dc05a29c-3ae5-4566-9e6b-e89596e159cb",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/controller/utility/Meadow-Endpoints-Stream-RecordArray.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/controller/utility/Meadow-Endpoints-Stream-RecordArray.js",
@@ -2191,7 +2228,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/count/Meadow-Endpoint-Count.js": {
-            "UUID": "23482d12-56ad-461f-a87c-440c4e697656",
+            "UUID": "9413f053-968c-4c58-abca-637485bdaab1",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/count/Meadow-Endpoint-Count.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/count/Meadow-Endpoint-Count.js",
@@ -2232,7 +2269,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/count/Meadow-Endpoint-CountBy.js": {
-            "UUID": "fb88ded0-1bfc-4a54-b956-ec7ffc3d2228",
+            "UUID": "083f0c4b-a955-443c-bfd7-123ab0b03fb2",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/count/Meadow-Endpoint-CountBy.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/count/Meadow-Endpoint-CountBy.js",
@@ -2273,7 +2310,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/create/Meadow-Endpoint-BulkCreate.js": {
-            "UUID": "09621f5b-01e2-471e-a73e-1f44874a0178",
+            "UUID": "daff38c4-a332-4031-90b6-2a8ed4758f66",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/create/Meadow-Endpoint-BulkCreate.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/create/Meadow-Endpoint-BulkCreate.js",
@@ -2314,7 +2351,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/create/Meadow-Endpoint-Create.js": {
-            "UUID": "ed8bc5bd-fc31-4935-a145-b62592852bb7",
+            "UUID": "b69c4f10-079a-4aba-ae61-77de9cac0d47",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/create/Meadow-Endpoint-Create.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/create/Meadow-Endpoint-Create.js",
@@ -2355,7 +2392,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/create/Meadow-Operation-Create.js": {
-            "UUID": "68599821-e31e-4632-9902-f63b069dcd88",
+            "UUID": "6acef1b5-f9b9-4bc6-a5c7-a0b89d892504",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/create/Meadow-Operation-Create.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/create/Meadow-Operation-Create.js",
@@ -2396,7 +2433,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/delete/Meadow-Endpoint-Delete.js": {
-            "UUID": "377c6593-d15b-4fb9-8652-c64d80f42fa5",
+            "UUID": "0c450438-4874-4e2e-90a8-e1f52459fe31",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/delete/Meadow-Endpoint-Delete.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/delete/Meadow-Endpoint-Delete.js",
@@ -2437,7 +2474,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/delete/Meadow-Endpoint-Undelete.js": {
-            "UUID": "84c1a0c4-8445-49ab-b995-5aca79f996c9",
+            "UUID": "21cc939c-9e89-49d8-beb5-ffc3e09be855",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/delete/Meadow-Endpoint-Undelete.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/delete/Meadow-Endpoint-Undelete.js",
@@ -2478,7 +2515,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/read/Meadow-Endpoint-Read.js": {
-            "UUID": "119ed8c7-6d67-4f0e-8030-c4bd306475e8",
+            "UUID": "c35c6dc9-f666-45b0-be97-b66d086a2522",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/read/Meadow-Endpoint-Read.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/read/Meadow-Endpoint-Read.js",
@@ -2519,7 +2556,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/read/Meadow-Endpoint-ReadDistinctList.js": {
-            "UUID": "fb3d1b1f-23c6-4a83-96f2-eef1e905682b",
+            "UUID": "0202c3b1-eac0-430f-b7da-e7ae1265a0a7",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/read/Meadow-Endpoint-ReadDistinctList.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/read/Meadow-Endpoint-ReadDistinctList.js",
@@ -2560,7 +2597,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/read/Meadow-Endpoint-ReadLiteList.js": {
-            "UUID": "72aecd0b-f03d-4633-8b9a-b2b27f11eeb5",
+            "UUID": "02c67d2f-290c-4bbe-80b8-aa897125c56d",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/read/Meadow-Endpoint-ReadLiteList.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/read/Meadow-Endpoint-ReadLiteList.js",
@@ -2601,7 +2638,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/read/Meadow-Endpoint-ReadMax.js": {
-            "UUID": "218e1393-6601-4086-a934-e0e2288dfa7e",
+            "UUID": "5fc33c3e-1da5-4713-b4aa-78a2cae6e6a5",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/read/Meadow-Endpoint-ReadMax.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/read/Meadow-Endpoint-ReadMax.js",
@@ -2642,7 +2679,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/read/Meadow-Endpoint-ReadSelectList.js": {
-            "UUID": "bdbd16be-410f-446a-9a41-e044e5a3309a",
+            "UUID": "f92ff0f1-54bb-436a-9489-a83611ba8f70",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/read/Meadow-Endpoint-ReadSelectList.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/read/Meadow-Endpoint-ReadSelectList.js",
@@ -2683,7 +2720,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/read/Meadow-Endpoint-Reads.js": {
-            "UUID": "78adf1c5-16cc-46e6-8d93-46d8eac1d834",
+            "UUID": "60122a73-9ace-463c-8fd3-92794e26dce8",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/read/Meadow-Endpoint-Reads.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/read/Meadow-Endpoint-Reads.js",
@@ -2724,7 +2761,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/read/Meadow-Endpoint-ReadsBy.js": {
-            "UUID": "ad34b3a2-0d35-4d0b-b685-b8fe33047eec",
+            "UUID": "f55f921f-101a-4678-a79f-e6c8d4209eb7",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/read/Meadow-Endpoint-ReadsBy.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/read/Meadow-Endpoint-ReadsBy.js",
@@ -2765,7 +2802,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/read/Meadow-Marshal-DistinctList.js": {
-            "UUID": "f4b2268b-e0dc-4da5-8fa1-caa9c78d071f",
+            "UUID": "f51e8cdc-c345-43ab-89a3-8431d000fc15",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/read/Meadow-Marshal-DistinctList.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/read/Meadow-Marshal-DistinctList.js",
@@ -2806,7 +2843,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/read/Meadow-Marshal-LiteList.js": {
-            "UUID": "63ead3eb-ee57-47a4-9a5d-45084ab60014",
+            "UUID": "56de674d-d045-430b-b7f1-5b95aeffb74d",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/read/Meadow-Marshal-LiteList.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/read/Meadow-Marshal-LiteList.js",
@@ -2847,7 +2884,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/schema/Meadow-Endpoint-New.js": {
-            "UUID": "1bce2d17-730a-4f2b-861a-bea73f5a7d08",
+            "UUID": "cace086c-4c77-4042-b0c1-7dcb68559592",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/schema/Meadow-Endpoint-New.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/schema/Meadow-Endpoint-New.js",
@@ -2888,7 +2925,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/schema/Meadow-Endpoint-Schema.js": {
-            "UUID": "5ffe55b0-6c8d-4615-803a-0645c84fa7c4",
+            "UUID": "881be903-166e-424c-ad21-67bdcd396501",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/schema/Meadow-Endpoint-Schema.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/schema/Meadow-Endpoint-Schema.js",
@@ -2929,7 +2966,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/schema/Meadow-Endpoint-Validate.js": {
-            "UUID": "4319583b-81bb-4935-b919-356d46390f1a",
+            "UUID": "0777e3a3-022c-43d3-864d-5645837d34b2",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/schema/Meadow-Endpoint-Validate.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/schema/Meadow-Endpoint-Validate.js",
@@ -2970,7 +3007,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/update/Meadow-Endpoint-BulkUpdate.js": {
-            "UUID": "7db86d50-c42f-4529-9276-aa92812ee78f",
+            "UUID": "0daa1225-85f5-428a-b21a-9ba8282e8294",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/update/Meadow-Endpoint-BulkUpdate.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/update/Meadow-Endpoint-BulkUpdate.js",
@@ -3011,7 +3048,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/update/Meadow-Endpoint-Update.js": {
-            "UUID": "a8e75c13-db5a-484e-b902-5d5799fa4ec0",
+            "UUID": "71e17bdd-e722-4ba6-be14-dfb73994a7e5",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/update/Meadow-Endpoint-Update.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/update/Meadow-Endpoint-Update.js",
@@ -3052,7 +3089,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/update/Meadow-Operation-Update.js": {
-            "UUID": "ccd44210-a53c-4a25-a693-9e59adc7e1c6",
+            "UUID": "21039af0-833c-48d4-ba4b-68c4fd8b5949",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/update/Meadow-Operation-Update.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/update/Meadow-Operation-Update.js",
@@ -3093,7 +3130,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/upsert/Meadow-Endpoint-BulkUpsert.js": {
-            "UUID": "fa587712-8af8-4bc5-a415-f196e99d9187",
+            "UUID": "b0889c8e-e073-4804-92b7-6eb0951ed7ba",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/upsert/Meadow-Endpoint-BulkUpsert.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/upsert/Meadow-Endpoint-BulkUpsert.js",
@@ -3134,7 +3171,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/upsert/Meadow-Endpoint-Upsert.js": {
-            "UUID": "590c40fd-add6-4218-ad00-8b33b59652a6",
+            "UUID": "59730184-c812-47d3-8e59-6a486fd4e375",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/upsert/Meadow-Endpoint-Upsert.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/upsert/Meadow-Endpoint-Upsert.js",
@@ -3175,7 +3212,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/upsert/Meadow-Operation-Upsert.js": {
-            "UUID": "767c9df7-a0d8-42cd-9f56-ee0c00865dce",
+            "UUID": "3b4da976-e706-4532-aa85-4a57dd6f6919",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/upsert/Meadow-Operation-Upsert.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/source/endpoints/upsert/Meadow-Operation-Upsert.js",
@@ -3216,7 +3253,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test/MeadowEndpoints_basic_tests.js": {
-            "UUID": "bfcfbb71-1380-4db1-8a9c-481859aff95b",
+            "UUID": "f95df1f5-1826-4d6a-97a1-01e4f5aad59f",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test/MeadowEndpoints_basic_tests.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test/MeadowEndpoints_basic_tests.js",
@@ -3255,7 +3292,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/bookstore-api-endpoint-exercises.paw": {
-            "UUID": "83624b5e-d8eb-4497-8256-628746650487",
+            "UUID": "228308a3-1713-422c-9094-7c269cb883bb",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/bookstore-api-endpoint-exercises.paw",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/bookstore-api-endpoint-exercises.paw",
@@ -3295,7 +3332,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/bookstore-configuration.json": {
-            "UUID": "1339a622-98bf-41c7-867d-479034363797",
+            "UUID": "57f0681c-658d-4a68-b9b1-43b27102dc25",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/bookstore-configuration.json",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/bookstore-configuration.json",
@@ -3333,7 +3370,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/bookstore-import-books-run.js": {
-            "UUID": "7d3c3fa1-ad89-42e8-8131-dad9cbec58ef",
+            "UUID": "7d954103-b12f-492d-9029-273ebd4848e4",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/bookstore-import-books-run.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/bookstore-import-books-run.js",
@@ -3373,7 +3410,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/bookstore-import-books.js": {
-            "UUID": "7cbfaafb-2414-4d85-852c-875ab0f3dc94",
+            "UUID": "54daf268-9a86-423b-8c14-e48c5ecc1fe2",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/bookstore-import-books.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/bookstore-import-books.js",
@@ -3412,7 +3449,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/bookstore-serve-meadow-endpoint-apis-IPC.js": {
-            "UUID": "194e2012-9a4b-4450-bfe8-d2bd411fcacf",
+            "UUID": "8381d78b-f32a-4d24-98be-56785c68d1df",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/bookstore-serve-meadow-endpoint-apis-IPC.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/bookstore-serve-meadow-endpoint-apis-IPC.js",
@@ -3454,7 +3491,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/bookstore-serve-meadow-endpoint-apis-run.js": {
-            "UUID": "c40eefa2-61b8-412e-ac0e-90e1ae247bd7",
+            "UUID": "5e811a3a-64b7-40ea-924a-a961cce31500",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/bookstore-serve-meadow-endpoint-apis-run.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/bookstore-serve-meadow-endpoint-apis-run.js",
@@ -3496,7 +3533,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/bookstore-serve-meadow-endpoint-apis.js": {
-            "UUID": "db6efb6f-bf7e-4bce-a532-dfc72982636d",
+            "UUID": "39020fe3-1fa0-4fb5-81af-36a052b05810",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/bookstore-serve-meadow-endpoint-apis.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/bookstore-serve-meadow-endpoint-apis.js",
@@ -3537,7 +3574,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/data/books.csv": {
-            "UUID": "d587ef4f-7d56-437a-a484-7172de73690b",
+            "UUID": "2a4fc7e2-f1f5-42a8-94a3-ad6f1b515f29",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/data/books.csv",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/data/books.csv",
@@ -3575,7 +3612,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/ddl/BookStore.ddl": {
-            "UUID": "0aaca6ff-74fb-4138-a440-2640ecda9927",
+            "UUID": "82a61fb8-725a-496d-a85a-f1bc662317cd",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/ddl/BookStore.ddl",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/ddl/BookStore.ddl",
@@ -3614,7 +3651,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/generated_diagram/README.md": {
-            "UUID": "fb3ebe20-3216-44a7-8bed-74c7ab5f25ff",
+            "UUID": "3a239228-a24e-4961-8b54-9f6e9030b9b4",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/generated_diagram/README.md",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/generated_diagram/README.md",
@@ -3653,7 +3690,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/generated_diagram/Stricture_Output.dot": {
-            "UUID": "e9f85fd5-2eda-47e3-923d-56600a1f6e5c",
+            "UUID": "500eb82a-38f1-43ff-b5ab-b6f8bba5325e",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/generated_diagram/Stricture_Output.dot",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/generated_diagram/Stricture_Output.dot",
@@ -3693,7 +3730,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/generated_diagram/Stricture_Output.png": {
-            "UUID": "aad405ee-6f70-4ded-8c3c-e735a847a788",
+            "UUID": "040f38e4-4001-4cc6-93d2-d7899fd0d35e",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/generated_diagram/Stricture_Output.png",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/generated_diagram/Stricture_Output.png",
@@ -3733,7 +3770,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/generated_documentation/Dictionary.md": {
-            "UUID": "f7e271c2-8746-4537-a7ab-2440577e060f",
+            "UUID": "9dff7e41-3c89-4a9e-8369-78f3bddc6f4c",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/generated_documentation/Dictionary.md",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/generated_documentation/Dictionary.md",
@@ -3772,7 +3809,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/generated_documentation/Model-Author.md": {
-            "UUID": "15ba124b-741a-4946-aeac-8ba5cfdc24c5",
+            "UUID": "369d2bad-370a-48bc-be2e-100244b9635e",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/generated_documentation/Model-Author.md",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/generated_documentation/Model-Author.md",
@@ -3812,7 +3849,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/generated_documentation/Model-Book.md": {
-            "UUID": "e5e54863-4c4b-46d5-bd0d-e57cfdfa4215",
+            "UUID": "ba958a6c-b496-4232-9687-93bdfc90db8d",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/generated_documentation/Model-Book.md",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/generated_documentation/Model-Book.md",
@@ -3852,7 +3889,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/generated_documentation/Model-BookAuthorJoin.md": {
-            "UUID": "fe2d3f45-4aa7-45fc-8c71-095136ffaec4",
+            "UUID": "0b598214-7b63-462b-a8e8-c00471479f3a",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/generated_documentation/Model-BookAuthorJoin.md",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/generated_documentation/Model-BookAuthorJoin.md",
@@ -3892,7 +3929,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/generated_documentation/Model-BookPrice.md": {
-            "UUID": "4af117a0-014b-44d9-85df-27f21952c552",
+            "UUID": "74d17246-326b-4137-97c6-29a9164bf873",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/generated_documentation/Model-BookPrice.md",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/generated_documentation/Model-BookPrice.md",
@@ -3932,7 +3969,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/generated_documentation/Model-Review.md": {
-            "UUID": "8c46c044-f7e0-461a-b788-ebac0308fcb4",
+            "UUID": "762356dc-548d-4fe5-866d-bb8db5d212e2",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/generated_documentation/Model-Review.md",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/generated_documentation/Model-Review.md",
@@ -3972,7 +4009,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/generated_documentation/ModelChangeTracking.md": {
-            "UUID": "bc676628-4e8a-468a-9305-a5b378e26c49",
+            "UUID": "75fc58d4-c466-4578-9b54-369ab344c5e4",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/generated_documentation/ModelChangeTracking.md",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/generated_documentation/ModelChangeTracking.md",
@@ -4011,7 +4048,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/generated_documentation/README.md": {
-            "UUID": "ace84b73-1925-40a0-975b-f71e443db352",
+            "UUID": "02cfc1be-3c61-4a7d-a636-eb896c8576be",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/generated_documentation/README.md",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/generated_documentation/README.md",
@@ -4050,7 +4087,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/json_schema/BookStore-Extended.json": {
-            "UUID": "1977e649-d421-446e-a04d-82fd603f0d6d",
+            "UUID": "dc090386-1bbc-4372-a814-628cd0a9e041",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/json_schema/BookStore-Extended.json",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/json_schema/BookStore-Extended.json",
@@ -4090,7 +4127,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/json_schema/BookStore-PICT.json": {
-            "UUID": "e013d675-904d-44e3-89d7-284d4128b18c",
+            "UUID": "aa64b96a-7c83-4808-9476-daf481e8b11e",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/json_schema/BookStore-PICT.json",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/json_schema/BookStore-PICT.json",
@@ -4130,7 +4167,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/json_schema/BookStore.json": {
-            "UUID": "f2cabd70-8f46-4677-990f-7361bb637243",
+            "UUID": "806692ba-eac2-4d98-b57a-7f4361683572",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/json_schema/BookStore.json",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/json_schema/BookStore.json",
@@ -4169,7 +4206,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/json_schema/README.md": {
-            "UUID": "a7497ea0-30b4-485a-8bd9-543d50aa0829",
+            "UUID": "a4b5ac56-b816-4b2c-9d9c-2763683b414e",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/json_schema/README.md",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/json_schema/README.md",
@@ -4208,7 +4245,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/manual_scripts/DropTables.sql": {
-            "UUID": "007fc679-eddf-4d56-9c3e-0575ba8ac04d",
+            "UUID": "712444f4-7094-4cf5-8ca6-23e9b15d22c3",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/manual_scripts/DropTables.sql",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/manual_scripts/DropTables.sql",
@@ -4247,7 +4284,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/manual_scripts/README.md": {
-            "UUID": "b6919462-285c-4d7c-b336-772b29692fbe",
+            "UUID": "d92e76dd-b9c7-40f8-adfa-5b0a993e58f5",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/manual_scripts/README.md",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/manual_scripts/README.md",
@@ -4286,7 +4323,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/meadow_schema/BookStore-MeadowSchema-Author.json": {
-            "UUID": "a5f43b33-98cf-4721-8c51-7393e86a54d0",
+            "UUID": "4cd89170-cb6e-4ecb-8793-a9975175923f",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/meadow_schema/BookStore-MeadowSchema-Author.json",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/meadow_schema/BookStore-MeadowSchema-Author.json",
@@ -4327,7 +4364,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/meadow_schema/BookStore-MeadowSchema-Book.json": {
-            "UUID": "5342db2a-84ca-4c4d-ae07-ca03c2b8f018",
+            "UUID": "6a54f5c7-17c1-45c3-9b02-895abba85411",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/meadow_schema/BookStore-MeadowSchema-Book.json",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/meadow_schema/BookStore-MeadowSchema-Book.json",
@@ -4368,7 +4405,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/meadow_schema/BookStore-MeadowSchema-BookAuthorJoin.json": {
-            "UUID": "725e04c1-5518-442a-b4e6-dfb892bcecd1",
+            "UUID": "ca8b9717-8381-40ad-bb53-5c9d490aeb27",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/meadow_schema/BookStore-MeadowSchema-BookAuthorJoin.json",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/meadow_schema/BookStore-MeadowSchema-BookAuthorJoin.json",
@@ -4409,7 +4446,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/meadow_schema/BookStore-MeadowSchema-BookPrice.json": {
-            "UUID": "20b3ee2c-cebb-4b7f-ba1f-8ae21d992034",
+            "UUID": "c8d08c04-d447-467d-a5a3-ce5f73c68c7a",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/meadow_schema/BookStore-MeadowSchema-BookPrice.json",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/meadow_schema/BookStore-MeadowSchema-BookPrice.json",
@@ -4450,7 +4487,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/meadow_schema/BookStore-MeadowSchema-Review.json": {
-            "UUID": "38180c6c-414b-440c-93f6-a521a5b521c6",
+            "UUID": "a11c158b-a934-4ac9-ac36-377db56f9678",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/meadow_schema/BookStore-MeadowSchema-Review.json",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/meadow_schema/BookStore-MeadowSchema-Review.json",
@@ -4491,7 +4528,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/meadow_schema/README.md": {
-            "UUID": "902b74cb-c6b5-4654-864a-ed23d1d2dceb",
+            "UUID": "93b7e22a-210b-4c82-8ffb-5a3b96654928",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/meadow_schema/README.md",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/meadow_schema/README.md",
@@ -4530,7 +4567,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/sql_create/BookStore-CreateDatabase.mysql.sql": {
-            "UUID": "9a9ce21a-c149-4ea0-ae07-151d340ca7dd",
+            "UUID": "0ad26015-bfca-4b62-b180-695c34fa363f",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/sql_create/BookStore-CreateDatabase.mysql.sql",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/sql_create/BookStore-CreateDatabase.mysql.sql",
@@ -4571,7 +4608,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/sql_create/README.md": {
-            "UUID": "29ea5d28-68d5-4d22-8c12-ed50b39af27d",
+            "UUID": "eddf55ba-8363-42e4-b8a5-bdb135eb65d8",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/sql_create/README.md",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/model/sql_create/README.md",
@@ -4610,7 +4647,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/test_old/Tests.js": {
-            "UUID": "5387bf8c-7389-47ac-98a5-85736304b2a0",
+            "UUID": "26ad7efa-70db-47b7-8eb8-6882cf54725b",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/test_old/Tests.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/test_old/Tests.js",
@@ -4648,7 +4685,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/test_old/untitled.js": {
-            "UUID": "61fd9d89-e501-4db8-9992-04f2969760b9",
+            "UUID": "0e6d162b-7e52-4bb4-b963-6ac521aec7ab",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/test_old/untitled.js",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/test_support/test_old/untitled.js",
@@ -4686,7 +4723,7 @@
             }
         },
         "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/tsconfig.json": {
-            "UUID": "685e8de0-75b5-4296-8279-c76b443f3c2a",
+            "UUID": "bcea1137-5393-4ae3-9324-17e6874b599e",
             "Type": "URI",
             "Hash": "URI~CONTENT~FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/tsconfig.json",
             "Path": "FILE://Users/steven/Code/retold/modules/meadow/meadow-endpoints/tsconfig.json",
