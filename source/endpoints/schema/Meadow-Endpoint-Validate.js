@@ -27,7 +27,7 @@ const doAPIEndpointValidate = function(pRequest, pResponse, fNext)
 			(fStageComplete) =>
 			{
 				pResponse.send(tmpRequestState.RecordValidation);
-				this.log.requestCompletedSuccessfully(pRequest, tmpRequestState, `Validated Record for ${this.DAL.scope} - ${tmpRequestState.RecordValidation}`);
+				this.log.requestCompletedSuccessfully(pRequest, tmpRequestState, `Validated Record for ${this.DAL.scope} - ${JSON.stringify(tmpRequestState.RecordValidation)}`);
 				return fStageComplete();
 			}
 		],
