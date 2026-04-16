@@ -19,7 +19,7 @@ const doCreate = function(pRecord, pRequest, pRequestState, pResponse, fCallback
 			tmpRequestState.RecordToCreate = pRecord;
 
 			//Make sure record gets created with a customerID
-			if (!tmpRequestState.RecordToCreate.hasOwnProperty('IDCustomer') && this.DAL.jsonSchema.properties.hasOwnProperty('IDCustomer'))
+			if (!tmpRequestState.RecordToCreate.hasOwnProperty('IDCustomer') && this.DAL.jsonSchema && this.DAL.jsonSchema.properties && this.DAL.jsonSchema.properties.hasOwnProperty('IDCustomer'))
 			{
 				tmpRequestState.RecordToCreate.IDCustomer = tmpRequestState.SessionData.CustomerID || 0;
 			}
