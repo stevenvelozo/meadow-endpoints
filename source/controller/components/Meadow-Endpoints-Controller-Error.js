@@ -1,3 +1,11 @@
+/**
+ * Error object extended with the extra response-shape metadata
+ * meadow-endpoints attaches: an HTTP StatusCode and a flag telling
+ * the error handler whether to include a stack trace in the response.
+ *
+ * @typedef {Error & { StatusCode?: number, SuppressSoftwareTrace?: boolean, code?: string }} MeadowEndpointError
+ */
+
 class MeadowEndpointsControllerErrorBase
 {
     /**
@@ -11,7 +19,7 @@ class MeadowEndpointsControllerErrorBase
     // Get the error object
     getError(pMessage, pStatusCode, pSuppressSoftwareTrace)
     {
-		let tmpError = new Error(pMessage);
+		const tmpError = /** @type {MeadowEndpointError} */ (new Error(pMessage));
 
     	// Default the error status code to 400 if none is passed
 		tmpError.StatusCode = (typeof(pStatusCode) == 'number') ? pStatusCode : 400;

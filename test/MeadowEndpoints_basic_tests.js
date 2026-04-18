@@ -1408,6 +1408,743 @@ suite
 							);
 					}
 				);
+
+				// ==================================================================
+				// New hooks added 2026-04-18 to restore ME2 parity
+				// (Update-Pre, Update-Query) and to extend ME4's bulk-level hooks
+				// to Update/Upsert (UpdateBulk-*, UpsertBulk-*).
+				// ==================================================================
+
+				test
+				(
+					'setBehavior: Update-PreOperation hook can mutate RecordToModify before DAL update',
+					function (fDone)
+					{
+						_MeadowEndpoints.controller.BehaviorInjection.setBehavior('Update-PreOperation',
+							(pRequest, pRequestState, fCallback) =>
+							{
+								// Hook sees the incoming payload on RecordToModify,
+								// existing loaded row on Record. Mutations to
+								// RecordToModify flow through to the DAL update.
+								Expect(pRequestState.RecordToModify).to.be.an('object');
+								pRequestState.RecordToModify.Genre = 'MutatedByPreOp';
+								return fCallback();
+							});
+
+						_SuperTest
+							.put('1.0/Book')
+							.send({ IDBook: 4, Title: 'Snow Crash (v2)' })
+							.end(
+								(pError, pResponse) =>
+								{
+									let tmpResult = JSON.parse(pResponse.text);
+									Expect(tmpResult.Genre).to.equal('MutatedByPreOp');
+									Expect(tmpResult.Title).to.equal('Snow Crash (v2)');
+
+									delete _MeadowEndpoints.controller.BehaviorInjection._BehaviorFunctions['Update-PreOperation'];
+									fDone();
+								}
+							);
+					}
+				);
+				test
+				(
+					'setBehavior: Update-PreOperation hook can reject an update',
+					function (fDone)
+					{
+						_MeadowEndpoints.controller.BehaviorInjection.setBehavior('Update-PreOperation',
+							(pRequest, pRequestState, fCallback) =>
+							{
+								if (!pRequestState.RecordToModify.Title)
+								{
+									const tmpError = new Error('Title is required');
+									tmpError.StatusCode = 400;
+									return fCallback(tmpError);
+								}
+								return fCallback();
+							});
+
+						_SuperTest
+							.put('1.0/Book')
+							.send({ IDBook: 3 })
+							.end(
+								(pError, pResponse) =>
+								{
+									const tmpResult = JSON.parse(pResponse.text);
+									Expect(tmpResult).to.have.property('Error');
+
+									delete _MeadowEndpoints.controller.BehaviorInjection._BehaviorFunctions['Update-PreOperation'];
+									fDone();
+								}
+							);
+					}
+				);
+				test
+				(
+					'setBehavior: Update-QueryConfiguration hook fires after Query.addRecord',
+					function (fDone)
+					{
+						_MeadowEndpoints.controller.BehaviorInjection.setBehavior('Update-QueryConfiguration',
+							(pRequest, pRequestState, fCallback) =>
+							{
+								// Query should exist and have had the record added;
+								// hook can scope the update further.
+								Expect(pRequestState.Query).to.exist;
+								pRequestState.Query.addFilter('Deleted', 0);
+								return fCallback();
+							});
+
+						_SuperTest
+							.put('1.0/Book')
+							.send({ IDBook: 2, Title: 'Dune (updated)' })
+							.end(
+								(pError, pResponse) =>
+								{
+									const tmpResult = JSON.parse(pResponse.text);
+									Expect(tmpResult.Title).to.equal('Dune (updated)');
+
+									delete _MeadowEndpoints.controller.BehaviorInjection._BehaviorFunctions['Update-QueryConfiguration'];
+									fDone();
+								}
+							);
+					}
+				);
+				test
+				(
+					'setBehavior: UpdateBulk-PreOperation fires once before the batch',
+					function (fDone)
+					{
+						let _CallCount = 0;
+						let _SawBulkRecords = false;
+						_MeadowEndpoints.controller.BehaviorInjection.setBehavior('UpdateBulk-PreOperation',
+							(pRequest, pRequestState, fCallback) =>
+							{
+								_CallCount++;
+								_SawBulkRecords = Array.isArray(pRequestState.BulkRecords);
+								return fCallback();
+							});
+
+						_SuperTest
+							.put('1.0/Books')
+							.send([
+								{ IDBook: 1, Title: 'Angels & Demons (batch)' },
+								{ IDBook: 2, Title: 'Dune (batch)' },
+							])
+							.end(
+								(pError, pResponse) =>
+								{
+									Expect(_CallCount).to.equal(1);
+									Expect(_SawBulkRecords).to.equal(true);
+
+									delete _MeadowEndpoints.controller.BehaviorInjection._BehaviorFunctions['UpdateBulk-PreOperation'];
+									fDone();
+								}
+							);
+					}
+				);
+				test
+				(
+					'setBehavior: UpdateBulk-PostOperation fires once after the batch',
+					function (fDone)
+					{
+						let _CallCount = 0;
+						let _SawUpdatedRecords = false;
+						_MeadowEndpoints.controller.BehaviorInjection.setBehavior('UpdateBulk-PostOperation',
+							(pRequest, pRequestState, fCallback) =>
+							{
+								_CallCount++;
+								_SawUpdatedRecords = Array.isArray(pRequestState.UpdatedRecords) && pRequestState.UpdatedRecords.length > 0;
+								return fCallback();
+							});
+
+						_SuperTest
+							.put('1.0/Books')
+							.send([
+								{ IDBook: 3, Title: 'Neuromancer (batch post)' },
+							])
+							.end(
+								(pError, pResponse) =>
+								{
+									Expect(_CallCount).to.equal(1);
+									Expect(_SawUpdatedRecords).to.equal(true);
+
+									delete _MeadowEndpoints.controller.BehaviorInjection._BehaviorFunctions['UpdateBulk-PostOperation'];
+									fDone();
+								}
+							);
+					}
+				);
+				test
+				(
+					'setBehavior: UpsertBulk-PreOperation fires once before the batch',
+					function (fDone)
+					{
+						let _CallCount = 0;
+						_MeadowEndpoints.controller.BehaviorInjection.setBehavior('UpsertBulk-PreOperation',
+							(pRequest, pRequestState, fCallback) =>
+							{
+								_CallCount++;
+								Expect(Array.isArray(pRequestState.BulkRecords)).to.equal(true);
+								return fCallback();
+							});
+
+						_SuperTest
+							.put('1.0/Book/Upserts')
+							.send([
+								{ Title: 'Bulk Upsert New 1' },
+								{ Title: 'Bulk Upsert New 2' },
+							])
+							.end(
+								(pError, pResponse) =>
+								{
+									Expect(_CallCount).to.equal(1);
+
+									delete _MeadowEndpoints.controller.BehaviorInjection._BehaviorFunctions['UpsertBulk-PreOperation'];
+									fDone();
+								}
+							);
+					}
+				);
+				test
+				(
+					'setBehavior: UpsertBulk-PostOperation fires once after the batch',
+					function (fDone)
+					{
+						let _CallCount = 0;
+						let _SawUpserted = false;
+						_MeadowEndpoints.controller.BehaviorInjection.setBehavior('UpsertBulk-PostOperation',
+							(pRequest, pRequestState, fCallback) =>
+							{
+								_CallCount++;
+								_SawUpserted = Array.isArray(pRequestState.UpsertedRecords) && pRequestState.UpsertedRecords.length > 0;
+								return fCallback();
+							});
+
+						_SuperTest
+							.put('1.0/Book/Upserts')
+							.send([
+								{ Title: 'Bulk Upsert Post 1' },
+							])
+							.end(
+								(pError, pResponse) =>
+								{
+									Expect(_CallCount).to.equal(1);
+									Expect(_SawUpserted).to.equal(true);
+
+									delete _MeadowEndpoints.controller.BehaviorInjection._BehaviorFunctions['UpsertBulk-PostOperation'];
+									fDone();
+								}
+							);
+					}
+				);
+
+				// ==================================================================
+				// Coverage backfill for hooks that were present but previously
+				// untested. Each test registers a handler, fires the endpoint,
+				// and asserts the hook observed the expected state. These also
+				// act as stage-semantics documentation for the hook surface.
+				// ==================================================================
+
+				test
+				(
+					'setBehavior: Create-QueryConfiguration fires after Query.addRecord',
+					function (fDone)
+					{
+						let _Seen = null;
+						_MeadowEndpoints.controller.BehaviorInjection.setBehavior('Create-QueryConfiguration',
+							(pRequest, pRequestState, fCallback) =>
+							{
+								_Seen = {
+									hasQuery: !!pRequestState.Query,
+									hasRecordToCreate: !!pRequestState.RecordToCreate,
+								};
+								return fCallback();
+							});
+
+						_SuperTest
+							.post('1.0/Book')
+							.send({ Title: 'Query-Config hook target' })
+							.end(
+								(pError, pResponse) =>
+								{
+									Expect(_Seen).to.deep.equal({ hasQuery: true, hasRecordToCreate: true });
+
+									delete _MeadowEndpoints.controller.BehaviorInjection._BehaviorFunctions['Create-QueryConfiguration'];
+									fDone();
+								}
+							);
+					}
+				);
+				test
+				(
+					'setBehavior: Create-PostOperation sees the freshly-inserted Record',
+					function (fDone)
+					{
+						let _SeenIDBook = null;
+						_MeadowEndpoints.controller.BehaviorInjection.setBehavior('Create-PostOperation',
+							(pRequest, pRequestState, fCallback) =>
+							{
+								_SeenIDBook = pRequestState.Record && pRequestState.Record.IDBook;
+								pRequestState.Record.PostOpTag = 'was-here';
+								return fCallback();
+							});
+
+						_SuperTest
+							.post('1.0/Book')
+							.send({ Title: 'Post-op hook target' })
+							.end(
+								(pError, pResponse) =>
+								{
+									const tmpResult = JSON.parse(pResponse.text);
+									Expect(_SeenIDBook).to.be.above(0);
+									Expect(tmpResult.PostOpTag).to.equal('was-here');
+
+									delete _MeadowEndpoints.controller.BehaviorInjection._BehaviorFunctions['Create-PostOperation'];
+									fDone();
+								}
+							);
+					}
+				);
+				test
+				(
+					'setBehavior: CreateBulk-PreOperation fires once with RecordsToBulkCreate',
+					function (fDone)
+					{
+						let _CallCount = 0;
+						let _SawRecords = false;
+						_MeadowEndpoints.controller.BehaviorInjection.setBehavior('CreateBulk-PreOperation',
+							(pRequest, pRequestState, fCallback) =>
+							{
+								_CallCount++;
+								_SawRecords = Array.isArray(pRequest.RecordsToBulkCreate);
+								return fCallback();
+							});
+
+						_SuperTest
+							.post('1.0/Books')
+							.send([
+								{ Title: 'Bulk Create 1' },
+								{ Title: 'Bulk Create 2' },
+							])
+							.end(
+								(pError, pResponse) =>
+								{
+									Expect(_CallCount).to.equal(1);
+									Expect(_SawRecords).to.equal(true);
+
+									delete _MeadowEndpoints.controller.BehaviorInjection._BehaviorFunctions['CreateBulk-PreOperation'];
+									fDone();
+								}
+							);
+					}
+				);
+				test
+				(
+					'setBehavior: CreateBulk-PostOperation fires once with CreatedRecords',
+					function (fDone)
+					{
+						let _SawCreated = null;
+						_MeadowEndpoints.controller.BehaviorInjection.setBehavior('CreateBulk-PostOperation',
+							(pRequest, pRequestState, fCallback) =>
+							{
+								_SawCreated = Array.isArray(pRequestState.CreatedRecords) && pRequestState.CreatedRecords.length;
+								return fCallback();
+							});
+
+						_SuperTest
+							.post('1.0/Books')
+							.send([
+								{ Title: 'Bulk Create Post 1' },
+							])
+							.end(
+								(pError, pResponse) =>
+								{
+									Expect(_SawCreated).to.equal(1);
+
+									delete _MeadowEndpoints.controller.BehaviorInjection._BehaviorFunctions['CreateBulk-PostOperation'];
+									fDone();
+								}
+							);
+					}
+				);
+				test
+				(
+					'setBehavior: Delete-QueryConfiguration can scope the delete query',
+					function (fDone)
+					{
+						_MeadowEndpoints.controller.BehaviorInjection.setBehavior('Delete-QueryConfiguration',
+							(pRequest, pRequestState, fCallback) =>
+							{
+								Expect(pRequestState.Query).to.exist;
+								return fCallback();
+							});
+
+						// Use a record we don't care about the state of; create one inline.
+						_SuperTest
+							.post('1.0/Book')
+							.send({ Title: 'Delete-Query target' })
+							.end(
+								(pPostErr, pPostRes) =>
+								{
+									const tmpID = JSON.parse(pPostRes.text).IDBook;
+									_SuperTest
+										.delete(`1.0/Book/${tmpID}`)
+										.end(
+											(pDelErr, pDelRes) =>
+											{
+												delete _MeadowEndpoints.controller.BehaviorInjection._BehaviorFunctions['Delete-QueryConfiguration'];
+												fDone();
+											}
+										);
+								}
+							);
+					}
+				);
+				test
+				(
+					'setBehavior: Delete-PostOperation fires after soft-delete',
+					function (fDone)
+					{
+						let _HookFired = false;
+						_MeadowEndpoints.controller.BehaviorInjection.setBehavior('Delete-PostOperation',
+							(pRequest, pRequestState, fCallback) =>
+							{
+								_HookFired = true;
+								return fCallback();
+							});
+
+						_SuperTest
+							.post('1.0/Book')
+							.send({ Title: 'Delete-Post target' })
+							.end(
+								(pPostErr, pPostRes) =>
+								{
+									const tmpID = JSON.parse(pPostRes.text).IDBook;
+									_SuperTest
+										.delete(`1.0/Book/${tmpID}`)
+										.end(
+											() =>
+											{
+												Expect(_HookFired).to.equal(true);
+												delete _MeadowEndpoints.controller.BehaviorInjection._BehaviorFunctions['Delete-PostOperation'];
+												fDone();
+											}
+										);
+								}
+							);
+					}
+				);
+				test
+				(
+					'setBehavior: Read-QueryConfiguration runs after filter is applied',
+					function (fDone)
+					{
+						let _SeenCriteria = null;
+						_MeadowEndpoints.controller.BehaviorInjection.setBehavior('Read-QueryConfiguration',
+							(pRequest, pRequestState, fCallback) =>
+							{
+								_SeenCriteria = pRequestState.RecordSearchCriteria;
+								return fCallback();
+							});
+
+						_SuperTest
+							.get('1.0/Book/1')
+							.end(
+								() =>
+								{
+									Expect(_SeenCriteria).to.be.a('string').and.satisfy((pS) => pS.includes('IDBook'));
+									delete _MeadowEndpoints.controller.BehaviorInjection._BehaviorFunctions['Read-QueryConfiguration'];
+									fDone();
+								}
+							);
+					}
+				);
+				test
+				(
+					'setBehavior: Reads-PostOperation fires after list load',
+					function (fDone)
+					{
+						let _SawRecords = false;
+						_MeadowEndpoints.controller.BehaviorInjection.setBehavior('Reads-PostOperation',
+							(pRequest, pRequestState, fCallback) =>
+							{
+								_SawRecords = Array.isArray(pRequestState.Records) && pRequestState.Records.length > 0;
+								return fCallback();
+							});
+
+						_SuperTest
+							.get('1.0/Books/0/10')
+							.end(
+								() =>
+								{
+									Expect(_SawRecords).to.equal(true);
+									delete _MeadowEndpoints.controller.BehaviorInjection._BehaviorFunctions['Reads-PostOperation'];
+									fDone();
+								}
+							);
+					}
+				);
+				test
+				(
+					'setBehavior: ReadMax-QueryConfiguration fires with column name',
+					function (fDone)
+					{
+						let _SeenColumn = null;
+						_MeadowEndpoints.controller.BehaviorInjection.setBehavior('ReadMax-QueryConfiguration',
+							(pRequest, pRequestState, fCallback) =>
+							{
+								_SeenColumn = pRequestState.ColumnName;
+								return fCallback();
+							});
+
+						_SuperTest
+							.get('1.0/Book/Max/PublicationYear')
+							.end(
+								() =>
+								{
+									Expect(_SeenColumn).to.equal('PublicationYear');
+									delete _MeadowEndpoints.controller.BehaviorInjection._BehaviorFunctions['ReadMax-QueryConfiguration'];
+									fDone();
+								}
+							);
+					}
+				);
+				test
+				(
+					'setBehavior: ReadMax-PostOperation fires after max lookup',
+					function (fDone)
+					{
+						let _HookFired = false;
+						_MeadowEndpoints.controller.BehaviorInjection.setBehavior('ReadMax-PostOperation',
+							(pRequest, pRequestState, fCallback) =>
+							{
+								_HookFired = true;
+								return fCallback();
+							});
+
+						_SuperTest
+							.get('1.0/Book/Max/PublicationYear')
+							.end(
+								() =>
+								{
+									Expect(_HookFired).to.equal(true);
+									delete _MeadowEndpoints.controller.BehaviorInjection._BehaviorFunctions['ReadMax-PostOperation'];
+									fDone();
+								}
+							);
+					}
+				);
+				test
+				(
+					'setBehavior: CountBy-QueryConfiguration can modify count-by query',
+					function (fDone)
+					{
+						let _HookFired = false;
+						_MeadowEndpoints.controller.BehaviorInjection.setBehavior('CountBy-QueryConfiguration',
+							(pRequest, pRequestState, fCallback) =>
+							{
+								_HookFired = true;
+								Expect(pRequestState.Query).to.exist;
+								return fCallback();
+							});
+
+						_SuperTest
+							.get('1.0/Books/Count/By/Genre/Thriller')
+							.end(
+								() =>
+								{
+									Expect(_HookFired).to.equal(true);
+									delete _MeadowEndpoints.controller.BehaviorInjection._BehaviorFunctions['CountBy-QueryConfiguration'];
+									fDone();
+								}
+							);
+					}
+				);
+				test
+				(
+					'setBehavior: Undelete-PreOperation fires before undelete',
+					function (fDone)
+					{
+						let _HookFired = false;
+						_MeadowEndpoints.controller.BehaviorInjection.setBehavior('Undelete-PreOperation',
+							(pRequest, pRequestState, fCallback) =>
+							{
+								_HookFired = true;
+								return fCallback();
+							});
+
+						// Create, delete, then undelete to hit the hook.
+						_SuperTest
+							.post('1.0/Book')
+							.send({ Title: 'Undelete-Pre target' })
+							.end(
+								(pPostErr, pPostRes) =>
+								{
+									const tmpID = JSON.parse(pPostRes.text).IDBook;
+									_SuperTest
+										.delete(`1.0/Book/${tmpID}`)
+										.end(
+											() =>
+											{
+												_SuperTest
+													.get(`1.0/Book/Undelete/${tmpID}`)
+													.end(
+														() =>
+														{
+															Expect(_HookFired).to.equal(true);
+															delete _MeadowEndpoints.controller.BehaviorInjection._BehaviorFunctions['Undelete-PreOperation'];
+															fDone();
+														}
+													);
+											}
+										);
+								}
+							);
+					}
+				);
+				test
+				(
+					'setBehavior: Undelete-PostOperation fires after undelete',
+					function (fDone)
+					{
+						let _HookFired = false;
+						_MeadowEndpoints.controller.BehaviorInjection.setBehavior('Undelete-PostOperation',
+							(pRequest, pRequestState, fCallback) =>
+							{
+								_HookFired = true;
+								return fCallback();
+							});
+
+						_SuperTest
+							.post('1.0/Book')
+							.send({ Title: 'Undelete-Post target' })
+							.end(
+								(pPostErr, pPostRes) =>
+								{
+									const tmpID = JSON.parse(pPostRes.text).IDBook;
+									_SuperTest
+										.delete(`1.0/Book/${tmpID}`)
+										.end(
+											() =>
+											{
+												_SuperTest
+													.get(`1.0/Book/Undelete/${tmpID}`)
+													.end(
+														() =>
+														{
+															Expect(_HookFired).to.equal(true);
+															delete _MeadowEndpoints.controller.BehaviorInjection._BehaviorFunctions['Undelete-PostOperation'];
+															fDone();
+														}
+													);
+											}
+										);
+								}
+							);
+					}
+				);
+				test
+				(
+					'setBehavior: Schema-PreOperation fires before schema render',
+					function (fDone)
+					{
+						let _HookFired = false;
+						_MeadowEndpoints.controller.BehaviorInjection.setBehavior('Schema-PreOperation',
+							(pRequest, pRequestState, fCallback) =>
+							{
+								_HookFired = true;
+								return fCallback();
+							});
+
+						_SuperTest
+							.get('1.0/Book/Schema')
+							.end(
+								() =>
+								{
+									Expect(_HookFired).to.equal(true);
+									delete _MeadowEndpoints.controller.BehaviorInjection._BehaviorFunctions['Schema-PreOperation'];
+									fDone();
+								}
+							);
+					}
+				);
+				test
+				(
+					'setBehavior: Validate-PreOperation fires before validate',
+					function (fDone)
+					{
+						let _HookFired = false;
+						_MeadowEndpoints.controller.BehaviorInjection.setBehavior('Validate-PreOperation',
+							(pRequest, pRequestState, fCallback) =>
+							{
+								_HookFired = true;
+								return fCallback();
+							});
+
+						_SuperTest
+							.post('1.0/Book/Schema/Validate')
+							.send({ Title: 'Validate target' })
+							.end(
+								() =>
+								{
+									Expect(_HookFired).to.equal(true);
+									delete _MeadowEndpoints.controller.BehaviorInjection._BehaviorFunctions['Validate-PreOperation'];
+									fDone();
+								}
+							);
+					}
+				);
+				test
+				(
+					'setBehavior: Validate-PostOperation fires after validate',
+					function (fDone)
+					{
+						let _HookFired = false;
+						_MeadowEndpoints.controller.BehaviorInjection.setBehavior('Validate-PostOperation',
+							(pRequest, pRequestState, fCallback) =>
+							{
+								_HookFired = true;
+								return fCallback();
+							});
+
+						_SuperTest
+							.post('1.0/Book/Schema/Validate')
+							.send({ Title: 'Validate target 2' })
+							.end(
+								() =>
+								{
+									Expect(_HookFired).to.equal(true);
+									delete _MeadowEndpoints.controller.BehaviorInjection._BehaviorFunctions['Validate-PostOperation'];
+									fDone();
+								}
+							);
+					}
+				);
+				test
+				(
+					'setBehavior: New-PreOperation fires before empty record render',
+					function (fDone)
+					{
+						let _HookFired = false;
+						_MeadowEndpoints.controller.BehaviorInjection.setBehavior('New-PreOperation',
+							(pRequest, pRequestState, fCallback) =>
+							{
+								_HookFired = true;
+								return fCallback();
+							});
+
+						_SuperTest
+							.get('1.0/Book/Schema/New')
+							.end(
+								() =>
+								{
+									Expect(_HookFired).to.equal(true);
+									delete _MeadowEndpoints.controller.BehaviorInjection._BehaviorFunctions['New-PreOperation'];
+									fDone();
+								}
+							);
+					}
+				);
 			}
 		);
 

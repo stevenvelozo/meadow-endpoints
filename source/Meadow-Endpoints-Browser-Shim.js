@@ -8,7 +8,10 @@ var libNPMModuleWrapper = require('./Meadow-Endpoints.js');
 
 if ((typeof(window) === 'object') && !window.hasOwnProperty('MeadowEndpoints'))
 {
-	window.MeadowEndpoints = libNPMModuleWrapper;
+	// Browser shim attaches the module to a named window global. The
+	// property doesn't exist on the built-in Window type; cast to a
+	// Window augmented with the optional property to satisfy checkJs.
+	/** @type {Window & { MeadowEndpoints?: unknown }} */ (window).MeadowEndpoints = libNPMModuleWrapper;
 }
 
 module.exports = libNPMModuleWrapper;

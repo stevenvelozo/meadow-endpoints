@@ -23,6 +23,7 @@ const doAPIEndpointUpdate = function(pRequest, pResponse, fNext)
 
 				return fStageComplete();
 			},
+			fBehaviorInjector(`UpdateBulk-PreOperation`),
 			(fStageComplete) =>
 			{
 				this.eachLimit(tmpRequestState.BulkRecords, 1,
@@ -31,6 +32,7 @@ const doAPIEndpointUpdate = function(pRequest, pResponse, fNext)
 						doUpdate.call(this, pRecord, pRequest, tmpRequestState, pResponse, fCallback);
 					}, fStageComplete);
 			},
+			fBehaviorInjector(`UpdateBulk-PostOperation`),
 			(fStageComplete) =>
 			{
 				return this.doStreamRecordArray(pResponse, tmpRequestState.UpdatedRecords, fStageComplete);

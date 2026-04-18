@@ -28,6 +28,7 @@ const doAPIEndpointUpserts = function(pRequest, pResponse, fNext)
 
 				return fStageComplete();
 			},
+			fBehaviorInjector(`UpsertBulk-PreOperation`),
 			(fStageComplete) =>
 			{
 				this.eachLimit(tmpRequestState.BulkRecords, 1,
@@ -36,6 +37,7 @@ const doAPIEndpointUpserts = function(pRequest, pResponse, fNext)
 						doUpsert.call(this, pRecord, pRequest, tmpRequestState, pResponse, fCallback);
 					}, fStageComplete);
 			},
+			fBehaviorInjector(`UpsertBulk-PostOperation`),
 			(fStageComplete) =>
 			{
 				return this.doStreamRecordArray(pResponse, marshalLiteList.call(this, tmpRequestState.UpsertedRecords, pRequest), fStageComplete);

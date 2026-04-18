@@ -58,6 +58,7 @@ const doUpdate = function(pRecordToModify, pRequest, pRequestState, pResponse, f
 			tmpRequestState.Query = this.DAL.query;
 			return fStageComplete();
 		},
+		fBehaviorInjector(`Update-PreOperation`),
 		(fStageComplete) =>
 		{
 			tmpRequestState.Query.setIDUser(tmpRequestState.SessionData.UserID);
@@ -65,6 +66,7 @@ const doUpdate = function(pRecordToModify, pRequest, pRequestState, pResponse, f
 
 			return fStageComplete();
 		},
+		fBehaviorInjector(`Update-QueryConfiguration`),
 		(fStageComplete) =>
 		{
 			this.DAL.doUpdate(tmpRequestState.Query,
