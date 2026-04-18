@@ -4,14 +4,14 @@ const libUnderscore = require('underscore');
 
 class MeadowEndpointsControllerBehaviorInjectionBase
 {
-    /**
-     * @param {import('../Meadow-Endpoints-Controller-Base.js')} pController
-     */
-    constructor(pController)
+	/**
+	 * @param {import('../Meadow-Endpoints-Controller-Base.js')} pController
+	 */
+	constructor(pController)
 	{
-        this._Controller = pController;
+		this._Controller = pController;
 
-        // The template compilation function
+		// The template compilation function
 		//this.template = this._Controller.DAL.fable.Utility.template;
 		this.template = libUnderscore.template;
 
@@ -21,7 +21,7 @@ class MeadowEndpointsControllerBehaviorInjectionBase
 		// A set of objects to hold the specific templates and their compiled functions
 		this._Templates = {};
 		this._TemplateFunctions = {};
-    }
+	}
 
 	/**
 	* Set a specific behavior.
@@ -30,10 +30,10 @@ class MeadowEndpointsControllerBehaviorInjectionBase
 	*
 	* var someBehavior = function(pRequest, fCallback)
 	* {
-	*      // Do some stuff with pRequest...
-	*      if (pRequest.UserSession.UserRoleIndex < 5)
-	*          tmpRequestState.Query.addFilter('Customer', pRequest.UserSession.IDCustomer);
-	*      return fCallback(false);
+	*	  // Do some stuff with pRequest...
+	*	  if (pRequest.UserSession.UserRoleIndex < 5)
+	*		  tmpRequestState.Query.addFilter('Customer', pRequest.UserSession.IDCustomer);
+	*	  return fCallback(false);
 	* }
 	*
 	* It is important to note that the fCallback function expects false if no error, or a string message if there is one.

@@ -1,12 +1,12 @@
 class MeadowEndpointsControllerLogBase
 {
-    /**
-     * @param {import('../Meadow-Endpoints-Controller-Base.js')} pController
-     */
-    constructor(pController)
+	/**
+	 * @param {import('../Meadow-Endpoints-Controller-Base.js')} pController
+	 */
+	constructor(pController)
 	{
-        this._Controller = pController;
-    }
+		this._Controller = pController;
+	}
 
 	// This is called for every successful request log line.  Be careful what you add in overloads!
 	prepareLogData(pRequest, pRequestState, pLogData)
@@ -38,7 +38,7 @@ class MeadowEndpointsControllerLogBase
 		return pLogData;
 	}
 
-    // This is called whenever an endpoint is completed successfully
+	// This is called whenever an endpoint is completed successfully
 	requestCompletedSuccessfully(pRequest, pRequestState, pActionSummary)
 	{
 		let tmpLogData = (
@@ -54,7 +54,7 @@ class MeadowEndpointsControllerLogBase
 		this._Controller.log.info(pActionSummary, this.prepareLogData(pRequest, pRequestState, tmpLogData));
 	}
 
-    // This is called whenever an endpoint is completed successfully
+	// This is called whenever an endpoint is completed successfully
 	logRequestError(pRequest, pRequestState, pError)
 	{
 		let tmpErrorLogData = (
@@ -72,7 +72,7 @@ class MeadowEndpointsControllerLogBase
 		this._Controller.log.error(pError.message, this.prepareLogData(pRequest, pRequestState, tmpErrorLogData));
 	}
 
-    trace(pLogText, pLogObject)
+	trace(pLogText, pLogObject)
 	{
 		this._Controller.DAL.log.trace(pLogText, pLogObject);
 	}

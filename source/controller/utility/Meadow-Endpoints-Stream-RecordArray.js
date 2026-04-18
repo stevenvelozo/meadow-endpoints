@@ -6,13 +6,13 @@ const JSONStream = require('JSONStream');
 
 class MeadowEndpointsStreamRecordArray
 {
-    /**
-     * @param {import('../Meadow-Endpoints-Controller-Base.js')} pController
-     */
-    constructor(pController)
+	/**
+	 * @param {import('../Meadow-Endpoints-Controller-Base.js')} pController
+	 */
+	constructor(pController)
 	{
-        this._Controller = pController;
-    }
+		this._Controller = pController;
+	}
 
 	chunk(pInput, pChunkSize, pChunkCache)
 	{

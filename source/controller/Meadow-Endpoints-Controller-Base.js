@@ -11,9 +11,9 @@ const libMeadowEndpointsStreamRecordArray = require('./utility/Meadow-Endpoints-
 
 class MeadowEndpointControllerBase
 {
-    /**
-     * @param {import('../Meadow-Endpoints.js')} pMeadowEndpoints
-     */
+	/**
+	 * @param {import('../Meadow-Endpoints.js')} pMeadowEndpoints
+	 */
 	constructor(pMeadowEndpoints)
 	{
 		this.DAL = pMeadowEndpoints.DAL;
@@ -44,9 +44,9 @@ class MeadowEndpointControllerBase
 		this._StreamRecordArray = new libMeadowEndpointsStreamRecordArray(this);
 	}
 
-    /**
-     * @param {import('./Meadow-Endpoints-Controller-Base.js')} pController
-     */
+	/**
+	 * @param {import('./Meadow-Endpoints-Controller-Base.js')} pController
+	 */
 	initializeDefaultUnsetControllers(pController)
 	{
 		// Application Services

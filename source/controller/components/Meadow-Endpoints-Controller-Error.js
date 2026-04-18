@@ -8,29 +8,29 @@
 
 class MeadowEndpointsControllerErrorBase
 {
-    /**
-     * @param {import('../Meadow-Endpoints-Controller-Base.js')} pController
-     */
-    constructor(pController)
+	/**
+	 * @param {import('../Meadow-Endpoints-Controller-Base.js')} pController
+	 */
+	constructor(pController)
 	{
-        this._Controller = pController;
-    }
+		this._Controller = pController;
+	}
 
-    // Get the error object
-    getError(pMessage, pStatusCode, pSuppressSoftwareTrace)
-    {
+	// Get the error object
+	getError(pMessage, pStatusCode, pSuppressSoftwareTrace)
+	{
 		const tmpError = /** @type {MeadowEndpointError} */ (new Error(pMessage));
 
-    	// Default the error status code to 400 if none is passed
+		// Default the error status code to 400 if none is passed
 		tmpError.StatusCode = (typeof(pStatusCode) == 'number') ? pStatusCode : 400;
 		// This suppresses the stack trace from being sent back or logged.
 		// And by default it does not send a stack trace, as we expect errors created this way to be protocol, schema or data related.
 		tmpError.SuppressSoftwareTrace = (typeof(pSuppressSoftwareTrace) != 'undefined') ? pSuppressSoftwareTrace : true;
 
-        return tmpError;
-    }
+		return tmpError;
+	}
 
-    // Handle an error if set -- some errors don't send the response back because they aren't fully errory errors.
+	// Handle an error if set -- some errors don't send the response back because they aren't fully errory errors.
 	handleErrorIfSet(pRequest, pRequestState, pResponse, pError, fCallback)
 	{
 		if (pError)
@@ -41,7 +41,7 @@ class MeadowEndpointsControllerErrorBase
 		return fCallback();
 	}
 
-    // Send an error object
+	// Send an error object
 	sendError(pRequest, pRequestState, pResponse, pError, fCallback)
 	{
 		this._Controller.log.logRequestError(pRequest, pRequestState, pError);
