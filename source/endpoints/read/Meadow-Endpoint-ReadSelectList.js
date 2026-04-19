@@ -54,6 +54,12 @@ const doAPIEndpointReadSelectList = function(pRequest, pResponse, fNext)
 
 				return fStageComplete();
 			},
+			// Stage-specific post-op hook. Fires after DAL read but
+			// BEFORE the records are projected to select-list
+			// (Hash/Value) shape, so handlers can run against full
+			// rows. Separate from Reads-PostOperation so registering
+			// one doesn't unintentionally fire on the other.
+			fBehaviorInjector(`ReadSelectList-PostOperation`),
 			(fStageComplete) =>
 			{
 				tmpRequestState.SelectList = [];

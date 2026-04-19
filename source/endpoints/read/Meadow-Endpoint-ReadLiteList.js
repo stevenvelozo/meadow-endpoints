@@ -60,8 +60,14 @@ const doAPIEndpointReadLite = function(pRequest, pResponse, fNext)
 					pRecords = [];
 				}
 				tmpRequestState.RawRecords = pRecords;
+				// Expose the loaded records under pRequestState.Records
+				// so post-op hooks operate on the same shape regular
+				// Reads uses. Marshalling to lite shape runs AFTER the
+				// hook so hooks see full rows.
+				tmpRequestState.Records = pRecords;
 				return fStageComplete();
 			},
+			fBehaviorInjector(`ReadsLite-PostOperation`),
 			(fStageComplete) =>
 			{
 				tmpRequestState.Records = marshalLiteList.call(this, tmpRequestState.RawRecords, pRequest, (typeof(pRequest.params.ExtraColumns) === 'string') ? pRequest.params.ExtraColumns.split(',') : []);

@@ -49,6 +49,14 @@ const doUpdate = function(pRecordToModify, pRequest, pRequestState, pResponse, f
 							return fStageComplete(this.ErrorHandler.getError('Record not Found', 404));
 						}
 						tmpRequestState.Record = pRecord;
+						// Alias the loaded pre-update row under an
+						// unambiguous name. pRequestState.Record gets
+						// overwritten with the POST-update row later in
+						// this waterfall; OriginalRecord preserves the
+						// PRE-update reference for post-op hooks that
+						// need to compare before/after values (change
+						// logs, customer-boundary checks, etc.).
+						tmpRequestState.OriginalRecord = pRecord;
 						return fStageComplete();
 					});
 			}

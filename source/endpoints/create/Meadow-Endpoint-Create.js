@@ -19,6 +19,14 @@ const doAPIEndpointCreate = function(pRequest, pResponse, fNext)
 
 			return fStageComplete();
 		},
+		// Endpoint-level pre-request hook. Runs after the body-type check
+		// but before any operation work, mirroring ME 2.x's
+		// Create-PreRequest stage. Use cases include idempotency
+		// suppression (e.g. look up by primary GUID and short-circuit
+		// if the row already exists). Handlers can abort the operation
+		// by calling fStageComplete with a truthy error or by fully
+		// writing pResponse and returning a sentinel.
+		fBehaviorInjector(`Create-PreRequest`),
 		(fStageComplete) =>
 		{
 			doCreate.call(this, pRequest.body, pRequest, tmpRequestState, pResponse, fStageComplete);

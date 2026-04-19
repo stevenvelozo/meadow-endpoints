@@ -2404,5 +2404,337 @@ suite
 				);
 			}
 		);
+
+		// ======================================================================
+		// v4.0.17 additions: Create-PreRequest, OriginalRecord retention,
+		// Reads-PostOperation on Lite / Select / Distinct list endpoints.
+		// ======================================================================
+		suite
+		(
+			'Create-PreRequest fires before Create-Operation',
+			() =>
+			{
+				test
+				(
+					'setBehavior: Create-PreRequest hook fires before the operation pipeline',
+					function (fDone)
+					{
+						let tmpFired = false;
+						_MeadowEndpoints.controller.BehaviorInjection.setBehavior('Create-PreRequest',
+							(pRequest, pRequestState, fCallback) =>
+							{
+								tmpFired = true;
+								// At this stage the operation hasn't started — Record
+								// should be undefined, RecordToCreate shouldn't exist yet
+								// either. The HTTP body is the only record source.
+								Expect(pRequestState.Record).to.be.undefined;
+								Expect(pRequest.body.Title).to.equal('PreRequest Test');
+								return fCallback();
+							});
+
+						_SuperTest
+							.post('1.0/Book')
+							.send({ Title: 'PreRequest Test' })
+							.end(
+								(pError, pResponse) =>
+								{
+									Expect(tmpFired, 'Create-PreRequest did not fire').to.be.true;
+									let tmpResult = JSON.parse(pResponse.text);
+									Expect(tmpResult.Title).to.equal('PreRequest Test');
+									delete _MeadowEndpoints.controller.BehaviorInjection._BehaviorFunctions['Create-PreRequest'];
+									fDone();
+								}
+							);
+					}
+				);
+				test
+				(
+					'setBehavior: Create-PreRequest hook can abort the operation',
+					function (fDone)
+					{
+						_MeadowEndpoints.controller.BehaviorInjection.setBehavior('Create-PreRequest',
+							(pRequest, pRequestState, fCallback) =>
+							{
+								let tmpError = new Error('Rejected by pre-request');
+								tmpError.StatusCode = 400;
+								return fCallback(tmpError);
+							});
+
+						_SuperTest
+							.post('1.0/Book')
+							.send({ Title: 'Should be rejected' })
+							.end(
+								(pError, pResponse) =>
+								{
+									let tmpResult = JSON.parse(pResponse.text);
+									Expect(tmpResult).to.have.property('Error');
+									delete _MeadowEndpoints.controller.BehaviorInjection._BehaviorFunctions['Create-PreRequest'];
+									fDone();
+								}
+							);
+					}
+				);
+				test
+				(
+					'setBehavior: CreateBulk-PreRequest fires before per-record operations',
+					function (fDone)
+					{
+						let tmpFired = false;
+						_MeadowEndpoints.controller.BehaviorInjection.setBehavior('CreateBulk-PreRequest',
+							(pRequest, pRequestState, fCallback) =>
+							{
+								tmpFired = true;
+								Expect(Array.isArray(pRequest.RecordsToBulkCreate)).to.be.true;
+								Expect(pRequest.RecordsToBulkCreate).to.have.lengthOf(2);
+								return fCallback();
+							});
+
+						_SuperTest
+							.post('1.0/Books')
+							.send([ { Title: 'Bulk A' }, { Title: 'Bulk B' } ])
+							.end(
+								(pError, pResponse) =>
+								{
+									Expect(tmpFired, 'CreateBulk-PreRequest did not fire').to.be.true;
+									delete _MeadowEndpoints.controller.BehaviorInjection._BehaviorFunctions['CreateBulk-PreRequest'];
+									fDone();
+								}
+							);
+					}
+				);
+			}
+		);
+
+		suite
+		(
+			'OriginalRecord retained on pRequestState after Update/Delete/Undelete',
+			() =>
+			{
+				let _OriginalTestID = 0;
+				test
+				(
+					'pre-op: create a seed record for OriginalRecord testing',
+					function (fDone)
+					{
+						_SuperTest
+							.post('1.0/Book')
+							.send({ Title: 'Original Title', Genre: 'Original Genre' })
+							.end(
+								(pError, pResponse) =>
+								{
+									let tmpResult = JSON.parse(pResponse.text);
+									_OriginalTestID = tmpResult.IDBook;
+									Expect(_OriginalTestID).to.be.above(0);
+									fDone();
+								}
+							);
+					}
+				);
+				test
+				(
+					'Update-PostOperation: pRequestState.OriginalRecord holds the pre-update row',
+					function (fDone)
+					{
+						let tmpSeenOriginal = null;
+						let tmpSeenRecord = null;
+						_MeadowEndpoints.controller.BehaviorInjection.setBehavior('Update-PostOperation',
+							(pRequest, pRequestState, fCallback) =>
+							{
+								tmpSeenOriginal = pRequestState.OriginalRecord;
+								tmpSeenRecord = pRequestState.Record;
+								return fCallback();
+							});
+
+						_SuperTest
+							.put('1.0/Book')
+							.send({ IDBook: _OriginalTestID, Title: 'Updated Title', Genre: 'Updated Genre' })
+							.end(
+								(pError, pResponse) =>
+								{
+									Expect(tmpSeenOriginal, 'OriginalRecord should be set at post-op').to.not.be.null;
+									Expect(tmpSeenOriginal.Title).to.equal('Original Title');
+									Expect(tmpSeenRecord.Title).to.equal('Updated Title');
+									// The two references must be DIFFERENT objects — the
+									// operation overwrites Record with the post-update row
+									// while OriginalRecord keeps the pre-update reference.
+									Expect(tmpSeenOriginal).to.not.equal(tmpSeenRecord);
+									delete _MeadowEndpoints.controller.BehaviorInjection._BehaviorFunctions['Update-PostOperation'];
+									fDone();
+								}
+							);
+					}
+				);
+				test
+				(
+					'Delete-PostOperation: pRequestState.OriginalRecord holds the pre-delete row',
+					function (fDone)
+					{
+						let tmpSeenOriginal = null;
+						_MeadowEndpoints.controller.BehaviorInjection.setBehavior('Delete-PostOperation',
+							(pRequest, pRequestState, fCallback) =>
+							{
+								tmpSeenOriginal = pRequestState.OriginalRecord;
+								return fCallback();
+							});
+
+						_SuperTest
+							.delete(`1.0/Book/${_OriginalTestID}`)
+							.end(
+								(pError, pResponse) =>
+								{
+									Expect(tmpSeenOriginal, 'OriginalRecord should be set at delete post-op').to.not.be.null;
+									Expect(tmpSeenOriginal.IDBook).to.equal(_OriginalTestID);
+									delete _MeadowEndpoints.controller.BehaviorInjection._BehaviorFunctions['Delete-PostOperation'];
+									fDone();
+								}
+							);
+					}
+				);
+				test
+				(
+					'Undelete-PostOperation: pRequestState.OriginalRecord holds the pre-undelete row',
+					function (fDone)
+					{
+						let tmpSeenOriginal = null;
+						_MeadowEndpoints.controller.BehaviorInjection.setBehavior('Undelete-PostOperation',
+							(pRequest, pRequestState, fCallback) =>
+							{
+								tmpSeenOriginal = pRequestState.OriginalRecord;
+								return fCallback();
+							});
+
+						_SuperTest
+							.get(`1.0/Book/Undelete/${_OriginalTestID}`)
+							.end(
+								(pError, pResponse) =>
+								{
+									Expect(tmpSeenOriginal, 'OriginalRecord should be set at undelete post-op').to.not.be.null;
+									Expect(tmpSeenOriginal.IDBook).to.equal(_OriginalTestID);
+									delete _MeadowEndpoints.controller.BehaviorInjection._BehaviorFunctions['Undelete-PostOperation'];
+									fDone();
+								}
+							);
+					}
+				);
+			}
+		);
+
+		suite
+		(
+			'Stage-specific PostOperation hooks on Lite / SelectList / Distinct list endpoints',
+			() =>
+			{
+				test
+				(
+					'ReadsLite-PostOperation fires on /s/Lite and receives loaded records before marshal (ME 2.x hash)',
+					function (fDone)
+					{
+						let tmpFired = false;
+						let tmpSeenRecords = null;
+						_MeadowEndpoints.controller.BehaviorInjection.setBehavior('ReadsLite-PostOperation',
+							(pRequest, pRequestState, fCallback) =>
+							{
+								tmpFired = true;
+								tmpSeenRecords = pRequestState.Records;
+								return fCallback();
+							});
+
+						_SuperTest
+							.get('1.0/Books/Lite')
+							.end(
+								(pError, pResponse) =>
+								{
+									Expect(tmpFired, 'ReadsLite-PostOperation did not fire on lite list').to.be.true;
+									Expect(Array.isArray(tmpSeenRecords)).to.be.true;
+									// Hook runs BEFORE marshalling — records should still
+									// have their full-row shape (Title + Genre + IDBook etc.),
+									// not the lite (Hash/Value) shape the client receives.
+									if (tmpSeenRecords.length > 0)
+									{
+										Expect(tmpSeenRecords[0]).to.have.property('IDBook');
+									}
+									delete _MeadowEndpoints.controller.BehaviorInjection._BehaviorFunctions['ReadsLite-PostOperation'];
+									fDone();
+								}
+							);
+					}
+				);
+				test
+				(
+					'Reads-PostOperation does NOT fire on /s/Lite (stage isolation)',
+					function (fDone)
+					{
+						let tmpFiredReads = false;
+						_MeadowEndpoints.controller.BehaviorInjection.setBehavior('Reads-PostOperation',
+							(pRequest, pRequestState, fCallback) =>
+							{
+								tmpFiredReads = true;
+								return fCallback();
+							});
+
+						_SuperTest
+							.get('1.0/Books/Lite')
+							.end(
+								() =>
+								{
+									Expect(tmpFiredReads, 'Reads-PostOperation should NOT fire on lite list — consumers register at ReadsLite-PostOperation').to.be.false;
+									delete _MeadowEndpoints.controller.BehaviorInjection._BehaviorFunctions['Reads-PostOperation'];
+									fDone();
+								}
+							);
+					}
+				);
+				test
+				(
+					'ReadSelectList-PostOperation fires on /Select before marshal',
+					function (fDone)
+					{
+						let tmpFired = false;
+						_MeadowEndpoints.controller.BehaviorInjection.setBehavior('ReadSelectList-PostOperation',
+							(pRequest, pRequestState, fCallback) =>
+							{
+								tmpFired = true;
+								return fCallback();
+							});
+
+						_SuperTest
+							.get('1.0/BookSelect')
+							.end(
+								(pError, pResponse) =>
+								{
+									Expect(tmpFired, 'ReadSelectList-PostOperation did not fire on select list').to.be.true;
+									delete _MeadowEndpoints.controller.BehaviorInjection._BehaviorFunctions['ReadSelectList-PostOperation'];
+									fDone();
+								}
+							);
+					}
+				);
+				test
+				(
+					'ReadDistinct-PostOperation fires on /s/Distinct/:Columns before marshal',
+					function (fDone)
+					{
+						let tmpFired = false;
+						_MeadowEndpoints.controller.BehaviorInjection.setBehavior('ReadDistinct-PostOperation',
+							(pRequest, pRequestState, fCallback) =>
+							{
+								tmpFired = true;
+								return fCallback();
+							});
+
+						_SuperTest
+							.get('1.0/Books/Distinct/Genre')
+							.end(
+								(pError, pResponse) =>
+								{
+									Expect(tmpFired, 'ReadDistinct-PostOperation did not fire on distinct list').to.be.true;
+									delete _MeadowEndpoints.controller.BehaviorInjection._BehaviorFunctions['ReadDistinct-PostOperation'];
+									fDone();
+								}
+							);
+					}
+				);
+			}
+		);
 	}
 );

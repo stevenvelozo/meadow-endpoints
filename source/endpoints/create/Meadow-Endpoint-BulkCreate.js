@@ -23,6 +23,12 @@ const doAPIEndpointBulkCreate = function(pRequest, pResponse, fNext)
 
 			return fStageComplete();
 		},
+		// Endpoint-level pre-request hook for bulk creates. Mirror of
+		// Create-PreRequest in the singular Create endpoint — fires
+		// after body-array validation and before any per-record
+		// operation. Use cases include bulk idempotency suppression /
+		// dedup across the incoming batch.
+		fBehaviorInjector(`CreateBulk-PreRequest`),
 		fBehaviorInjector(`CreateBulk-PreOperation`),
 		(fStageComplete) =>
 		{

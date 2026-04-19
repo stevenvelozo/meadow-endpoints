@@ -70,6 +70,13 @@ const doAPIEndpointReadDistinct = function(pRequest, pResponse, fNext)
 			tmpRequestState.Records = pRecords;
 			return fStageComplete();
 		},
+		// Stage-specific post-op hook. Fires after DAL read but BEFORE
+		// the records are projected to distinct-column shape, so
+		// handlers can run against full rows. Separate from
+		// Reads-PostOperation so registering one doesn't unintentionally
+		// fire on the other. Hash matches the endpoint's action label
+		// (initializeRequestState(..., 'ReadDistinct')).
+		fBehaviorInjector(`ReadDistinct-PostOperation`),
 		(fStageComplete) =>
 		{
 			tmpRequestState.ResultRecords = marshalDistinctList.call(this, tmpRequestState.Records, pRequest, tmpRequestState.DistinctColumns);

@@ -70,6 +70,11 @@ const doAPIEndpointUndelete = function(pRequest, pResponse, fNext)
 							return fStageComplete(this.ErrorHandler.getError('Record not found.', 404));
 						}
 						tmpRequestState.Record = pRecord;
+						// Alias the loaded pre-undelete row for symmetry
+						// with Update / Delete (see their endpoints). Post-op
+						// hooks that compare pre/post values can reliably
+						// read OriginalRecord.
+						tmpRequestState.OriginalRecord = pRecord;
 						return fStageComplete();
 					});
 			},

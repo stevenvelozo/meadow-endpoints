@@ -55,6 +55,12 @@ const doAPIEndpointDelete = function(pRequest, pResponse, fNext)
 							return fStageComplete(this.ErrorHandler.getError('Record not found.', 404));
 						}
 						tmpRequestState.Record = pRecord;
+						// Alias the loaded pre-delete row for symmetry
+						// with Update (see Meadow-Operation-Update.js).
+						// Post-op hooks that compare pre/post values can
+						// reliably read OriginalRecord without having to
+						// know which stage overwrote Record.
+						tmpRequestState.OriginalRecord = pRecord;
 						return fStageComplete();
 					});
 			},
