@@ -82,6 +82,7 @@ class MeadowEndpoints
 
 			Upsert: require('./endpoints/upsert/Meadow-Endpoint-Upsert.js'),
 			Upserts: require('./endpoints/upsert/Meadow-Endpoint-BulkUpsert.js'),
+			UpsertsDetailed: require('./endpoints/upsert/Meadow-Endpoint-BulkUpsertDetailed.js'),
 
 			Delete: require('./endpoints/delete/Meadow-Endpoint-Delete.js'),
 			Undelete: require('./endpoints/delete/Meadow-Endpoint-Undelete.js'),
@@ -211,6 +212,7 @@ class MeadowEndpoints
 			this.connectRoute(pServiceServer, 'putWithBodyParser', `s`, this._Endpoints.Updates, `the internal behavior _Endpoints.Updates`);
 			this.connectRoute(pServiceServer, 'putWithBodyParser', `/Upsert`, this._Endpoints.Upsert, `the internal behavior _Endpoints.Upsert`);
 			this.connectRoute(pServiceServer, 'putWithBodyParser', `/Upserts`, this._Endpoints.Upserts, `the internal behavior _Endpoints.Upserts`);
+			this.connectRoute(pServiceServer, 'putWithBodyParser', `/Upserts/Detailed`, this._Endpoints.UpsertsDetailed, `the internal behavior _Endpoints.UpsertsDetailed`);
 		}
 		if (this._EnabledBehaviorSets.Delete)
 		{
