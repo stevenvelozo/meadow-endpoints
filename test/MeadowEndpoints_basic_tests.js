@@ -2736,5 +2736,557 @@ suite
 				);
 			}
 		);
+
+		// ======================================================================
+		// Update by primary key via URL (PUT/PATCH /:IDRecord)
+		// ----------------------------------------------------------------------
+		// REST-idiomatic in-place update. URL ID is authoritative — clients no
+		// longer need to GET → DELETE → INSERT to "edit" a row, which was the
+		// pattern that churned auto-ids and broke ID-holding consumers.
+		// ======================================================================
+		suite
+		(
+			'Update by primary key via URL',
+			() =>
+			{
+				let _ByIDRecordID = 0;
+
+				suiteSetup
+				(
+					function (fDone)
+					{
+						_SuperTest
+							.post('1.0/Book')
+							.send({ Title: 'PUT-by-id seed', Genre: 'Test' })
+							.end(
+								(pError, pResponse) =>
+								{
+									let tmpResult = JSON.parse(pResponse.text);
+									_ByIDRecordID = tmpResult.IDBook;
+									Expect(_ByIDRecordID).to.be.above(0);
+									fDone();
+								}
+							);
+					}
+				);
+
+				test
+				(
+					'PUT /:IDRecord updates in place and preserves the primary key',
+					function (fDone)
+					{
+						_SuperTest
+							.put(`1.0/Book/${_ByIDRecordID}`)
+							.send({ Title: 'PUT-by-id updated', Genre: 'Updated' })
+							.end(
+								(pError, pResponse) =>
+								{
+									Expect(pResponse.status).to.equal(200);
+									let tmpResult = JSON.parse(pResponse.text);
+									Expect(tmpResult.IDBook).to.equal(_ByIDRecordID);
+									Expect(tmpResult.Title).to.equal('PUT-by-id updated');
+									Expect(tmpResult.Genre).to.equal('Updated');
+									fDone();
+								}
+							);
+					}
+				);
+
+				test
+				(
+					'PUT /:IDRecord persists the update and the row is read back at the same ID',
+					function (fDone)
+					{
+						_SuperTest
+							.get(`1.0/Book/${_ByIDRecordID}`)
+							.end(
+								(pError, pResponse) =>
+								{
+									let tmpResult = JSON.parse(pResponse.text);
+									Expect(tmpResult.IDBook).to.equal(_ByIDRecordID);
+									Expect(tmpResult.Title).to.equal('PUT-by-id updated');
+									fDone();
+								}
+							);
+					}
+				);
+
+				test
+				(
+					'PATCH /:IDRecord behaves the same as PUT — update in place by URL ID',
+					function (fDone)
+					{
+						_SuperTest
+							.patch(`1.0/Book/${_ByIDRecordID}`)
+							.send({ Title: 'PATCH-by-id', Genre: 'Patched' })
+							.end(
+								(pError, pResponse) =>
+								{
+									Expect(pResponse.status).to.equal(200);
+									let tmpResult = JSON.parse(pResponse.text);
+									Expect(tmpResult.IDBook).to.equal(_ByIDRecordID);
+									Expect(tmpResult.Title).to.equal('PATCH-by-id');
+									fDone();
+								}
+							);
+					}
+				);
+
+				test
+				(
+					'PUT /:IDRecord — URL ID overrides any IDBook in the body',
+					function (fDone)
+					{
+						// Send a body whose IDBook contradicts the URL. The URL
+						// must win so consumers can't accidentally pivot the
+						// update to a different row by stale-body cache.
+						_SuperTest
+							.put(`1.0/Book/${_ByIDRecordID}`)
+							.send({ IDBook: 99999, Title: 'URL wins', Genre: 'Override' })
+							.end(
+								(pError, pResponse) =>
+								{
+									Expect(pResponse.status).to.equal(200);
+									let tmpResult = JSON.parse(pResponse.text);
+									Expect(tmpResult.IDBook).to.equal(_ByIDRecordID);
+									Expect(tmpResult.Title).to.equal('URL wins');
+									fDone();
+								}
+							);
+					}
+				);
+
+				test
+				(
+					'PUT /Upsert is still routed to the upsert endpoint, not /:IDRecord',
+					function (fDone)
+					{
+						// Regression: the literal /Upsert route must not be
+						// shadowed by the new /:IDRecord parameterized route.
+						_SuperTest
+							.put('1.0/Book/Upsert')
+							.send({ IDBook: _ByIDRecordID, Title: 'Upsert kept routed' })
+							.end(
+								(pError, pResponse) =>
+								{
+									Expect(pResponse.status).to.equal(200);
+									let tmpResult = JSON.parse(pResponse.text);
+									Expect(tmpResult.IDBook).to.equal(_ByIDRecordID);
+									Expect(tmpResult.Title).to.equal('Upsert kept routed');
+									fDone();
+								}
+							);
+					}
+				);
+
+				test
+				(
+					'PUT /:IDRecord — full delete → put-with-same-key → re-read round trip',
+					function (fDone)
+					{
+						// Previously this round-trip required GET → DELETE →
+						// INSERT, and the new INSERT got a fresh auto-id. With
+						// PUT-by-id the primary key is preserved end-to-end.
+						_SuperTest
+							.post('1.0/Book')
+							.send({ Title: 'Round-trip seed' })
+							.end(
+								(pPostErr, pPostRes) =>
+								{
+									let tmpRecord = JSON.parse(pPostRes.text);
+									let tmpID = tmpRecord.IDBook;
+									Expect(tmpID).to.be.above(0);
+
+									_SuperTest
+										.put(`1.0/Book/${tmpID}`)
+										.send({ Title: 'Round-trip updated' })
+										.end(
+											(pPutErr, pPutRes) =>
+											{
+												Expect(pPutRes.status).to.equal(200);
+
+												_SuperTest
+													.get(`1.0/Book/${tmpID}`)
+													.end(
+														(pGetErr, pGetRes) =>
+														{
+															let tmpReadBack = JSON.parse(pGetRes.text);
+															Expect(tmpReadBack.IDBook).to.equal(tmpID);
+															Expect(tmpReadBack.Title).to.equal('Round-trip updated');
+															fDone();
+														}
+													);
+											}
+										);
+								}
+							);
+					}
+				);
+			}
+		);
+
+		// ======================================================================
+		// Soft-deleted collision rename on INSERT
+		// ----------------------------------------------------------------------
+		// New Widget table with a plain UNIQUE INDEX on Code (no
+		// `WHERE Deleted=0` predicate) and a plain composite UNIQUE INDEX on
+		// (Scope, Hash). Verifies that soft-deleted rows whose values would
+		// collide with a new INSERT are renamed deterministically before the
+		// INSERT runs, freeing the slot.
+		// ======================================================================
+		suite
+		(
+			'Soft-deleted collision rename on INSERT',
+			() =>
+			{
+				let _WidgetMeadow = false;
+				let _WidgetEndpoints = false;
+				let _DB = false;
+
+				const _WidgetSchema = [
+					{ Column: 'IDWidget',       Type: 'AutoIdentity' },
+					{ Column: 'GUIDWidget',     Type: 'AutoGUID' },
+					{ Column: 'CreateDate',     Type: 'CreateDate' },
+					{ Column: 'CreatingIDUser', Type: 'CreateIDUser' },
+					{ Column: 'UpdateDate',     Type: 'UpdateDate' },
+					{ Column: 'UpdatingIDUser', Type: 'UpdateIDUser' },
+					{ Column: 'Deleted',        Type: 'Deleted' },
+					{ Column: 'DeleteDate',     Type: 'DeleteDate' },
+					{ Column: 'DeletingIDUser', Type: 'DeleteIDUser' },
+					{ Column: 'Code',           Type: 'String', Unique: true },
+					{ Column: 'Scope',          Type: 'String', UniqueGroup: 'ScopeHash' },
+					{ Column: 'Hash',           Type: 'String', UniqueGroup: 'ScopeHash' },
+					{ Column: 'Name',           Type: 'String' }
+				];
+				const _WidgetJsonSchema = {
+					title: 'Widget',
+					type: 'object',
+					properties: {
+						IDWidget: { type: 'integer' },
+						Code: { type: 'string' },
+						Scope: { type: 'string' },
+						Hash: { type: 'string' },
+						Name: { type: 'string' }
+					},
+					required: ['IDWidget']
+				};
+				const _WidgetDefault = {
+					IDWidget: 0,
+					GUIDWidget: '0x0000000000000000',
+					CreateDate: null,
+					CreatingIDUser: 0,
+					UpdateDate: null,
+					UpdatingIDUser: 0,
+					Deleted: 0,
+					DeleteDate: null,
+					DeletingIDUser: 0,
+					Code: '',
+					// Scope/Hash default to null so rows that only exercise the
+					// single-column Unique on Code don't collide with each other
+					// on the composite UNIQUE — SQLite treats each NULL in a
+					// unique index as distinct, so NULL+NULL across many rows
+					// is fine. Tests that exercise the composite supply real
+					// values explicitly.
+					Scope: null,
+					Hash: null,
+					Name: ''
+				};
+
+				const _RenamePrefix = '__mdsd_';
+
+				suiteSetup
+				(
+					function (fDone)
+					{
+						_DB = _Fable.MeadowSQLiteProvider.db;
+
+						// Plain UNIQUE INDEX statements — no `WHERE Deleted=0`
+						// partial-index syntax. Proof that the rename clears the
+						// soft-deleted slot well enough that downstream schemas
+						// don't need dialect-specific gymnastics.
+						_DB.exec(
+							`CREATE TABLE IF NOT EXISTS Widget (
+								IDWidget INTEGER PRIMARY KEY AUTOINCREMENT,
+								GUIDWidget TEXT NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
+								CreateDate TEXT,
+								CreatingIDUser INTEGER NOT NULL DEFAULT 0,
+								UpdateDate TEXT,
+								UpdatingIDUser INTEGER NOT NULL DEFAULT 0,
+								Deleted INTEGER NOT NULL DEFAULT 0,
+								DeleteDate TEXT,
+								DeletingIDUser INTEGER NOT NULL DEFAULT 0,
+								Code TEXT NOT NULL DEFAULT '',
+								Scope TEXT,
+								Hash TEXT,
+								Name TEXT NOT NULL DEFAULT ''
+							);
+							CREATE UNIQUE INDEX IF NOT EXISTS widget_code_unique ON Widget(Code);
+							CREATE UNIQUE INDEX IF NOT EXISTS widget_scope_hash_unique ON Widget(Scope, Hash);`
+						);
+
+						_WidgetMeadow = libMeadow.new(_Fable, 'Widget')
+							.setProvider('SQLite')
+							.setSchema(_WidgetSchema)
+							.setJsonSchema(_WidgetJsonSchema)
+							.setDefaultIdentifier('IDWidget')
+							.setDefault(_WidgetDefault);
+
+						_WidgetEndpoints = libMeadowEndpoints.new(_WidgetMeadow);
+						_WidgetEndpoints.connectRoutes(_Orator.serviceServer);
+
+						return fDone();
+					}
+				);
+
+				test
+				(
+					'INSERT with a value colliding with a soft-deleted row succeeds and renames the soft-deleted row',
+					function (fDone)
+					{
+						// Setup: create a widget with Code=alpha and soft-delete it.
+						_SuperTest
+							.post('1.0/Widget')
+							.send({ Code: 'alpha', Name: 'Original' })
+							.end(
+								(pPostErr, pPostRes) =>
+								{
+									Expect(pPostRes.status).to.equal(200);
+									let tmpOriginal = JSON.parse(pPostRes.text);
+									Expect(tmpOriginal.Code).to.equal('alpha');
+									let tmpOriginalID = tmpOriginal.IDWidget;
+
+									_SuperTest
+										.delete(`1.0/Widget/${tmpOriginalID}`)
+										.end(
+											(pDelErr, pDelRes) =>
+											{
+												Expect(pDelRes.status).to.equal(200);
+												// Soft-deleted: row 1 still exists with Code=alpha and Deleted=1.
+
+												// Now insert a NEW widget with Code=alpha. The plain
+												// UNIQUE INDEX would reject this without the rename;
+												// with the rename, the soft-deleted row's Code gets
+												// renamed deterministically and the new INSERT wins
+												// the slot.
+												_SuperTest
+													.post('1.0/Widget')
+													.send({ Code: 'alpha', Name: 'Replacement' })
+													.end(
+														(pNewErr, pNewRes) =>
+														{
+															Expect(pNewRes.status, `unexpected status ${pNewRes.status}; body=${pNewRes.text}`).to.equal(200);
+															let tmpNew = JSON.parse(pNewRes.text);
+															Expect(tmpNew.Code).to.equal('alpha');
+															Expect(tmpNew.Name).to.equal('Replacement');
+															Expect(tmpNew.IDWidget).to.be.above(tmpOriginalID);
+
+															// Verify the soft-deleted row was renamed
+															// deterministically. Inspect via the raw DB
+															// (bypassing the soft-delete filter the API
+															// applies by default).
+															let tmpRow = _DB.prepare('SELECT IDWidget, Code, Deleted FROM Widget WHERE IDWidget = ?').get(tmpOriginalID);
+															Expect(tmpRow).to.exist;
+															Expect(tmpRow.Deleted).to.equal(1);
+															Expect(tmpRow.Code).to.match(new RegExp('^' + _RenamePrefix + '[0-9a-f]{16}$'));
+
+															// Determinism: recompute the expected suffix
+															// from (IDRecord, Column, OriginalValue) and
+															// check it matches.
+															const libCrypto = require('crypto');
+															const tmpExpected = _RenamePrefix + libCrypto.createHash('sha1').update(`${tmpOriginalID}:Code:alpha`).digest('hex').slice(0, 16);
+															Expect(tmpRow.Code).to.equal(tmpExpected);
+
+															fDone();
+														}
+													);
+											}
+										);
+								}
+							);
+					}
+				);
+
+				test
+				(
+					'Composite (Scope, Hash) collision: soft-deleted row gets BOTH columns renamed',
+					function (fDone)
+					{
+						_SuperTest
+							.post('1.0/Widget')
+							.send({ Code: 'cmp1', Scope: 'TenantA', Hash: 'hashV1', Name: 'Composite original' })
+							.end(
+								(pPostErr, pPostRes) =>
+								{
+									Expect(pPostRes.status).to.equal(200);
+									let tmpOriginal = JSON.parse(pPostRes.text);
+									let tmpOriginalID = tmpOriginal.IDWidget;
+
+									_SuperTest
+										.delete(`1.0/Widget/${tmpOriginalID}`)
+										.end(
+											(pDelErr, pDelRes) =>
+											{
+												Expect(pDelRes.status).to.equal(200);
+
+												_SuperTest
+													.post('1.0/Widget')
+													.send({ Code: 'cmp2', Scope: 'TenantA', Hash: 'hashV1', Name: 'Composite replacement' })
+													.end(
+														(pNewErr, pNewRes) =>
+														{
+															Expect(pNewRes.status, `unexpected status ${pNewRes.status}; body=${pNewRes.text}`).to.equal(200);
+															let tmpNew = JSON.parse(pNewRes.text);
+															Expect(tmpNew.Scope).to.equal('TenantA');
+															Expect(tmpNew.Hash).to.equal('hashV1');
+
+															// Both Scope and Hash on the soft-deleted row
+															// should now be __mdsd_-prefixed.
+															let tmpRow = _DB.prepare('SELECT IDWidget, Scope, Hash, Deleted FROM Widget WHERE IDWidget = ?').get(tmpOriginalID);
+															Expect(tmpRow.Deleted).to.equal(1);
+															Expect(tmpRow.Scope).to.match(new RegExp('^' + _RenamePrefix + '[0-9a-f]{16}$'));
+															Expect(tmpRow.Hash).to.match(new RegExp('^' + _RenamePrefix + '[0-9a-f]{16}$'));
+
+															const libCrypto = require('crypto');
+															const tmpExpectedScope = _RenamePrefix + libCrypto.createHash('sha1').update(`${tmpOriginalID}:Scope:TenantA`).digest('hex').slice(0, 16);
+															const tmpExpectedHash = _RenamePrefix + libCrypto.createHash('sha1').update(`${tmpOriginalID}:Hash:hashV1`).digest('hex').slice(0, 16);
+															Expect(tmpRow.Scope).to.equal(tmpExpectedScope);
+															Expect(tmpRow.Hash).to.equal(tmpExpectedHash);
+
+															fDone();
+														}
+													);
+											}
+										);
+								}
+							);
+					}
+				);
+
+				test
+				(
+					'Live (non-deleted) row colliding on a unique index still errors — rename only fires for soft-deleted',
+					function (fDone)
+					{
+						_SuperTest
+							.post('1.0/Widget')
+							.send({ Code: 'beta', Name: 'Live row' })
+							.end(
+								(pPostErr, pPostRes) =>
+								{
+									Expect(pPostRes.status).to.equal(200);
+
+									// No DELETE this time. Insert again with Code=beta —
+									// should error because the live row holds the slot.
+									_SuperTest
+										.post('1.0/Widget')
+										.send({ Code: 'beta', Name: 'Live collision' })
+										.end(
+											(pNewErr, pNewRes) =>
+											{
+												let tmpResult = JSON.parse(pNewRes.text);
+												Expect(tmpResult).to.have.property('Error');
+												fDone();
+											}
+										);
+								}
+							);
+					}
+				);
+
+				test
+				(
+					'Round-trip: delete → POST-with-same-Code → re-read cleanly, no partial-index needed',
+					function (fDone)
+					{
+						// End-to-end demonstration of the scenario downstream
+						// schemas used to need `WHERE Deleted=0` to support.
+						_SuperTest
+							.post('1.0/Widget')
+							.send({ Code: 'roundtrip', Name: 'gen-1' })
+							.end(
+								(pPostErr, pPostRes) =>
+								{
+									let tmpFirst = JSON.parse(pPostRes.text);
+									Expect(tmpFirst.IDWidget).to.be.above(0);
+
+									_SuperTest
+										.delete(`1.0/Widget/${tmpFirst.IDWidget}`)
+										.end(
+											(pDelErr) =>
+											{
+												_SuperTest
+													.post('1.0/Widget')
+													.send({ Code: 'roundtrip', Name: 'gen-2' })
+													.end(
+														(pPost2Err, pPost2Res) =>
+														{
+															Expect(pPost2Res.status).to.equal(200);
+															let tmpSecond = JSON.parse(pPost2Res.text);
+															Expect(tmpSecond.IDWidget).to.not.equal(tmpFirst.IDWidget);
+
+															_SuperTest
+																.get(`1.0/Widget/${tmpSecond.IDWidget}`)
+																.end(
+																	(pGetErr, pGetRes) =>
+																	{
+																		Expect(pGetRes.status).to.equal(200);
+																		let tmpReadBack = JSON.parse(pGetRes.text);
+																		Expect(tmpReadBack.Code).to.equal('roundtrip');
+																		Expect(tmpReadBack.Name).to.equal('gen-2');
+																		fDone();
+																	}
+																);
+														}
+													);
+											}
+										);
+								}
+							);
+					}
+				);
+
+				test
+				(
+					'Upsert (create branch) also benefits from the rename',
+					function (fDone)
+					{
+						// Upsert with a new GUID + a Code that collides with a
+						// soft-deleted row. The rename must run on the create
+						// branch of the upsert too.
+						_SuperTest
+							.post('1.0/Widget')
+							.send({ Code: 'upsertcollide', Name: 'upsert-original' })
+							.end(
+								(pPostErr, pPostRes) =>
+								{
+									let tmpOriginalID = JSON.parse(pPostRes.text).IDWidget;
+									_SuperTest
+										.delete(`1.0/Widget/${tmpOriginalID}`)
+										.end(
+											() =>
+											{
+												// IDWidget=0 forces the upsert path to a Create.
+												_SuperTest
+													.put('1.0/Widget/Upsert')
+													.send({ IDWidget: 0, Code: 'upsertcollide', Name: 'upsert-new' })
+													.end(
+														(pUpErr, pUpRes) =>
+														{
+															Expect(pUpRes.status, `unexpected status ${pUpRes.status}; body=${pUpRes.text}`).to.equal(200);
+															let tmpResult = JSON.parse(pUpRes.text);
+															Expect(tmpResult.Code).to.equal('upsertcollide');
+															Expect(tmpResult.Name).to.equal('upsert-new');
+															Expect(tmpResult.IDWidget).to.not.equal(tmpOriginalID);
+															fDone();
+														}
+													);
+											}
+										);
+								}
+							);
+					}
+				);
+			}
+		);
 	}
 );

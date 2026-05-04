@@ -12,10 +12,26 @@ const doAPIEndpointUpdate = function(pRequest, pResponse, fNext)
 	[
 		(fStageComplete) =>
 		{
-			if (typeof(pRequest.body) !== 'object')
+			if (typeof(pRequest.body) !== 'object' || pRequest.body === null)
 			{
 				return fStageComplete(this.ErrorHandler.getError('Record update failure - a valid record is required.', 400));
 			}
+
+			// PUT|PATCH /Entity/:IDRecord puts the primary key in the URL path
+			// (REST-idiomatic, parallels GET/:IDRecord and DELETE/:IDRecord).
+			// When present, the URL ID is authoritative and overrides anything
+			// in the body. This is what lets clients update-in-place without
+			// the GET → DELETE → INSERT churn that loses the primary key.
+			if (pRequest.params && pRequest.params.IDRecord)
+			{
+				let tmpURLID = pRequest.params.IDRecord;
+				if (typeof(tmpURLID) === 'string' && /^-?\d+$/.test(tmpURLID))
+				{
+					tmpURLID = Number(tmpURLID);
+				}
+				pRequest.body[this.DAL.defaultIdentifier] = tmpURLID;
+			}
+
 			if (pRequest.body[this.DAL.defaultIdentifier] < 1)
 			{
 				return fStageComplete(this.ErrorHandler.getError('Record update failure - a valid record ID is required in the passed-in record.', 400));

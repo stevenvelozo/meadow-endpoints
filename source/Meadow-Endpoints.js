@@ -213,6 +213,14 @@ class MeadowEndpoints
 			this.connectRoute(pServiceServer, 'putWithBodyParser', `/Upsert`, this._Endpoints.Upsert, `the internal behavior _Endpoints.Upsert`);
 			this.connectRoute(pServiceServer, 'putWithBodyParser', `/Upserts`, this._Endpoints.Upserts, `the internal behavior _Endpoints.Upserts`);
 			this.connectRoute(pServiceServer, 'putWithBodyParser', `/Upserts/Detailed`, this._Endpoints.UpsertsDetailed, `the internal behavior _Endpoints.UpsertsDetailed`);
+			// REST-idiomatic PUT/PATCH-by-id: the URL path holds the primary key,
+			// matching GET/:IDRecord and DELETE/:IDRecord. The Update endpoint
+			// merges pRequest.params.IDRecord into the body so the row is updated
+			// in-place — no GET → DELETE → INSERT dance, primary key preserved.
+			// Registered AFTER the literal /Upsert(s) routes so those win on the
+			// :IDRecord match.
+			this.connectRoute(pServiceServer, 'putWithBodyParser', `/:IDRecord`, this._Endpoints.Update, `the internal behavior _Endpoints.Update (by-id PUT)`);
+			this.connectRoute(pServiceServer, 'patchWithBodyParser', `/:IDRecord`, this._Endpoints.Update, `the internal behavior _Endpoints.Update (by-id PATCH)`);
 		}
 		if (this._EnabledBehaviorSets.Delete)
 		{
