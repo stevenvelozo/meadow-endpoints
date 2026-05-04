@@ -40,11 +40,35 @@ const doAPIEndpointUpserts = function(pRequest, pResponse, fNext)
 			fBehaviorInjector(`UpsertBulk-PostOperation`),
 			(fStageComplete) =>
 			{
+				// Surface per-row error counts to the caller via response
+				// headers BEFORE streaming the success array. Without these,
+				// callers can only see "N records came back" and have no
+				// signal that other records were silently dropped (e.g.
+				// from a NOT NULL constraint or a column-too-long error).
+				// We keep the response body shape stable (bare array of
+				// upserted records) for back-compat — the headers are the
+				// non-breaking surface for the failure count + total.
+				let tmpInputCount = (tmpRequestState.BulkRecords && tmpRequestState.BulkRecords.length) || 0;
+				let tmpErrorCount = (tmpRequestState.ErrorRecords && tmpRequestState.ErrorRecords.length) || 0;
+				let tmpUpsertedCount = (tmpRequestState.UpsertedRecords && tmpRequestState.UpsertedRecords.length) || 0;
+				try
+				{
+					pResponse.header('X-Meadow-Upsert-Total', String(tmpInputCount));
+					pResponse.header('X-Meadow-Upsert-Succeeded', String(tmpUpsertedCount));
+					pResponse.header('X-Meadow-Upsert-Errored', String(tmpErrorCount));
+				}
+				catch (pHdrErr) { /* response.header may not exist on all servers; degrade silently */ }
+
 				return this.doStreamRecordArray(pResponse, marshalLiteList.call(this, tmpRequestState.UpsertedRecords, pRequest), fStageComplete);
 			},
 			(fStageComplete) =>
 			{
-				this.log.requestCompletedSuccessfully(pRequest, tmpRequestState, `Bulk upsert complete -- ${tmpRequestState.UpsertedRecords.length} records processed`);
+				let tmpUpsertedCount = (tmpRequestState.UpsertedRecords && tmpRequestState.UpsertedRecords.length) || 0;
+				let tmpErrorCount = (tmpRequestState.ErrorRecords && tmpRequestState.ErrorRecords.length) || 0;
+				let tmpMessage = (tmpErrorCount > 0)
+					? `Bulk upsert complete -- ${tmpUpsertedCount} records succeeded, ${tmpErrorCount} errored`
+					: `Bulk upsert complete -- ${tmpUpsertedCount} records processed`;
+				this.log.requestCompletedSuccessfully(pRequest, tmpRequestState, tmpMessage);
 				return fStageComplete();
 			}
 		], (pError) =>
