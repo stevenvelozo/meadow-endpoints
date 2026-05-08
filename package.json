@@ -54,7 +54,7 @@
     "gulp-util": "^3.0.8",
     "meadow-connection-sqlite": "^1.0.19",
     "mysql2": "^3.22.1",
-    "orator-serviceserver-restify": "^2.0.10",
+    "orator-serviceserver-restify": "^2.0.11",
     "papaparse": "^5.5.3",
     "pict-docuserve": "^0.1.5",
     "quackage": "^1.2.3",
@@ -64,12 +64,12 @@
   },
   "dependencies": {
     "async": "3.2.6",
-    "fable": "^3.1.71",
+    "fable": "^3.1.72",
     "fable-serviceproviderbase": "^3.0.19",
     "JSONStream": "^1.3.5",
     "meadow": "^2.0.38",
     "meadow-filter": "^1.0.10",
-    "orator": "^6.1.1",
+    "orator": "^6.1.2",
     "underscore": "^1.13.8"
   }
 }
