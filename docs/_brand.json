@@ -1,0 +1,18 @@
+{
+	"Hash": "meadow-endpoints",
+	"Name": "Meadow Endpoints",
+	"Tagline": "Automatic RESTful CRUD endpoint generation from Meadow entities with behavior injection hooks",
+	"Palette": "mix",
+	"Icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 96 96\" width=\"96\" height=\"96\">\n\t\t<defs>\n\t\t\t<clipPath id=\"frame-meadow-endpoints-filled-light\">\n\t\t\t\t<path d=\"M 2 48\n\t\t\tA 46 46 0 1 0 94 48\n\t\t\tA 46 46 0 1 0 2 48 Z\"/>\n\t\t\t</clipPath>\n\t\t</defs>\n\t\t<path d=\"M 2 48\n\t\t\tA 46 46 0 1 0 94 48\n\t\t\tA 46 46 0 1 0 2 48 Z\" fill=\"#2b55e2\"/>\n\t\t<g clip-path=\"url(#frame-meadow-endpoints-filled-light)\"><rect x=\"19.5\" y=\"28.5\" width=\"48\" height=\"48\" rx=\"8\" fill=\"#dd7d63\" opacity=\"0.9\"/>\n\t\t\t\t\t<rect x=\"28.5\" y=\"19.5\" width=\"48\" height=\"48\" rx=\"8\" fill=\"rgba(255,255,255,0.18)\"/></g>\n\t\t<text x=\"48\" y=\"50\" text-anchor=\"middle\" dominant-baseline=\"central\"\n\t\t\tfont-family=\"-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif\"\n\t\t\tfont-size=\"38\" font-weight=\"600\"\n\t\t\tfill=\"#ffffff\" letter-spacing=\"-1\">ME</text>\n\t</svg>",
+	"IconType": "svg",
+	"Favicon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 96 96\" width=\"96\" height=\"96\">\n\t\t<defs>\n\t\t\t<clipPath id=\"fav-meadow-endpoints-light\">\n\t\t\t\t<path d=\"M 2 48\n\t\t\tA 46 46 0 1 0 94 48\n\t\t\tA 46 46 0 1 0 2 48 Z\"/>\n\t\t\t</clipPath>\n\t\t</defs>\n\t\t<path d=\"M 2 48\n\t\t\tA 46 46 0 1 0 94 48\n\t\t\tA 46 46 0 1 0 2 48 Z\" fill=\"#2b55e2\"/>\n\t\t<g clip-path=\"url(#fav-meadow-endpoints-light)\"><rect x=\"26.5\" y=\"17.5\" width=\"52\" height=\"52\" rx=\"9\" fill=\"rgba(255,255,255,0.22)\"/></g>\n\t\t<text x=\"48\" y=\"50\" text-anchor=\"middle\" dominant-baseline=\"central\"\n\t\t\tfont-family=\"-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif\"\n\t\t\tfont-size=\"60\" font-weight=\"800\"\n\t\t\tfill=\"#ffffff\" letter-spacing=\"-1\">M</text>\n\t</svg>",
+	"FaviconDark": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 96 96\" width=\"96\" height=\"96\">\n\t\t<defs>\n\t\t\t<clipPath id=\"fav-meadow-endpoints-dark\">\n\t\t\t\t<path d=\"M 2 48\n\t\t\tA 46 46 0 1 0 94 48\n\t\t\tA 46 46 0 1 0 2 48 Z\"/>\n\t\t\t</clipPath>\n\t\t</defs>\n\t\t<path d=\"M 2 48\n\t\t\tA 46 46 0 1 0 94 48\n\t\t\tA 46 46 0 1 0 2 48 Z\" fill=\"#8098e8\"/>\n\t\t<g clip-path=\"url(#fav-meadow-endpoints-dark)\"><rect x=\"26.5\" y=\"17.5\" width=\"52\" height=\"52\" rx=\"9\" fill=\"rgba(255,255,255,0.22)\"/></g>\n\t\t<text x=\"48\" y=\"50\" text-anchor=\"middle\" dominant-baseline=\"central\"\n\t\t\tfont-family=\"-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif\"\n\t\t\tfont-size=\"60\" font-weight=\"800\"\n\t\t\tfill=\"#101418\" letter-spacing=\"-1\">M</text>\n\t</svg>",
+	"Colors": {
+		"Primary": "#2b55e2",
+		"Secondary": "#dd7d63",
+		"PrimaryLight": "#2b55e2",
+		"PrimaryDark": "#8098e8",
+		"SecondaryLight": "#dd7d63",
+		"SecondaryDark": "#eabbae"
+	}
+}

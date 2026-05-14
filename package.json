@@ -55,7 +55,7 @@
     "mysql2": "^3.22.1",
     "orator-serviceserver-restify": "^2.0.11",
     "papaparse": "^5.5.3",
-    "pict-docuserve": "^1.0.0",
+    "pict-docuserve": "^1.0.1",
     "quackage": "^1.2.3",
     "supertest": "^7.2.2",
     "typescript": "^5.9.3",
