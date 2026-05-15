@@ -315,12 +315,7 @@ a:hover
 		font-size: 14px;
 	}
 
-	#Docuserve-Sidebar-Container
-	{
-		display: none;
-	}
-
-	.docuserve-body
+.docuserve-body
 	{
 		flex-direction: column;
 	}
