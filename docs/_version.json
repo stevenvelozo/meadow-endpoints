@@ -1,7 +1,7 @@
 {
 	"Name": "meadow-endpoints",
-	"Version": "4.0.15",
+	"Version": "4.0.21",
 	"Description": "Automatic API endpoints for Meadow data.",
-	"GeneratedAt": "2026-04-10T17:21:31.782Z",
-	"GitCommit": "b36813c"
+	"GeneratedAt": "2026-05-21T17:35:36.727Z",
+	"GitCommit": "57d87a3"
 }

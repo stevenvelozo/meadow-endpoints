@@ -1,5 +1,5 @@
 {
-	"Generated": "2026-04-10T17:21:31.481Z",
+	"Generated": "2026-05-21T17:35:36.545Z",
 	"GitHubOrg": "stevenvelozo",
 	"DefaultBranch": "master",
 	"Groups": [
@@ -105,18 +105,6 @@
 						"crud/read.md",
 						"crud/schema.md",
 						"crud/update.md"
-					]
-				},
-				{
-					"Name": "css",
-					"Repo": "css",
-					"Group": "docs",
-					"Branch": "master",
-					"HasDocs": true,
-					"HasCover": false,
-					"Sidebar": [],
-					"DocFiles": [
-						"css/docuserve.css"
 					]
 				}
 			]
