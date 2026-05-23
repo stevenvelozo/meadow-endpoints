@@ -8,12 +8,12 @@ Meadow Endpoints generates a full suite of RESTful routes from a configured Mead
 
 | Group | Operations | Description |
 |-------|-----------|-------------|
-| [Create](crud/create.md) | Create, BulkCreate | Insert new records |
-| [Read](crud/read.md) | Read, Reads, ReadsBy, ReadMax, ReadSelectList, ReadLiteList, ReadDistinctList | Retrieve records with pagination, filtering, and projections |
-| [Update](crud/update.md) | Update, BulkUpdate, Upsert, BulkUpsert | Modify existing records |
-| [Delete](crud/delete.md) | Delete, Undelete | Soft-delete and restore records |
-| [Count](crud/count.md) | Count, CountBy | Aggregate record counts |
-| [Schema](crud/schema.md) | Schema, New, Validate | Serve schema metadata, default objects, and validation |
+| [Create](create.md) | Create, BulkCreate | Insert new records |
+| [Read](read.md) | Read, Reads, ReadsBy, ReadMax, ReadSelectList, ReadLiteList, ReadDistinctList | Retrieve records with pagination, filtering, and projections |
+| [Update](update.md) | Update, BulkUpdate, Upsert, BulkUpsert | Modify existing records |
+| [Delete](delete.md) | Delete, Undelete | Soft-delete and restore records |
+| [Count](count.md) | Count, CountBy | Aggregate record counts |
+| [Schema](schema.md) | Schema, New, Validate | Serve schema metadata, default objects, and validation |
 
 ## Complete Route Table
 

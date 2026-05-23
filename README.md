@@ -1,5 +1,7 @@
 # Meadow Endpoints
 
+> **[&#9654; Read the Meadow-Endpoints Documentation](https://stevenvelozo.github.io/meadow-endpoints/)** &mdash; interactive docs with the full API reference.
+
 > Automagic REST endpoints for CRUD operations on the Retold framework
 
 Meadow Endpoints generates a full suite of RESTful API routes from your Meadow data entities. Define your data model with Meadow, point Meadow Endpoints at it, and you get Create, Read, Update, Delete, Count, Schema, and Validate endpoints -- with authentication hooks, authorization, dynamic filtering, pagination, and behavior injection for customization. The design philosophy is to cover the 99% via configuration; the last 1% is easily hand-craftable.
