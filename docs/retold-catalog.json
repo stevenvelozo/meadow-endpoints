@@ -1,7 +1,7 @@
 {
-	"Generated": "2026-05-22T05:40:17.184Z",
+	"Generated": "2026-05-26T18:19:43.822Z",
 	"Mode": "module",
-	"GitHubOrg": "stevenvelozo",
+	"GitHubOrg": "fable-retold",
 	"DefaultBranch": "master",
 	"Module": {
 		"Name": "meadow-endpoints",
@@ -9,7 +9,7 @@
 		"Group": "",
 		"Branch": "master",
 		"HasDocs": true,
-		"HasCover": false,
+		"HasCover": true,
 		"Sidebar": [
 			{
 				"Title": "Getting Started",
@@ -133,6 +133,7 @@
 			".nojekyll",
 			"README.md",
 			"_brand.json",
+			"_cover.md",
 			"_sidebar.md",
 			"_version.json",
 			"crud/README.md",
