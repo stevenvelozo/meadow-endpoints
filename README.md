@@ -1,6 +1,6 @@
 # Meadow Endpoints
 
-> **[&#9654; Read the Meadow-Endpoints Documentation](https://stevenvelozo.github.io/meadow-endpoints/)** &mdash; interactive docs with the full API reference.
+> **[&#9654; Read the Meadow-Endpoints Documentation](https://fable-retold.github.io/meadow-endpoints/)** &mdash; interactive docs with the full API reference.
 
 > Automagic REST endpoints for CRUD operations on the Retold framework
 
@@ -191,10 +191,10 @@ npx docsify-cli serve docs
 
 ## Related Packages
 
-- [meadow](https://github.com/stevenvelozo/meadow) - Data access and ORM
-- [foxhound](https://github.com/stevenvelozo/foxhound) - Query DSL for SQL generation
-- [orator](https://github.com/stevenvelozo/orator) - API server abstraction
-- [fable](https://github.com/stevenvelozo/fable) - Application services framework
+- [meadow](https://github.com/fable-retold/meadow) - Data access and ORM
+- [foxhound](https://github.com/fable-retold/foxhound) - Query DSL for SQL generation
+- [orator](https://github.com/fable-retold/orator) - API server abstraction
+- [fable](https://github.com/fable-retold/fable) - Application services framework
 
 ## License
 

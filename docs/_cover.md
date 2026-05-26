@@ -4,6 +4,6 @@
 
 - Read the full documentation for usage, configuration, and reference
 
-[GitHub](https://github.com/stevenvelozo/meadow-endpoints)
+[GitHub](https://github.com/fable-retold/meadow-endpoints)
 [Get Started](#meadow-endpoints)
 

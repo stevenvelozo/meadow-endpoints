@@ -35,7 +35,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/stevenvelozo/meadow-endpoints.git"
+    "url": "https://github.com/fable-retold/meadow-endpoints.git"
   },
   "keywords": [
     "crud",
@@ -44,9 +44,9 @@
   "author": "Steven Velozo <steven@velozo.com> (http://velozo.com/)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/stevenvelozo/meadow-endpoints/issues"
+    "url": "https://github.com/fable-retold/meadow-endpoints/issues"
   },
-  "homepage": "https://github.com/stevenvelozo/meadow-endpoints",
+  "homepage": "https://github.com/fable-retold/meadow-endpoints",
   "devDependencies": {
     "alasql": "^4.17.2",
     "chance": "^1.1.13",
