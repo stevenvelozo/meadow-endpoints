@@ -1,5 +1,5 @@
 {
-	"Generated": "2026-05-26T21:12:32.592Z",
+	"Generated": "2026-05-30T22:11:58.581Z",
 	"Mode": "module",
 	"GitHubOrg": "fable-retold",
 	"DefaultBranch": "master",
@@ -17,6 +17,10 @@
 					{
 						"Title": "Introduction",
 						"Path": "README.md"
+					},
+					{
+						"Title": "Quick Start",
+						"Path": "quickstart.md"
 					},
 					{
 						"Title": "Getting Started",
@@ -136,6 +140,7 @@
 			"_cover.md",
 			"_sidebar.md",
 			"_version.json",
+			"architecture.md",
 			"crud/README.md",
 			"crud/count.md",
 			"crud/create.md",
@@ -144,6 +149,7 @@
 			"crud/schema.md",
 			"crud/update.md",
 			"index.html",
+			"quickstart.md",
 			"retold-catalog.json",
 			"retold-keyword-index.json"
 		]
