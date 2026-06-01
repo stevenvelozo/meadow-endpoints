@@ -1,6 +1,6 @@
 # Meadow Endpoints
 
-> **[&#9654; Read the Meadow-Endpoints Documentation](https://fable-retold.github.io/meadow-endpoints/)** &mdash; interactive docs with the full API reference.
+> **[Read the Meadow-Endpoints Documentation](https://fable-retold.github.io/meadow-endpoints/)** - interactive docs with the full API reference.
 
 > Automagic REST endpoints for CRUD operations on the Retold framework
 
