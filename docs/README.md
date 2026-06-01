@@ -317,10 +317,10 @@ npx docsify-cli serve docs
 
 ## Related Packages
 
-- [meadow](https://github.com/fable-retold/meadow) - Data access layer (required)
+- [meadow](https://fable-retold.github.io/meadow/) - Data access layer (required)
 - [meadow-filter](https://github.com/fable-retold/meadow-filter) - URL filter expression parser
-- [orator](https://github.com/fable-retold/orator) - API server abstraction
-- [orator-serviceserver-restify](https://github.com/fable-retold/orator-serviceserver-restify) - Restify service server
-- [stricture](https://github.com/fable-retold/stricture) - Schema definition language
-- [foxhound](https://github.com/fable-retold/foxhound) - Query DSL for SQL generation
-- [fable](https://github.com/fable-retold/fable) - Service provider framework
+- [orator](https://fable-retold.github.io/orator/) - API server abstraction
+- [orator-serviceserver-restify](https://fable-retold.github.io/orator-serviceserver-restify/) - Restify service server
+- [stricture](https://fable-retold.github.io/stricture/) - Schema definition language
+- [foxhound](https://fable-retold.github.io/foxhound/) - Query DSL for SQL generation
+- [fable](https://fable-retold.github.io/fable/) - Service provider framework
