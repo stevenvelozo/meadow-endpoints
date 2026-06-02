@@ -1,0 +1,9 @@
+flowchart LR
+	subgraph Phases["Hook phases per operation"]
+		direction TB
+		Pre["{Verb}-PreOperation<br/>before the query is built"]
+		Query["{Verb}-QueryConfiguration<br/>after the query is built,<br/>before execution"]
+		Post["{Verb}-PostOperation<br/>after the operation completes"]
+	end
+
+	Pre --> Query --> Post

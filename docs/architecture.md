@@ -6,27 +6,8 @@ This document describes how Meadow Endpoints turns a single Meadow entity into a
 
 Meadow Endpoints is the Layer-3 keystone of the data tier. It binds a Meadow data access layer (the data broker below it) to an Orator service server (the API host above it), registering one HTTP route per generated endpoint.
 
-```mermaid
-graph TB
-	Orator["Orator<br/>(API Server / Restify host)"]
-	MeadowEndpoints["Meadow Endpoints<br/>(Route Registration)"]
-	Controller["Controller<br/>(Request Lifecycle)"]
-	SessionMarshaler["Session Marshaler<br/>(Authentication)"]
-	BehaviorInjection["Behavior Injection<br/>(Authorization & Custom Logic)"]
-	ErrorHandler["Error Handler<br/>(Error Responses)"]
-	LogController["Log Controller<br/>(Request Logging)"]
-	Meadow["Meadow DAL<br/>(Data Access)"]
-	Provider["Database Provider<br/>(MySQL, MSSQL, PostgreSQL,<br/>SQLite, MongoDB, etc.)"]
-
-	Orator --> MeadowEndpoints
-	MeadowEndpoints --> Controller
-	Controller --> SessionMarshaler
-	Controller --> BehaviorInjection
-	Controller --> ErrorHandler
-	Controller --> LogController
-	MeadowEndpoints --> Meadow
-	Meadow --> Provider
-```
+<!-- bespoke diagram: edit diagrams/where-it-sits-in-the-stack.mmd or .hints.json, then: npx pict-renderer-graph build modules/meadow/meadow-endpoints/docs -->
+![Where It Sits in the Stack](diagrams/where-it-sits-in-the-stack.svg)
 
 Orator hosts the routes and supplies the HTTP request and response objects. Meadow Endpoints owns the request lifecycle through its controller. Meadow executes the data operation against whichever database provider is configured. Fable underpins all of it, supplying configuration, logging, and the async utilities the controller uses.
 
@@ -34,21 +15,8 @@ Orator hosts the routes and supplies the HTTP request and response objects. Mead
 
 A `MeadowEndpoints` instance is constructed from a configured Meadow DAL. The DAL scope (for example `Book`) and the configured version (default `1.0`) form the route prefix `/{version}/{entity}` -- so `Book` becomes `/1.0/Book`.
 
-```mermaid
-flowchart TD
-	A["Meadow DAL<br/>(scope = 'Book')"]
-	B["new MeadowEndpoints(tmpMeadow)"]
-	C["EndpointPrefix = /1.0/Book"]
-	D["connectRoutes(serviceServer)"]
-	E["For each enabled behavior set,<br/>register routes on the service server"]
-	F["Orator service server<br/>holds the live route table"]
-
-	A --> B
-	B --> C
-	C --> D
-	D --> E
-	E --> F
-```
+<!-- bespoke diagram: edit diagrams/how-routes-are-generated.mmd or .hints.json, then: npx pict-renderer-graph build modules/meadow/meadow-endpoints/docs -->
+![How Routes Are Generated](diagrams/how-routes-are-generated.svg)
 
 Calling `connectRoutes(_Orator.serviceServer)` walks the enabled behavior sets and registers every route through the internal `connectRoute()` helper, which binds each endpoint handler to the controller instance. Endpoints are grouped into behavior sets -- `Create`, `Read`, `Reads`, `Update`, `Delete`, `Count`, `Schema`, `Validate`, and `New` -- and any set can be turned off before `connectRoutes()` is called so its routes are never registered.
 
@@ -58,30 +26,8 @@ Route ordering matters: the `Schema`, `Schema/New`, and `Schema/Validate` routes
 
 Every generated endpoint runs the same async waterfall. Each stage either advances to the next or short-circuits to the shared error handler. Behavior-injection hooks are interleaved between the built-in stages, so custom logic runs at well-defined points without replacing any built-in step.
 
-```mermaid
-flowchart TD
-	A["HTTP Request<br/>(from Orator)"]
-	B["initializeRequestState(pRequest, 'Verb')<br/>marshals SessionData onto the request state"]
-	C["[Pre-Operation Behavior Injection]<br/>authenticate, authorize, validate"]
-	D["Build / Configure Query<br/>(filters, pagination, identifier)"]
-	E["[Query-Configuration Behavior Injection]<br/>modify query, add filters"]
-	F["Execute DAL Operation<br/>(doCreate / doRead / doReads / doUpdate / doDelete / doCount)"]
-	G["[Post-Operation Behavior Injection]<br/>transform results, audit, notify"]
-	H["Send Response"]
-	I["ErrorHandler.handleErrorIfSet()<br/>catches any error from the waterfall"]
-
-	A --> B
-	B --> C
-	C --> D
-	D --> E
-	E --> F
-	F --> G
-	G --> H
-	C -.error.-> I
-	E -.error.-> I
-	F -.error.-> I
-	G -.error.-> I
-```
+<!-- bespoke diagram: edit diagrams/request-lifecycle.mmd or .hints.json, then: npx pict-renderer-graph build modules/meadow/meadow-endpoints/docs -->
+![Request Lifecycle](diagrams/request-lifecycle.svg)
 
 Not every endpoint exposes all three hook phases. A single-record read, for example, runs `Read-PreOperation`, then `Read-QueryConfiguration`, then `Read-PostOperation`; a multi-record read runs `Reads-QueryConfiguration` and `Reads-PostOperation`. See [Behavior Injection](behavior-injection.md) for the complete hook matrix.
 
@@ -105,17 +51,8 @@ The marshaler always starts from the `MeadowEndpointsDefaultSessionObject` templ
 
 Behavior injection is the primary extension mechanism: it lets you hook the lifecycle of any endpoint without subclassing or replacing the built-in handler. Hooks are registered by name on the controller's `BehaviorInjection` component, and each name follows the pattern `{Verb}-{Phase}`.
 
-```mermaid
-flowchart LR
-	subgraph Phases["Hook phases per operation"]
-		direction TB
-		Pre["{Verb}-PreOperation<br/>before the query is built"]
-		Query["{Verb}-QueryConfiguration<br/>after the query is built,<br/>before execution"]
-		Post["{Verb}-PostOperation<br/>after the operation completes"]
-	end
-
-	Pre --> Query --> Post
-```
+<!-- bespoke diagram: edit diagrams/behavior-injection-hook-points.mmd or .hints.json, then: npx pict-renderer-graph build modules/meadow/meadow-endpoints/docs -->
+![Behavior-Injection Hook Points](diagrams/behavior-injection-hook-points.svg)
 
 A registered hook receives `(pRequest, pRequestState, fCallback)`. Call `fCallback()` with no argument to continue the waterfall, or call it with an error to halt and route to the error handler. Because the hook is invoked with the controller as its `this`, register hooks as standard functions rather than arrow functions when you need that scope.
 

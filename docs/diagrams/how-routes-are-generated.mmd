@@ -1,0 +1,13 @@
+flowchart TD
+	A["Meadow DAL<br/>(scope = 'Book')"]
+	B["new MeadowEndpoints(tmpMeadow)"]
+	C["EndpointPrefix = /1.0/Book"]
+	D["connectRoutes(serviceServer)"]
+	E["For each enabled behavior set,<br/>register routes on the service server"]
+	F["Orator service server<br/>holds the live route table"]
+
+	A --> B
+	B --> C
+	C --> D
+	D --> E
+	E --> F

@@ -1,0 +1,19 @@
+graph TB
+	Orator["Orator<br/>(API Server / Restify host)"]
+	MeadowEndpoints["Meadow Endpoints<br/>(Route Registration)"]
+	Controller["Controller<br/>(Request Lifecycle)"]
+	SessionMarshaler["Session Marshaler<br/>(Authentication)"]
+	BehaviorInjection["Behavior Injection<br/>(Authorization & Custom Logic)"]
+	ErrorHandler["Error Handler<br/>(Error Responses)"]
+	LogController["Log Controller<br/>(Request Logging)"]
+	Meadow["Meadow DAL<br/>(Data Access)"]
+	Provider["Database Provider<br/>(MySQL, MSSQL, PostgreSQL,<br/>SQLite, MongoDB, etc.)"]
+
+	Orator --> MeadowEndpoints
+	MeadowEndpoints --> Controller
+	Controller --> SessionMarshaler
+	Controller --> BehaviorInjection
+	Controller --> ErrorHandler
+	Controller --> LogController
+	MeadowEndpoints --> Meadow
+	Meadow --> Provider

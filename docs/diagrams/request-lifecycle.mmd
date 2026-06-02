@@ -1,0 +1,22 @@
+flowchart TD
+	A["HTTP Request<br/>(from Orator)"]
+	B["initializeRequestState(pRequest, 'Verb')<br/>marshals SessionData onto the request state"]
+	C["[Pre-Operation Behavior Injection]<br/>authenticate, authorize, validate"]
+	D["Build / Configure Query<br/>(filters, pagination, identifier)"]
+	E["[Query-Configuration Behavior Injection]<br/>modify query, add filters"]
+	F["Execute DAL Operation<br/>(doCreate / doRead / doReads / doUpdate / doDelete / doCount)"]
+	G["[Post-Operation Behavior Injection]<br/>transform results, audit, notify"]
+	H["Send Response"]
+	I["ErrorHandler.handleErrorIfSet()<br/>catches any error from the waterfall"]
+
+	A --> B
+	B --> C
+	C --> D
+	D --> E
+	E --> F
+	F --> G
+	G --> H
+	C -.error.-> I
+	E -.error.-> I
+	F -.error.-> I
+	G -.error.-> I
