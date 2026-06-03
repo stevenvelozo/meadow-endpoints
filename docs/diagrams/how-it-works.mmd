@@ -1,0 +1,16 @@
+Orator (API Server)
+  └── Meadow Endpoints (Route Registration)
+        ├── Controller (Request Lifecycle)
+        │     ├── Session Marshaler (Authentication)
+        │     ├── Behavior Injection (Authorization & Custom Logic)
+        │     ├── Error Handler (Error Responses)
+        │     └── Log Controller (Request Logging)
+        ├── Endpoints (Route Handlers)
+        │     ├── Create / BulkCreate
+        │     ├── Read / Reads / ReadSelectList / ReadLiteList / ReadDistinctList
+        │     ├── Update / BulkUpdate / Upsert / BulkUpsert
+        │     ├── Delete / Undelete
+        │     ├── Count / CountBy
+        │     └── Schema / New / Validate
+        └── Meadow DAL (Data Access)
+              └── Database Provider

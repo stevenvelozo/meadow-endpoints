@@ -82,17 +82,8 @@ npm install meadow-endpoints
 
 Meadow Endpoints takes a configured Meadow DAL instance and registers HTTP routes with an Orator service server. Each route follows an async waterfall pattern with behavior injection points for customization.
 
-```
-Orator (API Server)
-  └── Meadow Endpoints (Route Registration)
-        ├── Controller (Request Lifecycle)
-        │     ├── Session Marshaler
-        │     ├── Behavior Injection
-        │     ├── Error Handler
-        │     └── Log Controller
-        └── Meadow DAL (Data Access)
-              └── Database Provider
-```
+<!-- bespoke diagram: edit diagrams/how-it-works.mmd or .hints.json, then: npx pict-renderer-graph build modules/meadow/meadow-endpoints -->
+![How It Works](diagrams/how-it-works.svg)
 
 ## Generated Routes
 
